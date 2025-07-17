@@ -13,7 +13,7 @@ dependencies:
   excel: ^2.1.0
   pdf: ^3.10.7
   printing: ^5.11.1
-  share_plus: ^7.2.1
+  share_plus:
   path_provider: ^2.1.1
 
 dev_dependencies:

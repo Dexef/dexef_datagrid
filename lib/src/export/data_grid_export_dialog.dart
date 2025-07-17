@@ -9,11 +9,17 @@ enum ExportFormat {
   pdf,
 }
 
-/// Export template enum
-enum ExportTemplate {
-  simple,
-  detailed,
-  custom,
+/// Export template class
+class ExportTemplate {
+  final String name;
+  final List<String> includedColumns;
+  final Map<String, String> customHeaders;
+
+  const ExportTemplate({
+    required this.name,
+    this.includedColumns = const [],
+    this.customHeaders = const {},
+  });
 }
 
 /// Export dialog with format selection and options
@@ -35,17 +41,40 @@ class DataGridExportDialog extends StatefulWidget {
 
 class _DataGridExportDialogState extends State<DataGridExportDialog> {
   ExportFormat _selectedFormat = ExportFormat.csv;
-  ExportTemplate _selectedTemplate = ExportTemplate.simple;
+  ExportTemplate? _selectedTemplate;
   List<String> _selectedColumns = [];
   Map<String, String> _customHeaders = {};
   bool _includeHeaders = true;
   bool _includeRowNumbers = false;
   bool _includeSummary = false;
+  
+  late List<ExportTemplate> _availableTemplates;
 
   @override
   void initState() {
     super.initState();
     _selectedColumns = widget.columns.map((col) => col.dataField).toList();
+    _availableTemplates = _createTemplates();
+  }
+  
+  List<ExportTemplate> _createTemplates() {
+    return [
+      const ExportTemplate(
+        name: 'Simple',
+        includedColumns: [],
+        customHeaders: {},
+      ),
+      const ExportTemplate(
+        name: 'Detailed',
+        includedColumns: [],
+        customHeaders: {},
+      ),
+      const ExportTemplate(
+        name: 'Custom',
+        includedColumns: [],
+        customHeaders: {},
+      ),
+    ];
   }
 
   @override
@@ -112,35 +141,19 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: _availableTemplates.map((template) {
+                return Expanded(
                   child: _buildTemplateButton(
-                    ExportTemplate.simple,
-                    'Simple',
-                    Icons.list,
-                    Colors.grey,
+                    template,
+                    template.name,
+                    _getTemplateIcon(template.name),
+                    _getTemplateColor(template.name),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildTemplateButton(
-                    ExportTemplate.detailed,
-                    'Detailed',
-                    Icons.description,
-                    Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildTemplateButton(
-                    ExportTemplate.custom,
-                    'Custom',
-                    Icons.settings,
-                    Colors.orange,
-                  ),
-                ),
-              ],
+                );
+              }).toList(),
             ),
             const SizedBox(height: 20),
             // Column selection
@@ -327,7 +340,7 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
     IconData icon,
     Color color,
   ) {
-    final isSelected = _selectedTemplate == template;
+    final isSelected = _selectedTemplate?.name == template.name;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: InkWell(
@@ -372,7 +385,7 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
 
   void _exportData() {
     // Prepare custom headers if needed
-    if (_selectedTemplate == ExportTemplate.custom) {
+    if (_selectedTemplate?.name == 'Custom') {
       for (final column in widget.columns) {
         if (_selectedColumns.contains(column.dataField)) {
           _customHeaders[column.dataField] = column.caption;
@@ -383,7 +396,7 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
     // Call the export function
     widget.onExport(
       _selectedFormat,
-      _selectedTemplate,
+      _selectedTemplate ?? _availableTemplates.first,
       _selectedColumns,
       _customHeaders,
     );
@@ -408,6 +421,32 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
         return 'Excel';
       case ExportFormat.pdf:
         return 'PDF';
+    }
+  }
+  
+  IconData _getTemplateIcon(String templateName) {
+    switch (templateName.toLowerCase()) {
+      case 'simple':
+        return Icons.list;
+      case 'detailed':
+        return Icons.description;
+      case 'custom':
+        return Icons.settings;
+      default:
+        return Icons.list_alt;
+    }
+  }
+  
+  Color _getTemplateColor(String templateName) {
+    switch (templateName.toLowerCase()) {
+      case 'simple':
+        return Colors.grey;
+      case 'detailed':
+        return Colors.blue;
+      case 'custom':
+        return Colors.orange;
+      default:
+        return Colors.grey;
     }
   }
 } 

@@ -107,7 +107,13 @@ class DataGridExportDropdownButton extends StatelessWidget {
     final selectedColumns = columns.map((col) => col.dataField).toList();
     final customHeaders = <String, String>{};
     
-    onExport(format, ExportTemplate.simple, selectedColumns, customHeaders);
+    final defaultTemplate = const ExportTemplate(
+      name: 'Simple',
+      includedColumns: [],
+      customHeaders: {},
+    );
+    
+    onExport(format, defaultTemplate, selectedColumns, customHeaders);
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
