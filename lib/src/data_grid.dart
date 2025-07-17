@@ -561,37 +561,52 @@ class _DataGridState extends State<DataGrid> {
       child: Row(
         children: [
           if (widget.selectionMode == SelectionMode.multiple)
-            DataGridSelectAllCheckbox(
-              isSelected: _controller.selectionState.isSelectAll,
-              isIndeterminate: _controller.selectionState.selectedCount > 0 &&
-                  _controller.selectionState.selectedCount < (_controller.source?.rowCount ?? 0),
-              onChanged: (value) {
-                if (value == true) {
-                  _controller.selectAll();
-                } else {
-                  _controller.clearSelection();
-                }
-              },
-              config: widget.config,
+            SizedBox(
+              width: 50,
+              child: Container(
+                decoration: widget.config.showBorders
+                    ? BoxDecoration(
+                        border: Border(
+                          right: BorderSide(
+                            color: widget.config.borderColor,
+                            width: widget.config.borderWidth,
+                          ),
+                        ),
+                      )
+                    : null,
+                child: DataGridSelectAllCheckbox(
+                  isSelected: _controller.selectionState.isSelectAll,
+                  isIndeterminate: _controller.selectionState.selectedCount > 0 &&
+                      _controller.selectionState.selectedCount < (_controller.source?.rowCount ?? 0),
+                  onChanged: (value) {
+                    if (value == true) {
+                      _controller.selectAll();
+                    } else {
+                      _controller.clearSelection();
+                    }
+                  },
+                  config: widget.config,
+                ),
+              ),
             ),
           ...columns.map((column) {
             final currentSort = _getCurrentSortForColumn(column.dataField);
             final sortPriority = _getSortPriorityForColumn(column.dataField);
             return Expanded(
               flex: column.width?.toInt() ?? 1,
-              child: GestureDetector(
-                onTap: column.sortable ? () => _onHeaderTap(column) : null,
-                child: Container(
-                  decoration: widget.config.showBorders
-                      ? BoxDecoration(
-                          border: Border(
-                            right: BorderSide(
-                              color: widget.config.borderColor,
-                              width: widget.config.borderWidth,
-                            ),
+              child: Container(
+                decoration: widget.config.showBorders
+                    ? BoxDecoration(
+                        border: Border(
+                          right: BorderSide(
+                            color: widget.config.borderColor,
+                            width: widget.config.borderWidth,
                           ),
-                        )
-                      : null,
+                        ),
+                      )
+                    : null,
+                child: GestureDetector(
+                  onTap: column.sortable ? () => _onHeaderTap(column) : null,
                   child: Stack(
                     children: [
                       Padding(
@@ -662,7 +677,7 @@ class _DataGridState extends State<DataGrid> {
         children: [
           if (widget.selectionMode == SelectionMode.multiple)
             SizedBox(
-              width: 50, // Fixed width for checkbox column
+              width: 50,
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
@@ -998,8 +1013,6 @@ class _DataGridState extends State<DataGrid> {
               onConfigureGroups: _showGroupDialog,
               onClearGroups: _clearGroups,
             ),
-          const SizedBox(width: 8),
-          Text('Showing ${_controller.filteredRowCount} of ${_controller.totalRowCount} rows'),
         ],
       ),
     );

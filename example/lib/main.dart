@@ -113,36 +113,41 @@ class _DataGridExampleState extends State<DataGridExample> {
 
   @override
   Widget build(BuildContext context) {
-    return DataGrid(
-      source: _source,
-      columns: _buildColumns(),
-      useOptimizedGrid: false,
-      controller: _controller,
-      config: const DataGridConfig(
-        rowHeight: 48,
-        headerHeight: 56,
-        minColumnWidth: 120,
-        showBorders: true,
-        showAlternateRows: true,
-        alternateRowBackgroundColor: Color(0xFFF5F5F5),
-      ),
-      selectionMode: SelectionMode.multiple,
-      editMode: EditMode.cell,
-      showFilterRow: true,
-      showFilterPanel: true,
-      showSearchPanel: true,
-      showSortControls: true,
-      showGroupControls: true,
-      paginationMode: PaginationMode.client,
-      virtualScrollMode: VirtualScrollMode.none,
-      showPaginationControls: true,
-      currentView: widget.currentView,
-      onViewChanged: widget.onViewChanged,
-      onSelectionChanged: (selectedRows) {
-        print('Selected rows: $selectedRows');
-      },
-      onCellEdit: (rowIndex, field, value) {
-        print('Cell edited: row=$rowIndex, field=$field, value=$value');
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, child) {
+        return DataGrid(
+          source: _source,
+          columns: _buildColumns(),
+          useOptimizedGrid: false,
+          controller: _controller,
+          config: const DataGridConfig(
+            rowHeight: 48,
+            headerHeight: 56,
+            minColumnWidth: 120,
+            showBorders: true,
+            showAlternateRows: true,
+            alternateRowBackgroundColor: Color(0xFFF5F5F5),
+          ),
+          selectionMode: SelectionMode.multiple,
+          editMode: EditMode.cell,
+          showFilterRow: true,
+          showFilterPanel: true,
+          showSearchPanel: true,
+          showSortControls: true,
+          showGroupControls: true,
+          paginationMode: PaginationMode.client,
+          virtualScrollMode: VirtualScrollMode.none,
+          showPaginationControls: true,
+          currentView: widget.currentView,
+          onViewChanged: widget.onViewChanged,
+          onSelectionChanged: (selectedRows) {
+            print('Selected rows: $selectedRows');
+          },
+          onCellEdit: (rowIndex, field, value) {
+            print('Cell edited: row=$rowIndex, field=$field, value=$value');
+          },
+        );
       },
     );
   }

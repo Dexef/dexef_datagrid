@@ -58,31 +58,58 @@ class DataGridRow extends StatelessWidget {
             children: [
               // Checkbox for selection
               if (selectionMode == SelectionMode.multiple)
-                DataGridCheckboxColumn(
-                  rowIndex: rowIndex,
-                  isSelected: isSelected,
-                  onChanged: (value) {
-                    if (onRowSelect != null) {
-                      onRowSelect!(rowIndex);
-                    }
-                  },
-                  config: config,
+                SizedBox(
+                  width: 50,
+                  child: Container(
+                    decoration: config.showBorders
+                        ? BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: config.borderColor,
+                                width: config.borderWidth,
+                              ),
+                            ),
+                          )
+                        : null,
+                    child: DataGridCheckboxColumn(
+                      rowIndex: rowIndex,
+                      isSelected: isSelected,
+                      onChanged: (value) {
+                        if (onRowSelect != null) {
+                          onRowSelect!(rowIndex);
+                        }
+                      },
+                      config: config,
+                    ),
+                  ),
                 ),
               ...columns.map((column) {
                 final value = rowData[column.dataField];
                 
                 return Expanded(
                   flex: column.width?.toInt() ?? 1,
-                  child: DataGridCell(
-                    value: value,
-                    column: column,
-                    config: config,
-                    isSelected: isSelected,
-                    isAlternateRow: isAlternateRow,
-                    onTap: onCellTap != null ? () => onCellTap!(rowIndex) : null,
-                    onDoubleTap: editMode != EditMode.none && onCellEdit != null 
-                        ? () => onCellEdit!(rowIndex, column.dataField, value) 
+                  child: Container(
+                    decoration: config.showBorders
+                        ? BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: config.borderColor,
+                                width: config.borderWidth,
+                              ),
+                            ),
+                          )
                         : null,
+                    child: DataGridCell(
+                      value: value,
+                      column: column,
+                      config: config,
+                      isSelected: isSelected,
+                      isAlternateRow: isAlternateRow,
+                      onTap: onCellTap != null ? () => onCellTap!(rowIndex) : null,
+                      onDoubleTap: editMode != EditMode.none && onCellEdit != null 
+                          ? () => onCellEdit!(rowIndex, column.dataField, value) 
+                          : null,
+                    ),
                   ),
                 );
               }).toList(),
