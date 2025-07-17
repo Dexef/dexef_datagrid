@@ -1064,6 +1064,11 @@ class _DataGridState extends State<DataGrid> {
         backgroundColor: Colors.transparent,
         child: Container(
           width: 400,
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
           constraints: const BoxConstraints(
             minWidth: 300,
             maxWidth: 500,

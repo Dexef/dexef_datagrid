@@ -80,7 +80,7 @@ class _DataGridTextFilterWidgetState extends State<DataGridTextFilterWidget> {
               },
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           // Text input
           TextField(
             controller: _controller,
@@ -90,7 +90,7 @@ class _DataGridTextFilterWidgetState extends State<DataGridTextFilterWidget> {
             ),
             onChanged: (_) => _applyFilter(),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           // Buttons
           Row(
             children: [
@@ -210,7 +210,7 @@ class _DataGridNumberFilterWidgetState extends State<DataGridNumberFilterWidget>
               },
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           // First value input
           TextField(
             controller: _valueController,
@@ -233,7 +233,7 @@ class _DataGridNumberFilterWidgetState extends State<DataGridNumberFilterWidget>
               onChanged: (_) => _applyFilter(),
             ),
           ],
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           // Buttons
           Row(
             children: [
