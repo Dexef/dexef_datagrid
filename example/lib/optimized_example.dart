@@ -149,92 +149,70 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
   }
 
   Widget _buildOptimizedGrid() {
-    return ListenableBuilder(
-      listenable: _controller,
-      builder: (context, child) {
-        return OptimizedDataGrid(
-          source: _source,
-          columns: _buildColumns(),
-          controller: _controller,
-          config: const DataGridConfig(
-            rowHeight: 48,
-            headerHeight: 56,
-            minColumnWidth: 120,
-            showBorders: true,
-            showAlternateRows: true,
-            alternateRowBackgroundColor: Color(0xFFF5F5F5),
-          ),
-          selectionMode: SelectionMode.multiple,
-          editMode: EditMode.cell,
-          showFilterRow: true,
-          showFilterPanel: true,
-          showSearchPanel: true,
-          showSortControls: true,
-          showGroupControls: true,
-          paginationMode: PaginationMode.client,
-          virtualScrollMode: VirtualScrollMode.basic,
-          showPaginationControls: true,
-          currentView: widget.currentView,
-          onViewChanged: widget.onViewChanged,
-          useOptimizedGrid: true, // Set to false to hide the optimized grid button
-          onSelectionChanged: (selectedRows) {
-            print('Selected rows: $selectedRows');
-            setState(() {
-              // Trigger rebuild when selection changes
-            });
-          },
-          onCellEdit: (rowIndex, field, value) {
-            print('Cell edited: row=$rowIndex, field=$field, value=$value');
-            setState(() {
-              // Trigger rebuild when cell is edited
-            });
-          },
-        );
+    return OptimizedDataGrid(
+      source: _source,
+      columns: _buildColumns(),
+      controller: _controller,
+      config: const DataGridConfig(
+        rowHeight: 48,
+        headerHeight: 56,
+        minColumnWidth: 120,
+        showBorders: true,
+        showAlternateRows: true,
+        alternateRowBackgroundColor: Color(0xFFF5F5F5),
+      ),
+      selectionMode: SelectionMode.multiple,
+      editMode: EditMode.cell,
+      showFilterRow: true,
+      showFilterPanel: true,
+      showSearchPanel: true,
+      showSortControls: true,
+      showGroupControls: true,
+      paginationMode: PaginationMode.client,
+      virtualScrollMode: VirtualScrollMode.basic,
+      showPaginationControls: true,
+      currentView: widget.currentView,
+      onViewChanged: widget.onViewChanged,
+      useOptimizedGrid: true, // Set to false to hide the optimized grid button
+      onSelectionChanged: (selectedRows) {
+        print('Selected rows: $selectedRows');
+      },
+      onCellEdit: (rowIndex, field, value) {
+        print('Cell edited: row=$rowIndex, field=$field, value=$value');
       },
     );
   }
 
   Widget _buildStandardGrid() {
-    return ListenableBuilder(
-      listenable: _controller,
-      builder: (context, child) {
-        return DataGrid(
-          source: _source,
-          columns: _buildColumns(),
-          controller: _controller,
-          config: const DataGridConfig(
-            rowHeight: 48,
-            headerHeight: 56,
-            minColumnWidth: 120,
-            showBorders: true,
-            showAlternateRows: true,
-            alternateRowBackgroundColor: Color(0xFFF5F5F5),
-          ),
-          selectionMode: SelectionMode.multiple,
-          editMode: EditMode.cell,
-          showFilterRow: true,
-          showFilterPanel: true,
-          showSearchPanel: true,
-          showSortControls: true,
-          showGroupControls: true,
-          paginationMode: PaginationMode.client,
-          virtualScrollMode: VirtualScrollMode.none,
-          showPaginationControls: true,
-          currentView: widget.currentView,
-          onViewChanged: widget.onViewChanged,
-          onSelectionChanged: (selectedRows) {
-            print('Selected rows: $selectedRows');
-            setState(() {
-              // Trigger rebuild when selection changes
-            });
-          },
-          onCellEdit: (rowIndex, field, value) {
-            print('Cell edited: row=$rowIndex, field=$field, value=$value');
-            setState(() {
-              // Trigger rebuild when cell is edited
-            });
-          },
-        );
+    return DataGrid(
+      source: _source,
+      columns: _buildColumns(),
+      controller: _controller,
+      config: const DataGridConfig(
+        rowHeight: 48,
+        headerHeight: 56,
+        minColumnWidth: 120,
+        showBorders: true,
+        showAlternateRows: true,
+        alternateRowBackgroundColor: Color(0xFFF5F5F5),
+      ),
+      selectionMode: SelectionMode.multiple,
+      editMode: EditMode.cell,
+      showFilterRow: true,
+      showFilterPanel: true,
+      showSearchPanel: true,
+      showSortControls: true,
+      showGroupControls: true,
+      paginationMode: PaginationMode.client,
+      virtualScrollMode: VirtualScrollMode.none,
+      showPaginationControls: true,
+      currentView: widget.currentView,
+      onViewChanged: widget.onViewChanged,
+      onSelectionChanged: (selectedRows) {
+        print('Selected rows: $selectedRows');
+      },
+      onCellEdit: (rowIndex, field, value) {
+        print('Cell edited: row=$rowIndex, field=$field, value=$value');
       },
     );
   }

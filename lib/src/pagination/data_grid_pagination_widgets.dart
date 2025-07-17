@@ -48,6 +48,7 @@ class DataGridPaginationControls extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Rows per page: '),
+              SizedBox(width:10),              
               Container(
                 child: DropdownButton<int>(
                   value: [10, 25, 50, 100].contains(pagination.pageSize) 
