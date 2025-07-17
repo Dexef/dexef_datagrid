@@ -244,18 +244,18 @@ class _DataGridSearchPanelState extends State<DataGridSearchPanel> {
     if (_searchText.isEmpty || _selectedFields.isEmpty) {
       // Clear search
       _currentFilterState = _currentFilterState.copyWith(
-        globalSearch: null,
+        searchFilter: null,
       );
     } else {
       // Apply search
-      final searchFilter = DataGridFilter(
-        field: _selectedFields.first,
-        type: FilterType.contains,
-        value: _searchText,
+      final searchFilter = DataGridSearchFilter(
+        searchText: _searchText,
+        searchFields: _selectedFields,
+        caseSensitive: false, // TODO: Add case sensitive option
       );
       
       _currentFilterState = _currentFilterState.copyWith(
-        globalSearch: searchFilter,
+        searchFilter: searchFilter,
       );
     }
     

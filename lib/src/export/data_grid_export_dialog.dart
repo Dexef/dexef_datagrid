@@ -255,7 +255,6 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
           ],
         ),
       ),
-      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
