@@ -145,13 +145,11 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
               spacing: 12,
               runSpacing: 8,
               children: _availableTemplates.map((template) {
-                return Expanded(
-                  child: _buildTemplateButton(
-                    template,
-                    template.name,
-                    _getTemplateIcon(template.name),
-                    _getTemplateColor(template.name),
-                  ),
+                return _buildTemplateButton(
+                  template,
+                  template.name,
+                  _getTemplateIcon(template.name),
+                  _getTemplateColor(template.name),
                 );
               }).toList(),
             ),
