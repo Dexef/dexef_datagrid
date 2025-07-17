@@ -22,8 +22,8 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
   
   // Performance tracking
   int _rowCount = 1000;
-  bool _useOptimizedGrid = true;
-  bool _showPerformanceInfo = true;
+  final bool _useOptimizedGrid = true;
+  final bool _showPerformanceInfo = true;
 
   @override
   void initState() {
@@ -219,7 +219,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
 
   List<DataGridColumn> _buildColumns() {
     return [
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'id',
         caption: 'ID',
         dataType: DataType.number,
@@ -262,7 +262,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
           );
         },
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'name',
         caption: 'Name',
         dataType: DataType.string,
@@ -270,7 +270,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'email',
         caption: 'Email',
         dataType: DataType.string,
@@ -278,7 +278,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'age',
         caption: 'Age',
         dataType: DataType.number,
@@ -286,7 +286,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'salary',
         caption: 'Salary',
         dataType: DataType.number,
@@ -294,7 +294,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'active',
         caption: 'Active',
         dataType: DataType.boolean,
@@ -302,7 +302,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'joinDate',
         caption: 'Join Date',
         dataType: DataType.date,
@@ -310,7 +310,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'phone',
         caption: 'Phone',
         dataType: DataType.string,
@@ -318,7 +318,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'website',
         caption: 'Website',
         dataType: DataType.string,
@@ -326,7 +326,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'department',
         caption: 'Department',
         dataType: DataType.string,

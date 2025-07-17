@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../model/data_grid_model.dart';
-import '../../model/data_grid_selection.dart';
 
 /// Inline cell editor widget
 class DataGridCellEditor extends StatefulWidget {
@@ -313,9 +312,9 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
     return TextField(
       controller: controller,
       focusNode: focusNode,
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       onChanged: (value) {
         widget.onValueChanged(column.dataField, value);
@@ -328,9 +327,9 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
       controller: controller,
       focusNode: focusNode,
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       onChanged: (value) {
         final number = double.tryParse(value);

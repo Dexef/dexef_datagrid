@@ -43,8 +43,7 @@ class _DataGridFilterPanelState extends State<DataGridFilterPanel> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Filter condition selector
+        children: [ // Filter condition selector
           const Text(
             'Filter Condition',
             style: TextStyle(

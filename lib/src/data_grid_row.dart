@@ -51,7 +51,7 @@ class DataGridRow extends StatelessWidget {
             onRowTap!();
           }
         },
-        child: Container(
+        child: SizedBox(
           height: config.rowHeight,
           width: double.infinity,
           child: Row(
@@ -112,7 +112,7 @@ class DataGridRow extends StatelessWidget {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

@@ -90,12 +90,12 @@ class DataGridDialog extends StatelessWidget {
             child: Opacity(
               opacity: value.clamp(0.0, 1.0),
               child: DataGridAnimatedDialog(
-                width: this.width,
-                height: this.height,
-                padding: this.padding,
-                borderRadius: this.borderRadius,
-                backgroundColor: this.backgroundColor,
-                shadow: this.shadow,
+                width: width,
+                height: height,
+                padding: padding,
+                borderRadius: borderRadius,
+                backgroundColor: backgroundColor,
+                shadow: shadow,
                 child: this.child,
               ),
             ),

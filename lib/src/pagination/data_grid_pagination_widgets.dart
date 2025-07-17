@@ -36,7 +36,7 @@ class DataGridPaginationControls extends StatelessWidget {
           // Info text
           Expanded(
             child: Text(
-              'Showing ${startRow}-${endRow > totalRows ? totalRows : endRow} of $totalRows rows',
+              'Showing $startRow-${endRow > totalRows ? totalRows : endRow} of $totalRows rows',
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontSize: 14,
@@ -48,7 +48,7 @@ class DataGridPaginationControls extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Rows per page: '),
-              SizedBox(width:10),              
+              const SizedBox(width:10),              
               Container(
                 child: DropdownButton<int>(
                   value: [10, 25, 50, 100].contains(pagination.pageSize) 

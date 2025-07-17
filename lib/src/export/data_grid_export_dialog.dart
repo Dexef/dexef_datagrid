@@ -43,7 +43,7 @@ class _DataGridExportDialogState extends State<DataGridExportDialog> {
   ExportFormat _selectedFormat = ExportFormat.csv;
   ExportTemplate? _selectedTemplate;
   List<String> _selectedColumns = [];
-  Map<String, String> _customHeaders = {};
+  final Map<String, String> _customHeaders = {};
   bool _includeHeaders = true;
   bool _includeRowNumbers = false;
   bool _includeSummary = false;

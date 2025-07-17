@@ -8,11 +8,11 @@ import '../model/data_grid_pagination.dart';
 /// Controller for managing the data grid state and interactions
 class DataGridController extends ChangeNotifier {
   DataGridSource? _source;
-  List<int> _selectedRows = [];
+  final List<int> _selectedRows = [];
   int? _sortColumnIndex;
   bool _sortAscending = true;
-  Map<String, double> _columnWidths = {};
-  Map<String, bool> _columnVisibility = {};
+  final Map<String, double> _columnWidths = {};
+  final Map<String, bool> _columnVisibility = {};
   DataGridFilterState _filterState = const DataGridFilterState();
   DataGridSortState _sortState = const DataGridSortState();
   DataGridSelectionState _selectionState = const DataGridSelectionState();

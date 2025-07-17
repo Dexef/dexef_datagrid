@@ -1,4 +1,3 @@
-import 'dart:collection';
 
 /// Diff result for efficient updates
 class DataGridDiffResult {

@@ -113,22 +113,29 @@ class _DataGridSearchPanelState extends State<DataGridSearchPanel> {
                   },
                 ),
                 const Divider(height: 1),
-                ...widget.columns.map((column) {
-                  return CheckboxListTile(
-                    title: Text(column.caption),
-                    subtitle: Text(column.dataField),
-                    value: _selectedFields.contains(column.dataField),
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedFields.add(column.dataField);
-                        } else {
-                          _selectedFields.remove(column.dataField);
-                        }
-                      });
-                    },
-                  );
-                }),
+                SizedBox(
+                  height: 300,
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      children: widget.columns.map((column) {
+                        return CheckboxListTile(
+                          title: Text(column.caption),
+                          subtitle: Text(column.dataField),
+                          value: _selectedFields.contains(column.dataField),
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedFields.add(column.dataField);
+                              } else {
+                                _selectedFields.remove(column.dataField);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

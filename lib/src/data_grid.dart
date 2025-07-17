@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import '../model/data_grid_model.dart';
 import '../model/data_grid_filters.dart';
 import '../model/data_grid_sorting.dart';
@@ -14,8 +13,6 @@ import '../model/data_grid_config.dart';
 import 'data_grid_controller.dart';
 
 import 'data_grid_row.dart';
-import 'data_grid_cell.dart';
-import 'data_grid_header.dart';
 import 'selection/data_grid_selection_widgets.dart';
 import 'sorting/data_grid_sort_widgets.dart';
 import 'filters/data_grid_filter_widgets.dart';
@@ -24,10 +21,7 @@ import 'filters/data_grid_search_panel.dart';
 import 'grouping/data_grid_group_widgets.dart';
 import 'pagination/data_grid_pagination_widgets.dart';
 import 'pagination/data_grid_virtual_scroll.dart';
-import 'editing/data_grid_editing_widgets.dart';
 import 'export/data_grid_export_dialog.dart';
-import 'export/data_grid_export_button.dart';
-import 'utils/data_grid_dialog.dart';
 
 /// A customizable data grid widget for displaying tabular data
 class DataGrid extends StatefulWidget {
@@ -157,6 +151,7 @@ class _DataGridState extends State<DataGrid> {
 
         return Column(
           children: [
+            if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
             _buildSearchBar(),
             _buildHeader(visibleColumns),
             if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
@@ -169,7 +164,6 @@ class _DataGridState extends State<DataGrid> {
             Expanded(
               child: _buildBody(visibleColumns),
             ),
-            if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
             if (widget.showPaginationControls && 
                 widget.paginationMode != PaginationMode.none && 
                 _controller.source?.hasData == true)
@@ -437,7 +431,7 @@ class _DataGridState extends State<DataGrid> {
               pw.SizedBox(height: 20),
               pw.Text(
                 'Generated on: ${DateTime.now().toString()}',
-                style: pw.TextStyle(fontSize: 12),
+                style: const pw.TextStyle(fontSize: 12),
               ),
               pw.SizedBox(height: 40),
             ],
@@ -476,7 +470,7 @@ class _DataGridState extends State<DataGrid> {
               ...data.map((row) {
                 return pw.Container(
                   padding: const pw.EdgeInsets.all(8),
-                  decoration: pw.BoxDecoration(
+                  decoration: const pw.BoxDecoration(
                     border: pw.Border(
                       bottom: pw.BorderSide(color: PdfColors.grey),
                     ),
@@ -505,7 +499,7 @@ class _DataGridState extends State<DataGrid> {
                     }).toList(),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           );
         },
@@ -653,7 +647,7 @@ class _DataGridState extends State<DataGrid> {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -708,7 +702,7 @@ class _DataGridState extends State<DataGrid> {
                 child: _buildFilterCell(column),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -979,21 +973,21 @@ class _DataGridState extends State<DataGrid> {
               icon: const Icon(Icons.filter_list),
               label: const Text('Advanced Filter'),
             ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           if (widget.showSearchPanel)
             ElevatedButton.icon(
               onPressed: _showSearchPanel,
               icon: const Icon(Icons.search),
               label: const Text('Global Search'),
             ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
                       if (widget.showSortControls)
               ElevatedButton.icon(
                 onPressed: _showSortDialog,
                 icon: const Icon(Icons.sort),
                 label: const Text('Sort'),
               ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           if (widget.showGroupControls)
             ElevatedButton.icon(
               onPressed: _showGroupDialog,
@@ -1006,7 +1000,7 @@ class _DataGridState extends State<DataGrid> {
                 activeSorts: _controller.sortState.sorts.where((s) => s.order != SortOrder.none).toList(),
                 onTap: _showSortDialog,
               ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           if (widget.showGroupControls)
             DataGridGroupControls(
               groups: _controller.sortState.groups,
@@ -1019,7 +1013,7 @@ class _DataGridState extends State<DataGrid> {
   }
 
   Widget _buildEmptyWidget() {
-    return Container(
+    return SizedBox(
       height: 200,
       child: Center(
         child: Column(
@@ -1067,6 +1061,7 @@ class _DataGridState extends State<DataGrid> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
         child: Container(
           width: 400,
           constraints: const BoxConstraints(
@@ -1099,6 +1094,7 @@ class _DataGridState extends State<DataGrid> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
         child: Container(
           width: 700,
           constraints: const BoxConstraints(
@@ -1122,6 +1118,7 @@ class _DataGridState extends State<DataGrid> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
         child: Container(
           width: 600,
           constraints: const BoxConstraints(
@@ -1178,6 +1175,7 @@ class _DataGridState extends State<DataGrid> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
         child: Container(
           width: 450,
           constraints: const BoxConstraints(

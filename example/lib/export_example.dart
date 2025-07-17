@@ -174,7 +174,7 @@ class _ExportExampleState extends State<ExportExample> {
 
   List<DataGridColumn> _buildColumns() {
     return [
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'id',
         caption: 'ID',
         dataType: DataType.number,
@@ -182,7 +182,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'name',
         caption: 'Name',
         dataType: DataType.string,
@@ -190,7 +190,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'email',
         caption: 'Email',
         dataType: DataType.string,
@@ -198,7 +198,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'age',
         caption: 'Age',
         dataType: DataType.number,
@@ -206,7 +206,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'salary',
         caption: 'Salary',
         dataType: DataType.number,
@@ -214,7 +214,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'active',
         caption: 'Active',
         dataType: DataType.boolean,
@@ -222,7 +222,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'joinDate',
         caption: 'Join Date',
         dataType: DataType.date,
@@ -230,7 +230,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'department',
         caption: 'Department',
         dataType: DataType.string,
@@ -238,7 +238,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'phone',
         caption: 'Phone',
         dataType: DataType.string,
@@ -246,7 +246,7 @@ class _ExportExampleState extends State<ExportExample> {
         sortable: true,
         filterable: true,
       ),
-      DataGridColumn(
+      const DataGridColumn(
         dataField: 'website',
         caption: 'Website',
         dataType: DataType.string,

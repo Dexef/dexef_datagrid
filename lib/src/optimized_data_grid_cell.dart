@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/data_grid_config.dart';
 import '../model/data_grid_model.dart';
-import '../model/data_grid_selection.dart';
 import 'selection/data_grid_selection_widgets.dart';
 
 /// Optimized DataGridCell with performance enhancements:

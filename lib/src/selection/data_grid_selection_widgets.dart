@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../model/data_grid_model.dart';
 import '../../model/data_grid_config.dart';
-import '../../model/data_grid_selection.dart';
 
 /// Checkbox column widget for multi-selection
 class DataGridCheckboxColumn extends StatelessWidget {
@@ -205,7 +203,7 @@ class DataGridCellSelectionHighlight extends StatelessWidget {
       decoration: borderColor != null
           ? BoxDecoration(
               border: Border.all(
-                color: borderColor!,
+                color: borderColor,
                 width: borderWidth!,
               ),
             )

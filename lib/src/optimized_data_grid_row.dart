@@ -55,7 +55,7 @@ class OptimizedDataGridRow extends StatelessWidget {
               onRowTap!();
             }
           },
-          child: Container(
+          child: SizedBox(
             height: config.rowHeight,
             child: IntrinsicWidth(
               child: Row(
@@ -90,7 +90,7 @@ class OptimizedDataGridRow extends StatelessWidget {
                           ? () => onCellEdit!(rowIndex, column.dataField, value) 
                           : null,
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),

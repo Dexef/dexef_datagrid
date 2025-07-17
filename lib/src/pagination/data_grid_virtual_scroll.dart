@@ -6,7 +6,6 @@ import '../../model/data_grid_config.dart';
 import '../../model/data_grid_selection.dart';
 
 import '../data_grid_row.dart';
-import 'data_grid_pagination_widgets.dart';
 
 /// Virtual scrolling widget for large datasets
 class DataGridVirtualScroll extends StatefulWidget {

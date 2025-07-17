@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import '../model/data_grid_model.dart';
 import '../model/data_grid_filters.dart';
 import '../model/data_grid_sorting.dart';
@@ -13,22 +12,13 @@ import '../model/data_grid_pagination.dart';
 import '../model/data_grid_config.dart';
 import 'data_grid_controller.dart';
 
-import 'data_grid_row.dart';
-import 'data_grid_cell.dart';
-import 'data_grid_header.dart';
 import 'optimized_data_grid_row.dart';
 import 'selection/data_grid_selection_widgets.dart';
 import 'sorting/data_grid_sort_widgets.dart';
 import 'filters/data_grid_filter_widgets.dart';
-import 'filters/data_grid_filter_panel.dart' hide DataGridSearchPanel;
-import 'filters/data_grid_search_panel.dart';
 import 'grouping/data_grid_group_widgets.dart';
 import 'pagination/data_grid_pagination_widgets.dart';
-import 'pagination/data_grid_virtual_scroll.dart';
-import 'editing/data_grid_editing_widgets.dart';
 import 'export/data_grid_export_dialog.dart';
-import 'export/data_grid_export_button.dart';
-import 'utils/data_grid_dialog.dart';
 
 /// Optimized DataGrid with performance enhancements:
 /// - Virtual scrolling for large datasets
@@ -114,7 +104,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   List<Map<String, dynamic>> _currentData = [];
   
   // Track expanded groups
-  Set<String> _expandedGroups = {};
+  final Set<String> _expandedGroups = {};
 
   @override
   void initState() {
@@ -443,7 +433,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
               pw.SizedBox(height: 20),
               pw.Text(
                 'Generated on: ${DateTime.now().toString()}',
-                style: pw.TextStyle(fontSize: 12),
+                style: const pw.TextStyle(fontSize: 12),
               ),
               pw.SizedBox(height: 40),
             ],
@@ -482,7 +472,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
               ...data.map((row) {
                 return pw.Container(
                   padding: const pw.EdgeInsets.all(8),
-                  decoration: pw.BoxDecoration(
+                  decoration: const pw.BoxDecoration(
                     border: pw.Border(
                       bottom: pw.BorderSide(color: PdfColors.grey),
                     ),
@@ -511,7 +501,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                     }).toList(),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           );
         },
@@ -573,7 +563,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
               children: [
                 if (widget.selectionMode == SelectionMode.multiple)
                   _buildOptimizedSelectAllCheckbox(),
-                ...columns.map((column) => _buildOptimizedHeaderCell(column)).toList(),
+                ...columns.map((column) => _buildOptimizedHeaderCell(column)),
               ],
             ),
           ),
@@ -707,7 +697,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                             : null,
                       ),
                     ),
-                  ...columns.map((column) => _buildOptimizedFilterCell(column)).toList(),
+                  ...columns.map((column) => _buildOptimizedFilterCell(column)),
                 ],
               ),
             ),
@@ -999,7 +989,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   }
 
   Widget _buildEmptyWidget() {
-    return Container(
+    return SizedBox(
       height: 200,
       child: Center(
         child: Column(

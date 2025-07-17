@@ -89,11 +89,11 @@ class DataGridExportDropdownButton extends StatelessWidget {
         const PopupMenuDivider(),
         PopupMenuItem(
           value: ExportFormat.csv, // This will be ignored
-          child: Row(
+          child: const Row(
             children: [
-              const Icon(Icons.settings, color: Colors.grey),
-              const SizedBox(width: 8),
-              const Text('Advanced Export...'),
+              Icon(Icons.settings, color: Colors.grey),
+              SizedBox(width: 8),
+              Text('Advanced Export...'),
             ],
           ),
           onTap: () => _showAdvancedExportDialog(context),
@@ -107,7 +107,7 @@ class DataGridExportDropdownButton extends StatelessWidget {
     final selectedColumns = columns.map((col) => col.dataField).toList();
     final customHeaders = <String, String>{};
     
-    final defaultTemplate = const ExportTemplate(
+    const defaultTemplate = ExportTemplate(
       name: 'Simple',
       includedColumns: [],
       customHeaders: {},
