@@ -1,24 +1,33 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'dart:html' as html show Blob, Url, AnchorElement;
+import 'dart:html' as html;
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../model/data_grid_model.dart';
-import '../model/data_grid_config.dart';
 import '../model/data_grid_filters.dart';
 import '../model/data_grid_sorting.dart';
 import '../model/data_grid_selection.dart';
 import '../model/data_grid_pagination.dart';
+import '../model/data_grid_config.dart';
 import 'data_grid_controller.dart';
+
 import 'data_grid_row.dart';
-import 'filters/data_grid_filter_widgets.dart';
-import 'filters/data_grid_filter_panel.dart';
-import 'sorting/data_grid_sort_widgets.dart';
-import 'grouping/data_grid_group_widgets.dart';
+import 'data_grid_cell.dart';
+import 'data_grid_header.dart';
 import 'selection/data_grid_selection_widgets.dart';
-import 'editing/data_grid_editing_widgets.dart';
+import 'sorting/data_grid_sort_widgets.dart';
+import 'filters/data_grid_filter_widgets.dart';
+import 'filters/data_grid_filter_panel.dart' hide DataGridSearchPanel;
+import 'filters/data_grid_search_panel.dart';
+import 'grouping/data_grid_group_widgets.dart';
 import 'pagination/data_grid_pagination_widgets.dart';
 import 'pagination/data_grid_virtual_scroll.dart';
-import '../model/data_grid_pagination.dart';
+import 'editing/data_grid_editing_widgets.dart';
 import 'export/data_grid_export_dialog.dart';
+import 'export/data_grid_export_button.dart';
+import 'utils/data_grid_dialog.dart';
 
 /// A customizable data grid widget for displaying tabular data
 class DataGrid extends StatefulWidget {
@@ -49,6 +58,7 @@ class DataGrid extends StatefulWidget {
   final bool showPaginationControls;
   final String? currentView;
   final Function(String)? onViewChanged;
+  final bool useOptimizedGrid;
 
   const DataGrid({
     super.key,
@@ -79,6 +89,7 @@ class DataGrid extends StatefulWidget {
     this.showPaginationControls = true,
     this.currentView,
     this.onViewChanged,
+    this.useOptimizedGrid = true,
   });
 
   @override
@@ -213,15 +224,17 @@ class _DataGridState extends State<DataGrid> {
               widget.onViewChanged?.call('standard');
             },
           ),
-          const SizedBox(width: 8),
-          _buildNavButton(
-            icon: Icons.speed,
-            label: 'Optimized',
-            isSelected: widget.currentView == 'optimized',
-            onTap: () {
-              widget.onViewChanged?.call('optimized');
-            },
-          ),
+          if (widget.useOptimizedGrid) ...[
+            const SizedBox(width: 8),
+            _buildNavButton(
+              icon: Icons.speed,
+              label: 'Optimized',
+              isSelected: widget.currentView == 'optimized',
+              onTap: () {
+                widget.onViewChanged?.call('optimized');
+              },
+            ),
+          ],
           const SizedBox(width: 8),
           _buildExportButton(
             icon: Icons.download,
@@ -344,107 +357,9 @@ class _DataGridState extends State<DataGrid> {
     );
   }
 
-  void _exportToExcel() {
-    if (_controller.source == null) return;
-    
-    final data = _controller.getDisplayData();
-    if (data.isEmpty) return;
 
-    // For Excel, we'll create a simple HTML table that can be opened in Excel
-    final columns = widget.columns.where((col) => col.visible).toList();
-    final headers = columns.map((col) => '<th>${col.caption}</th>').join('');
-    
-    final rows = data.map((row) {
-      final cells = columns.map((col) {
-        final value = row[col.dataField];
-        return '<td>${value?.toString() ?? ''}</td>';
-      }).join('');
-      return '<tr>$cells</tr>';
-    }).join('');
 
-    final htmlContent = '''
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Data Export</title>
-</head>
-<body>
-    <table border="1">
-        <thead>
-            <tr>$headers</tr>
-        </thead>
-        <tbody>
-            $rows
-        </tbody>
-    </table>
-</body>
-</html>
-''';
-    
-    _downloadFile('data_export.xls', htmlContent, 'application/vnd.ms-excel');
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Excel export completed!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 
-  void _exportToPDF() {
-    if (_controller.source == null) return;
-    
-    final data = _controller.getDisplayData();
-    if (data.isEmpty) return;
-
-    // For PDF, we'll create a simple HTML that can be printed as PDF
-    final columns = widget.columns.where((col) => col.visible).toList();
-    final headers = columns.map((col) => '<th>${col.caption}</th>').join('');
-    
-    final rows = data.map((row) {
-      final cells = columns.map((col) {
-        final value = row[col.dataField];
-        return '<td>${value?.toString() ?? ''}</td>';
-      }).join('');
-      return '<tr>$cells</tr>';
-    }).join('');
-
-    final htmlContent = '''
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Data Export</title>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-    <h2>Data Export</h2>
-    <table>
-        <thead>
-            <tr>$headers</tr>
-        </thead>
-        <tbody>
-            $rows
-        </tbody>
-    </table>
-</body>
-</html>
-''';
-    
-    _downloadFile('data_export.html', htmlContent, 'text/html');
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('PDF export completed! (Open the HTML file and print as PDF)'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 
   void _showExportDialog() {
     showDialog(
@@ -453,17 +368,173 @@ class _DataGridState extends State<DataGrid> {
         columns: widget.columns,
                     data: _controller.getDisplayData(),
         onExport: (format, template, columns, headers) {
-          // Handle export
-          print('Exporting: $format, $template, $columns, $headers');
+          _handleExport(format, template, columns, headers);
         },
       ),
     );
+  }
+
+  void _handleExport(ExportFormat format, ExportTemplate template, List<String> columns, Map<String, String> headers) {
+    print('Exporting: $format, $template, $columns, $headers');
+    
+    switch (format) {
+      case ExportFormat.csv:
+        _exportToCsv(columns, headers);
+        break;
+      case ExportFormat.excel:
+        _exportToExcel(columns, headers);
+        break;
+      case ExportFormat.pdf:
+        _exportToPdf(columns, headers);
+        break;
+    }
+  }
+
+  void _exportToCsv(List<String> columns, Map<String, String> headers) {
+    final data = _controller.getDisplayData();
+    final csvData = StringBuffer();
+    
+    // Add headers
+    final headerRow = columns.map((col) => headers[col] ?? col).join(',');
+    csvData.writeln(headerRow);
+    
+    // Add data rows
+    for (final row in data) {
+      final rowData = columns.map((col) => row[col]?.toString() ?? '').join(',');
+      csvData.writeln(rowData);
+    }
+    
+    _downloadFile('data_export.csv', csvData.toString(), 'text/csv');
+  }
+
+  void _exportToExcel(List<String> columns, Map<String, String> headers) {
+    // For now, export as CSV with .xlsx extension
+    // In a real implementation, you would use the excel package
+    _exportToCsv(columns, headers);
+  }
+
+  void _exportToPdf(List<String> columns, Map<String, String> headers) async {
+    final data = _controller.getDisplayData();
+    
+    // Create PDF document
+    final pdf = pw.Document();
+    
+    // Add title page
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Data Export Report',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Generated on: ${DateTime.now().toString()}',
+                style: pw.TextStyle(fontSize: 12),
+              ),
+              pw.SizedBox(height: 40),
+            ],
+          );
+        },
+      ),
+    );
+    
+    // Add data table page
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4.landscape,
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              // Table header
+              pw.Container(
+                padding: const pw.EdgeInsets.all(8),
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.grey300,
+                  border: pw.Border.all(color: PdfColors.black),
+                ),
+                child: pw.Row(
+                  children: columns.map((col) {
+                    return pw.Expanded(
+                      child: pw.Text(
+                        headers[col] ?? col,
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        textAlign: pw.TextAlign.center,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              // Table data
+              ...data.map((row) {
+                return pw.Container(
+                  padding: const pw.EdgeInsets.all(8),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border(
+                      bottom: pw.BorderSide(color: PdfColors.grey),
+                    ),
+                  ),
+                  child: pw.Row(
+                    children: columns.map((col) {
+                      final value = row[col];
+                      String displayValue = '';
+                      
+                      if (value != null) {
+                        if (value is DateTime) {
+                          displayValue = value.toString().split(' ')[0];
+                        } else if (value is bool) {
+                          displayValue = value ? 'Yes' : 'No';
+                        } else {
+                          displayValue = value.toString();
+                        }
+                      }
+                      
+                      return pw.Expanded(
+                        child: pw.Text(
+                          displayValue,
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }).toList(),
+            ],
+          );
+        },
+      ),
+    );
+    
+    // Generate PDF bytes
+    final pdfBytes = await pdf.save();
+    
+    // Download the PDF
+    _downloadPdfFile('data_export.pdf', pdfBytes);
   }
 
   void _downloadFile(String filename, String content, String mimeType) {
     // Create a blob URL and trigger download
     final bytes = utf8.encode(content);
     final blob = html.Blob([bytes], mimeType);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    
+    final anchor = html.AnchorElement(href: url)
+      ..setAttribute('download', filename)
+      ..click();
+    
+    html.Url.revokeObjectUrl(url);
+  }
+
+  void _downloadPdfFile(String filename, Uint8List pdfBytes) {
+    // Create a blob URL and trigger download for PDF
+    final blob = html.Blob([pdfBytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
     
     final anchor = html.AnchorElement(href: url)
@@ -1133,6 +1204,7 @@ class _DataGridState extends State<DataGrid> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
         child: Container(
           width: 450,
           constraints: const BoxConstraints(

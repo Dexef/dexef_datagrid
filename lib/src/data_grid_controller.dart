@@ -94,16 +94,22 @@ class DataGridController extends ChangeNotifier {
     
     // Initialize pagination state if in client mode
     if (_paginationMode == PaginationMode.client && source.hasData) {
-      // Use total source data count for proper pagination
+      // Use total source data count for pagination calculation
       final totalRecords = source.rowCount;
-      final pageSize = _paginationState.pageSize;
-      final totalPages = (totalRecords / pageSize).ceil();
+      
+      // Set initial page size to 25 if data length is greater than 20
+      int initialPageSize = 20; // Default page size
+      if (totalRecords > 20) {
+        initialPageSize = 25;
+      }
+      
+      final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
       
       // Force recalculation of pagination state
       _paginationState = DataGridPaginationState(
         currentPage: 1,
-        pageSize: pageSize,
+        pageSize: initialPageSize,
         totalPages: safeTotalPages,
         totalRecords: totalRecords,
         isLoading: false,
@@ -285,6 +291,26 @@ class DataGridController extends ChangeNotifier {
     _paginationMode = mode;
     if (mode == PaginationMode.none) {
       _paginationState = const DataGridPaginationState();
+    } else if (mode == PaginationMode.client && _source != null && _source!.hasData) {
+      // Initialize pagination state for client mode
+      final totalRecords = _source!.rowCount;
+      
+      // Set initial page size to 25 if data length is greater than 20
+      int initialPageSize = 20; // Default page size
+      if (totalRecords > 20) {
+        initialPageSize = 25;
+      }
+      
+      final totalPages = (totalRecords / initialPageSize).ceil();
+      final safeTotalPages = totalPages < 1 ? 1 : totalPages;
+      
+      _paginationState = DataGridPaginationState(
+        currentPage: 1,
+        pageSize: initialPageSize,
+        totalPages: safeTotalPages,
+        totalRecords: totalRecords,
+        isLoading: false,
+      );
     }
     notifyListeners();
   }
@@ -306,16 +332,19 @@ class DataGridController extends ChangeNotifier {
     if (pageSize <= 0) return;
     
     if (_paginationMode == PaginationMode.client) {
-      // Get the total source data count for proper pagination calculation
+      // Use total source data count for pagination calculation
       final totalRecords = _source?.rowCount ?? 0;
       final totalPages = (totalRecords / pageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
+      
+      // Ensure current page is within valid range
+      final newCurrentPage = _paginationState.currentPage.clamp(1, safeTotalPages);
       
       _paginationState = _paginationState.copyWith(
         pageSize: pageSize,
         totalRecords: totalRecords,
         totalPages: safeTotalPages,
-        currentPage: _paginationState.currentPage.clamp(1, safeTotalPages),
+        currentPage: newCurrentPage,
       );
     } else if (_paginationMode == PaginationMode.server) {
       _paginationState = _paginationState.copyWith(pageSize: pageSize);
@@ -452,6 +481,7 @@ class DataGridController extends ChangeNotifier {
     
     // Recalculate pagination for client mode when search changes
     if (_paginationMode == PaginationMode.client && _source != null) {
+      // Use total source data count for pagination calculation
       final totalRecords = _source!.rowCount;
       final totalPages = (totalRecords / _paginationState.pageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
@@ -466,11 +496,9 @@ class DataGridController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Get display data with pagination support
-  List<Map<String, dynamic>> getDisplayData() {
+  // Get filtered data without pagination
+  List<Map<String, dynamic>> _getFilteredData() {
     if (_source == null) return [];
-    
-    final visibleFields = _source!.data.first.keys.where((field) => _columnVisibility[field] ?? true).toList();
     
     // Apply filters
     var filteredData = _source!.data.where((row) => _filterState.apply(row)).toList();
@@ -484,6 +512,18 @@ class DataGridController extends ChangeNotifier {
     
     // Apply sorting
     filteredData = _sortState.sortData(filteredData);
+    
+    return filteredData;
+  }
+
+  // Get display data with pagination support
+  List<Map<String, dynamic>> getDisplayData() {
+    if (_source == null) return [];
+    
+    final visibleFields = _source!.data.first.keys.where((field) => _columnVisibility[field] ?? true).toList();
+    
+    // Get filtered data
+    final filteredData = _getFilteredData();
     
     // Filter to visible fields
     final displayData = filteredData.map((row) {

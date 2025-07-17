@@ -173,6 +173,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
       showPaginationControls: true,
       currentView: widget.currentView,
       onViewChanged: widget.onViewChanged,
+      useOptimizedGrid: true, // Set to false to hide the optimized grid button
       onSelectionChanged: (selectedRows) {
         print('Selected rows: $selectedRows');
       },

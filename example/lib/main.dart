@@ -116,6 +116,7 @@ class _DataGridExampleState extends State<DataGridExample> {
     return DataGrid(
       source: _source,
       columns: _buildColumns(),
+      useOptimizedGrid: false,
       controller: _controller,
       config: const DataGridConfig(
         rowHeight: 48,

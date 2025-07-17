@@ -23,7 +23,7 @@ class DataGridPaginationState {
 
   const DataGridPaginationState({
     this.currentPage = 1,
-    this.pageSize = 20,
+    this.pageSize = 25,
     this.totalPages = 1,
     this.totalRecords = 0,
     this.isLoading = false,
