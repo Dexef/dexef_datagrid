@@ -13,6 +13,7 @@ class DataGridConfig {
   final TextStyle headerTextStyle;
   final TextStyle cellTextStyle;
   final bool showBorders;
+  final bool showHorizontalBorders;
   final bool showAlternateRows;
   final bool sortable;
   final bool selectable;
@@ -37,6 +38,7 @@ class DataGridConfig {
       fontSize: 14,
     ),
     this.showBorders = true,
+    this.showHorizontalBorders = false,
     this.showAlternateRows = true,
     this.sortable = true,
     this.selectable = true,
@@ -58,6 +60,7 @@ class DataGridConfig {
     TextStyle? headerTextStyle,
     TextStyle? cellTextStyle,
     bool? showBorders,
+    bool? showHorizontalBorders,
     bool? showAlternateRows,
     bool? sortable,
     bool? selectable,
@@ -77,6 +80,7 @@ class DataGridConfig {
       headerTextStyle: headerTextStyle ?? this.headerTextStyle,
       cellTextStyle: cellTextStyle ?? this.cellTextStyle,
       showBorders: showBorders ?? this.showBorders,
+      showHorizontalBorders: showHorizontalBorders ?? this.showHorizontalBorders,
       showAlternateRows: showAlternateRows ?? this.showAlternateRows,
       sortable: sortable ?? this.sortable,
       selectable: selectable ?? this.selectable,

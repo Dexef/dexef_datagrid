@@ -17,6 +17,7 @@ class OptimizedDataGridCell extends StatelessWidget {
   final VoidCallback? onDoubleTap;
   final bool isEditing;
   final String? errorMessage;
+  final bool showMoreVert;
 
   const OptimizedDataGridCell({
     super.key,
@@ -29,6 +30,7 @@ class OptimizedDataGridCell extends StatelessWidget {
     this.onDoubleTap,
     this.isEditing = false,
     this.errorMessage,
+    this.showMoreVert = false,
   });
 
   @override
@@ -49,22 +51,40 @@ class OptimizedDataGridCell extends StatelessWidget {
               height: config.rowHeight,
               decoration: BoxDecoration(
                 color: backgroundColor,
-                border: config.showBorders
+                border: config.showHorizontalBorders && !config.showBorders
                     ? Border(
-                        right: BorderSide(
-                          color: config.borderColor,
-                          width: config.borderWidth,
-                        ),
                         bottom: BorderSide(
                           color: config.borderColor,
                           width: config.borderWidth,
                         ),
                       )
-                    : null,
+                    : config.showBorders
+                        ? Border(
+                            right: BorderSide(
+                              color: config.borderColor,
+                              width: config.borderWidth,
+                            ),
+                            bottom: BorderSide(
+                              color: config.borderColor,
+                              width: config.borderWidth,
+                            ),
+                          )
+                        : null,
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: _buildOptimizedCellContent(context),
+                child: showMoreVert 
+                    ? Row(
+                        children: [
+                          Expanded(child: _buildOptimizedCellContent(context)),
+                          const Icon(
+                            Icons.more_vert,
+                            size: 20,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      )
+                    : _buildOptimizedCellContent(context),
               ),
             ),
           ),
@@ -194,10 +214,7 @@ class OptimizedDataGridCell extends StatelessWidget {
       return Colors.blue.withOpacity(0.2);
     }
     
-    if (isAlternateRow && config.showAlternateRows) {
-      return config.alternateRowBackgroundColor;
-    }
-    
-    return config.rowBackgroundColor;
+    // Always return white background, no alternate row coloring
+    return Colors.white;
   }
 } 
