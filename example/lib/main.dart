@@ -172,7 +172,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       ),
       selectionMode: SelectionMode.multiple,
       editMode: EditMode.cell,
-      showFilterRow: false,
+      showFilterRow: true,
       showFilterPanel: true,
       showSearchPanel: true,
       showSortControls: true,

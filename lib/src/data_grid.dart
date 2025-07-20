@@ -118,11 +118,11 @@ class _DataGridState extends State<DataGrid> {
     if (widget.source != null) {
       _controller.setSource(widget.source!);
     }
-    
+
     // Set pagination and virtual scroll modes
     _controller.setPaginationMode(widget.paginationMode);
     _controller.setVirtualScrollMode(widget.virtualScrollMode, config: widget.virtualConfig);
-    
+
     // Set server data callback if provided
     if (widget.onServerDataRequest != null) {
       _controller.setServerDataCallback(widget.onServerDataRequest!);
@@ -161,18 +161,6 @@ class _DataGridState extends State<DataGrid> {
         // Filter visible columns
         final visibleColumns = widget.columns.where((col) => col.visible).toList();
 
-<<<<<<< HEAD
-        return Column(
-          children: [
-            // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
-            _buildSearchBar(),
-            _buildHeader(visibleColumns),
-            if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
-              DataGridSelectionIndicator(
-                selectedCount: _controller.selectionState.selectedCount,
-                totalCount: _controller.source?.rowCount ?? 0,
-                onClearSelection: () => _controller.clearSelection(),
-=======
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
@@ -185,9 +173,8 @@ class _DataGridState extends State<DataGrid> {
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   fontSize: 18,
-                 color: Color(0xff666666),
+                  color: Color(0xff666666),
                 ),
->>>>>>> mohamed_elkerba
               ),
               const SizedBox(height: 8),
               _buildSearchBar(),
@@ -450,13 +437,13 @@ class _DataGridState extends State<DataGrid> {
       onSelected: (value) {
         switch (value) {
           case 'refresh':
-            // Handle refresh
+          // Handle refresh
             break;
           case 'settings':
-            // Handle settings
+          // Handle settings
             break;
           case 'help':
-            // Handle help
+          // Handle help
             break;
         }
       },
@@ -538,13 +525,13 @@ class _DataGridState extends State<DataGrid> {
 
   void _exportToCSV() {
     if (_controller.source == null) return;
-    
+
     final data = _controller.getDisplayData();
     if (data.isEmpty) return;
 
     final columns = widget.columns.where((col) => col.visible).toList();
     final headers = columns.map((col) => col.caption).join(',');
-    
+
     final rows = data.map((row) {
       return columns.map((col) {
         final value = row[col.dataField];
@@ -553,10 +540,10 @@ class _DataGridState extends State<DataGrid> {
     }).join('\n');
 
     final csvContent = '$headers\n$rows';
-    
+
     // Create and download the CSV file
     _downloadFile('data_export.csv', csvContent, 'text/csv');
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('CSV export completed!'),
@@ -564,13 +551,13 @@ class _DataGridState extends State<DataGrid> {
       ),
     );
   }
-  
+
   void _showExportDialog() {
     showDialog(
       context: context,
       builder: (context) => DataGridExportDialog(
         columns: widget.columns,
-                    data: _controller.getDisplayData(),
+        data: _controller.getDisplayData(),
         onExport: (format, template, columns, headers) {
           _handleExport(format, template, columns, headers);
         },
@@ -580,7 +567,7 @@ class _DataGridState extends State<DataGrid> {
 
   void _handleExport(ExportFormat format, ExportTemplate template, List<String> columns, Map<String, String> headers) {
     print('Exporting: $format, $template, $columns, $headers');
-    
+
     switch (format) {
       case ExportFormat.csv:
         _exportToCsv(columns, headers);
@@ -597,17 +584,17 @@ class _DataGridState extends State<DataGrid> {
   void _exportToCsv(List<String> columns, Map<String, String> headers) {
     final data = _controller.getDisplayData();
     final csvData = StringBuffer();
-    
+
     // Add headers
     final headerRow = columns.map((col) => headers[col] ?? col).join(',');
     csvData.writeln(headerRow);
-    
+
     // Add data rows
     for (final row in data) {
       final rowData = columns.map((col) => row[col]?.toString() ?? '').join(',');
       csvData.writeln(rowData);
     }
-    
+
     _downloadFile('data_export.csv', csvData.toString(), 'text/csv');
   }
 
@@ -619,10 +606,10 @@ class _DataGridState extends State<DataGrid> {
 
   void _exportToPdf(List<String> columns, Map<String, String> headers) async {
     final data = _controller.getDisplayData();
-    
+
     // Create PDF document
     final pdf = pw.Document();
-    
+
     // Add title page
     pdf.addPage(
       pw.Page(
@@ -649,7 +636,7 @@ class _DataGridState extends State<DataGrid> {
         },
       ),
     );
-    
+
     // Add data table page
     pdf.addPage(
       pw.Page(
@@ -689,7 +676,7 @@ class _DataGridState extends State<DataGrid> {
                     children: columns.map((col) {
                       final value = row[col];
                       String displayValue = '';
-                      
+
                       if (value != null) {
                         if (value is DateTime) {
                           displayValue = value.toString().split(' ')[0];
@@ -699,7 +686,7 @@ class _DataGridState extends State<DataGrid> {
                           displayValue = value.toString();
                         }
                       }
-                      
+
                       return pw.Expanded(
                         child: pw.Text(
                           displayValue,
@@ -715,10 +702,10 @@ class _DataGridState extends State<DataGrid> {
         },
       ),
     );
-    
+
     // Generate PDF bytes
     final pdfBytes = await pdf.save();
-    
+
     // Download the PDF
     _downloadPdfFile('data_export.pdf', pdfBytes);
   }
@@ -728,11 +715,11 @@ class _DataGridState extends State<DataGrid> {
     final bytes = utf8.encode(content);
     final blob = html.Blob([bytes], mimeType);
     final url = html.Url.createObjectUrlFromBlob(blob);
-    
+
     final anchor = html.AnchorElement(href: url)
       ..setAttribute('download', filename)
       ..click();
-    
+
     html.Url.revokeObjectUrl(url);
   }
 
@@ -740,11 +727,11 @@ class _DataGridState extends State<DataGrid> {
     // Create a blob URL and trigger download for PDF
     final blob = html.Blob([pdfBytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
-    
+
     final anchor = html.AnchorElement(href: url)
       ..setAttribute('download', filename)
       ..click();
-    
+
     html.Url.revokeObjectUrl(url);
   }
 
@@ -755,11 +742,11 @@ class _DataGridState extends State<DataGrid> {
         color: widget.config.headerBackgroundColor,
         border: widget.config.showBorders
             ? Border(
-                bottom: BorderSide(
-                  color: widget.config.borderColor,
-                  width: widget.config.borderWidth,
-                ),
-              )
+          bottom: BorderSide(
+            color: widget.config.borderColor,
+            width: widget.config.borderWidth,
+          ),
+        )
             : null,
       ),
       child: Row(
@@ -770,13 +757,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: widget.config.borderColor,
-                            width: widget.config.borderWidth,
-                          ),
-                        ),
-                      )
+                  border: Border(
+                    right: BorderSide(
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
+                    ),
+                  ),
+                )
                     : null,
                 child: DataGridSelectAllCheckbox(
                   isSelected: _controller.selectionState.isSelectAll,
@@ -801,13 +788,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: widget.config.borderColor,
-                            width: widget.config.borderWidth,
-                          ),
-                        ),
-                      )
+                  border: Border(
+                    right: BorderSide(
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
+                    ),
+                  ),
+                )
                     : null,
                 child: GestureDetector(
                   onTap: column.sortable ? () => _onHeaderTap(column) : null,
@@ -870,11 +857,11 @@ class _DataGridState extends State<DataGrid> {
         color: Colors.grey[100],
         border: widget.config.showBorders
             ? Border(
-                bottom: BorderSide(
-                  color: widget.config.borderColor,
-                  width: widget.config.borderWidth,
-                ),
-              )
+          bottom: BorderSide(
+            color: widget.config.borderColor,
+            width: widget.config.borderWidth,
+          ),
+        )
             : null,
       ),
       child: Row(
@@ -885,13 +872,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: widget.config.borderColor,
-                            width: widget.config.borderWidth,
-                          ),
-                        ),
-                      )
+                  border: Border(
+                    right: BorderSide(
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
+                    ),
+                  ),
+                )
                     : null,
               ),
             ),
@@ -901,13 +888,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: widget.config.borderColor,
-                            width: widget.config.borderWidth,
-                          ),
-                        ),
-                      )
+                  border: Border(
+                    right: BorderSide(
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
+                    ),
+                  ),
+                )
                     : null,
                 child: _buildFilterCell(column),
               ),
@@ -1072,7 +1059,7 @@ class _DataGridState extends State<DataGrid> {
 
   Widget _buildNormalBody(List<DataGridColumn> columns) {
     final displayData = _controller.getDisplayData();
-    
+
     if (displayData.isEmpty) {
       return const Center(
         child: Padding(
@@ -1081,7 +1068,7 @@ class _DataGridState extends State<DataGrid> {
         ),
       );
     }
-    
+
     return Column(
       children: displayData.asMap().entries.map((entry) {
         final index = entry.key;
@@ -1129,7 +1116,7 @@ class _DataGridState extends State<DataGrid> {
       children: groupedData.asMap().entries.map<Widget>((entry) {
         final index = entry.key;
         final item = entry.value;
-        
+
         if (item is DataGridGroupRow) {
           return DataGridGroupHeader(
             groupRow: item,
@@ -1188,12 +1175,12 @@ class _DataGridState extends State<DataGrid> {
               label: const Text('Global Search'),
             ),
           const SizedBox(width: 12),
-                      if (widget.showSortControls)
-              ElevatedButton.icon(
-                onPressed: _showSortDialog,
-                icon: const Icon(Icons.sort),
-                label: const Text('Sort'),
-              ),
+          if (widget.showSortControls)
+            ElevatedButton.icon(
+              onPressed: _showSortDialog,
+              icon: const Icon(Icons.sort),
+              label: const Text('Sort'),
+            ),
           const SizedBox(width: 12),
           if (widget.showGroupControls)
             ElevatedButton.icon(
@@ -1202,11 +1189,11 @@ class _DataGridState extends State<DataGrid> {
               label: const Text('Group'),
             ),
           const Spacer(),
-                      if (widget.showSortControls)
-              DataGridSortPriorityIndicator(
-                activeSorts: _controller.sortState.sorts.where((s) => s.order != SortOrder.none).toList(),
-                onTap: _showSortDialog,
-              ),
+          if (widget.showSortControls)
+            DataGridSortPriorityIndicator(
+              activeSorts: _controller.sortState.sorts.where((s) => s.order != SortOrder.none).toList(),
+              onTap: _showSortDialog,
+            ),
           const SizedBox(width: 12),
           if (widget.showGroupControls)
             DataGridGroupControls(
@@ -1351,7 +1338,7 @@ class _DataGridState extends State<DataGrid> {
   // Helper methods for sorting
   SortOrder _getCurrentSortForColumn(String field) {
     final sort = _controller.sortState.sorts.firstWhere(
-      (s) => s.field == field,
+          (s) => s.field == field,
       orElse: () => DataGridSort(field: field, order: SortOrder.none, priority: 0),
     );
     return sort.order;
@@ -1359,7 +1346,7 @@ class _DataGridState extends State<DataGrid> {
 
   int? _getSortPriorityForColumn(String field) {
     final sort = _controller.sortState.sorts.firstWhere(
-      (s) => s.field == field && s.order != SortOrder.none,
+          (s) => s.field == field && s.order != SortOrder.none,
       orElse: () => DataGridSort(field: field, order: SortOrder.none, priority: -1),
     );
     return sort.priority >= 0 ? sort.priority : null;
@@ -1369,8 +1356,8 @@ class _DataGridState extends State<DataGrid> {
     final currentSort = _getCurrentSortForColumn(column.dataField);
     final newSort = DataGridSort(
       field: column.dataField,
-      order: currentSort == SortOrder.none ? SortOrder.ascending : 
-             currentSort == SortOrder.ascending ? SortOrder.descending : SortOrder.none,
+      order: currentSort == SortOrder.none ? SortOrder.ascending :
+      currentSort == SortOrder.ascending ? SortOrder.descending : SortOrder.none,
       priority: _controller.sortState.sorts.length,
     );
     _controller.addSort(newSort);
@@ -1414,7 +1401,7 @@ class _DataGridState extends State<DataGrid> {
   // Helper methods for grouping
   void _toggleGroupExpanded(String field) {
     final group = _controller.sortState.groups.firstWhere(
-      (g) => g.field == field,
+          (g) => g.field == field,
       orElse: () => DataGridGroup(field: field),
     );
     _controller.updateGroup(group.toggleExpanded());
