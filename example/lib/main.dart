@@ -143,6 +143,42 @@ class _DataGridExampleState extends State<DataGridExample> {
       onCellEdit: (rowIndex, field, value) {
         print('Cell edited: row=$rowIndex, field=$field, value=$value');
       },
+      onAddNew: () {
+        print('Add new item');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Add New button clicked')),
+        );
+      },
+      onDuplicate: () {
+        print('Duplicate selected items');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Duplicate button clicked')),
+        );
+      },
+      onEdit: () {
+        print('Edit selected items');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Edit button clicked')),
+        );
+      },
+      onDelete: () {
+        print('Delete selected items');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Delete button clicked')),
+        );
+      },
+      onPrint: () {
+        print('Print data');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Print button clicked')),
+        );
+      },
+      onShare: () {
+        print('Share data');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Share button clicked')),
+        );
+      },
     );
   }
 

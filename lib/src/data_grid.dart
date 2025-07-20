@@ -53,6 +53,12 @@ class DataGrid extends StatefulWidget {
   final String? currentView;
   final Function(String)? onViewChanged;
   final bool useOptimizedGrid;
+  final VoidCallback? onAddNew;
+  final VoidCallback? onDuplicate;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onPrint;
+  final VoidCallback? onShare;
 
   const DataGrid({
     super.key,
@@ -84,6 +90,12 @@ class DataGrid extends StatefulWidget {
     this.currentView,
     this.onViewChanged,
     this.useOptimizedGrid = true,
+    this.onAddNew,
+    this.onDuplicate,
+    this.onEdit,
+    this.onDelete,
+    this.onPrint,
+    this.onShare,
   });
 
   @override
@@ -191,6 +203,14 @@ class _DataGridState extends State<DataGrid> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
+          // Add New button
+          _buildActionButton(
+            icon: Icons.add,
+            label: 'Add New',
+            color: Colors.green,
+            onTap: widget.onAddNew,
+          ),
+          const SizedBox(width: 8),
           // Search box
           Expanded(
             child: TextField(
@@ -208,7 +228,50 @@ class _DataGridState extends State<DataGrid> {
               },
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 8),
+          // Duplicate button
+          _buildActionButton(
+            icon: Icons.content_copy,
+            label: 'Duplicate',
+            color: Colors.blue,
+            onTap: widget.onDuplicate,
+          ),
+          const SizedBox(width: 8),
+          // Edit button
+          _buildActionButton(
+            icon: Icons.edit,
+            label: 'Edit',
+            color: Colors.orange,
+            onTap: widget.onEdit,
+          ),
+          const SizedBox(width: 8),
+          // Delete button
+          _buildActionButton(
+            icon: Icons.delete,
+            label: 'Delete',
+            color: Colors.red,
+            onTap: widget.onDelete,
+          ),
+          const SizedBox(width: 8),
+          // Print button
+          _buildActionButton(
+            icon: Icons.print,
+            label: 'Print',
+            color: Colors.purple,
+            onTap: widget.onPrint,
+          ),
+          const SizedBox(width: 8),
+          // Share button
+          _buildActionButton(
+            icon: Icons.share,
+            label: 'Share',
+            color: Colors.teal,
+            onTap: widget.onShare,
+          ),
+          const SizedBox(width: 8),
+          // Menu button
+          _buildMenuButton(),
+          const SizedBox(width: 8),
           // Navigation buttons
           _buildNavButton(
             icon: Icons.table_chart,
@@ -281,6 +344,99 @@ class _DataGridState extends State<DataGrid> {
     );
   }
 
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: color,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuButton() {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) {
+        switch (value) {
+          case 'refresh':
+            // Handle refresh
+            break;
+          case 'settings':
+            // Handle settings
+            break;
+          case 'help':
+            // Handle help
+            break;
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'refresh',
+          child: Row(
+            children: [
+              Icon(Icons.refresh, size: 18),
+              SizedBox(width: 8),
+              Text('Refresh'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'settings',
+          child: Row(
+            children: [
+              Icon(Icons.settings, size: 18),
+              SizedBox(width: 8),
+              Text('Settings'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'help',
+          child: Row(
+            children: [
+              Icon(Icons.help, size: 18),
+              SizedBox(width: 8),
+              Text('Help'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildExportButton({
     required IconData icon,
     required String label,
@@ -350,11 +506,7 @@ class _DataGridState extends State<DataGrid> {
       ),
     );
   }
-
-
-
-
-
+  
   void _showExportDialog() {
     showDialog(
       context: context,
@@ -1088,8 +1240,6 @@ class _DataGridState extends State<DataGrid> {
       ),
     );
   }
-
-
 
   bool _hasColumnFilter(String field) {
     return _controller.filterState.columnFilters[field]?.isNotEmpty ?? false;
