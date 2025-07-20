@@ -234,6 +234,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         dataField: 'customerName',
         caption: 'Customer',
         width: 180,
+        filterable: true,
         cellBuilder: (context, value) {
           final rowData = _source.data.firstWhere((row) => row['customerName'] == value);
           return Row(
@@ -275,6 +276,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         dataField: 'phone1',
         caption: 'Contact',
         width: 140,
+        filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
             'Contact',
@@ -313,6 +315,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         dataField: 'lastPurchaseDate',
         caption: 'Last Purchase',
         width: 140,
+        filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
             'Last Purchase',
@@ -384,6 +387,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         dataField: 'totalSpent',
         caption: 'Total Spent',
         width: 120,
+        filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
             'Total Spent',
@@ -414,6 +418,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         dataField: 'status',
         caption: 'Status',
         width: 100,
+        filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
             'Status',
@@ -438,36 +443,6 @@ class _DataGridExampleState extends State<DataGridExample> {
           );
         },
       ),
-      // Action column with horizontal more_vert icon
-      DataGridColumn.custom(
-        dataField: 'action',
-        caption: 'Action',
-        width: 80,
-        sortable: false,
-        filterable: false,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Action',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          return Center(
-            child: GestureDetector(
-              onTap: () => _showActionDialog(context, value),
-              child: const Icon(
-                Icons.more_horiz,
-                color: Colors.grey,
-                size: 25,
-              ),
-            ),
-          );
-        },
-      ),
     ];
   }
 
@@ -477,51 +452,6 @@ class _DataGridExampleState extends State<DataGridExample> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return months[month - 1];
-  }
-
-  void _showActionDialog(BuildContext context, dynamic value) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Customer Actions'),
-          content: const Text('Choose an action for this customer:'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Edit customer')),
-                );
-              },
-              child: const Text('Edit'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Delete customer')),
-                );
-              },
-              child: const Text('Delete'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('View details')),
-                );
-              },
-              child: const Text('View Details'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _showCustomerMenu(BuildContext context, dynamic value) {
@@ -913,36 +843,6 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
           );
         },
       ),
-      // Action column with horizontal more_vert icon
-      DataGridColumn.custom(
-        dataField: 'action',
-        caption: 'Action',
-        width: 80,
-        sortable: false,
-        filterable: false,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Action',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          return Center(
-            child: GestureDetector(
-              onTap: () => _showActionDialog(context, value),
-              child: const Icon(
-                Icons.more_horiz,
-                color: Colors.grey,
-                size: 25,
-              ),
-            ),
-          );
-        },
-      ),
     ];
   }
 
@@ -952,51 +852,6 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return months[month - 1];
-  }
-
-  void _showActionDialog(BuildContext context, dynamic value) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Customer Actions'),
-          content: const Text('Choose an action for this customer:'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Edit customer')),
-                );
-              },
-              child: const Text('Edit'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Delete customer')),
-                );
-              },
-              child: const Text('Delete'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('View details')),
-                );
-              },
-              child: const Text('View Details'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _showCustomerMenu(BuildContext context, dynamic value) {
