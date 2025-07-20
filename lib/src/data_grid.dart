@@ -163,7 +163,7 @@ class _DataGridState extends State<DataGrid> {
 
         return Column(
           children: [
-            if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
+            // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
             _buildSearchBar(),
             _buildHeader(visibleColumns),
             if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
