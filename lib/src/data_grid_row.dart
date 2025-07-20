@@ -83,7 +83,9 @@ class DataGridRow extends StatelessWidget {
                     ),
                   ),
                 ),
-              ...columns.map((column) {
+              ...columns.asMap().entries.map((entry) {
+                final columnIndex = entry.key;
+                final column = entry.value;
                 final value = rowData[column.dataField];
                 
                 return Expanded(

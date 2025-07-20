@@ -161,6 +161,7 @@ class _DataGridState extends State<DataGrid> {
         // Filter visible columns
         final visibleColumns = widget.columns.where((col) => col.visible).toList();
 
+<<<<<<< HEAD
         return Column(
           children: [
             // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
@@ -171,28 +172,54 @@ class _DataGridState extends State<DataGrid> {
                 selectedCount: _controller.selectionState.selectedCount,
                 totalCount: _controller.source?.rowCount ?? 0,
                 onClearSelection: () => _controller.clearSelection(),
+=======
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
+              const SizedBox(height: 8),
+              const Text (
+                'Customers',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 18,
+                 color: Color(0xff666666),
+                ),
+>>>>>>> mohamed_elkerba
               ),
-            if (widget.showFilterRow) _buildFilterRow(visibleColumns),
-            Expanded(
-              child: _buildBody(visibleColumns),
-            ),
-            if (widget.showPaginationControls && 
-                widget.paginationMode != PaginationMode.none && 
-                _controller.source?.hasData == true)
-              DataGridPaginationControls(
-                pagination: _controller.paginationState,
-                onPaginationChanged: (pagination) {
-                  if (pagination.currentPage != _controller.paginationState.currentPage) {
-                    _controller.goToPage(pagination.currentPage);
-                  }
-                  if (pagination.pageSize != _controller.paginationState.pageSize) {
-                    _controller.setPageSize(pagination.pageSize);
-                  }
-                },
-                totalRows: _controller.source?.rowCount ?? 0,
-                isLoading: _controller.source?.isLoading ?? false,
+              const SizedBox(height: 8),
+              _buildSearchBar(),
+              _buildHeader(visibleColumns),
+              if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
+                DataGridSelectionIndicator(
+                  selectedCount: _controller.selectionState.selectedCount,
+                  totalCount: _controller.source?.rowCount ?? 0,
+                  onClearSelection: () => _controller.clearSelection(),
+                ),
+              if (widget.showFilterRow) _buildFilterRow(visibleColumns),
+              Expanded(
+                child: _buildBody(visibleColumns),
               ),
-          ],
+              if (widget.showPaginationControls &&
+                  widget.paginationMode != PaginationMode.none &&
+                  _controller.source?.hasData == true)
+                DataGridPaginationControls(
+                  pagination: _controller.paginationState,
+                  onPaginationChanged: (pagination) {
+                    if (pagination.currentPage != _controller.paginationState.currentPage) {
+                      _controller.goToPage(pagination.currentPage);
+                    }
+                    if (pagination.pageSize != _controller.paginationState.pageSize) {
+                      _controller.setPageSize(pagination.pageSize);
+                    }
+                  },
+                  totalRows: _controller.source?.rowCount ?? 0,
+                  isLoading: _controller.source?.isLoading ?? false,
+                ),
+            ],
+          ),
         );
       },
     );
@@ -204,21 +231,47 @@ class _DataGridState extends State<DataGrid> {
       child: Row(
         children: [
           // Add New button
-          _buildActionButton(
-            icon: Icons.add,
-            label: 'Add New',
-            color: Colors.green,
-            onTap: widget.onAddNew,
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              color: const Color(0XFFF7F7F7),
+              border: Border.all(
+                color: const Color(0xffE3E4E3),
+                width: 1,
+              ),
+            ),
+            child: _buildActionButton(
+              icon: Icons.add,
+              label: 'Add New',
+              onTap: widget.onAddNew,
+            ),
           ),
           const SizedBox(width: 8),
-          // Search box
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Search in table...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                prefixIcon: const Icon(Icons.home_outlined),
+                suffixIcon: const Icon(Icons.favorite_border_outlined),
+                fillColor: const Color(0xffF7F7F7),
+                filled: true,
+                hintText: 'Enter customer name or phone',
+                hintStyle: const TextStyle(
+                  color: Color(0xff999FA7),
+                  fontSize: 14,
+                ),
+                border: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    color: Color(0xffE3E4E3),
+                  ),
+                  borderRadius: BorderRadius.circular(22),
+                ),
                 isDense: true,
+                enabledBorder: OutlineInputBorder(
+                  borderSide:const BorderSide(
+                    color: Color(0xffE3E4E3),
+                  ),
+                  borderRadius: BorderRadius.circular(22),
+                ),
               ),
               onChanged: (value) {
                 setState(() {
@@ -229,75 +282,85 @@ class _DataGridState extends State<DataGrid> {
             ),
           ),
           const SizedBox(width: 8),
-          // Duplicate button
-          _buildActionButton(
-            icon: Icons.content_copy,
-            label: 'Duplicate',
-            color: Colors.blue,
-            onTap: widget.onDuplicate,
-          ),
-          const SizedBox(width: 8),
-          // Edit button
-          _buildActionButton(
-            icon: Icons.edit,
-            label: 'Edit',
-            color: Colors.orange,
-            onTap: widget.onEdit,
-          ),
-          const SizedBox(width: 8),
-          // Delete button
-          _buildActionButton(
-            icon: Icons.delete,
-            label: 'Delete',
-            color: Colors.red,
-            onTap: widget.onDelete,
-          ),
-          const SizedBox(width: 8),
-          // Print button
-          _buildActionButton(
-            icon: Icons.print,
-            label: 'Print',
-            color: Colors.purple,
-            onTap: widget.onPrint,
-          ),
-          const SizedBox(width: 8),
-          // Share button
-          _buildActionButton(
-            icon: Icons.share,
-            label: 'Share',
-            color: Colors.teal,
-            onTap: widget.onShare,
-          ),
-          const SizedBox(width: 8),
-          // Menu button
-          _buildMenuButton(),
-          const SizedBox(width: 8),
-          // Navigation buttons
-          _buildNavButton(
-            icon: Icons.table_chart,
-            label: 'Standard',
-            isSelected: widget.currentView == 'standard',
-            onTap: () {
-              widget.onViewChanged?.call('standard');
-            },
-          ),
-          if (widget.useOptimizedGrid) ...[
-            const SizedBox(width: 8),
-            _buildNavButton(
-              icon: Icons.speed,
-              label: 'Optimized',
-              isSelected: widget.currentView == 'optimized',
-              onTap: () {
-                widget.onViewChanged?.call('optimized');
-              },
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xffF5F5F5),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: const Color(0xffDDDDDD),
+                width: 1,
+              ),
             ),
-          ],
-          const SizedBox(width: 8),
-          _buildExportButton(
-            icon: Icons.download,
-            label: 'Export',
-            onTap: () => _showExportDialog(),
-          ),
+            child: Row(
+              children: [
+                // Duplicate button
+                _buildActionButton(
+                  icon: Icons.content_copy,
+                  label: 'Duplicate',
+                  onTap: widget.onDuplicate,
+                ),
+                const SizedBox(width: 8),
+                // Edit button
+                _buildActionButton(
+                  icon: Icons.edit,
+                  label: 'Edit',
+                  onTap: widget.onEdit,
+                ),
+                const SizedBox(width: 8),
+                // Delete button
+                _buildActionButton(
+                  icon: Icons.delete,
+                  label: 'Delete',
+                  onTap: widget.onDelete,
+                ),
+                const SizedBox(width: 8),
+                // Print button
+                _buildActionButton(
+                  icon: Icons.print,
+                  label: 'Print',
+                  onTap: widget.onPrint,
+                ),
+                const SizedBox(width: 8),
+                // Share button
+                _buildActionButton(
+                  icon: Icons.share,
+                  label: 'Share',
+                  onTap: widget.onShare,
+                ),
+                const SizedBox(width: 8),
+                // Menu button
+                _buildMenuButton(),
+                const SizedBox(width: 8),
+                // Navigation buttons
+                // _buildNavButton(
+                //   icon: Icons.table_chart,
+                //   label: 'Standard',
+                //   isSelected: widget.currentView == 'standard',
+                //   onTap: () {
+                //     widget.onViewChanged?.call('standard');
+                //   },
+                // ),
+                if (widget.useOptimizedGrid) ...[
+                  const SizedBox(width: 8),
+                  _buildNavButton(
+                    icon: Icons.speed,
+                    label: 'Optimized',
+                    isSelected: widget.currentView == 'optimized',
+                    onTap: () {
+                      widget.onViewChanged?.call('optimized');
+                    },
+                  ),
+                ],
+                // const SizedBox(width: 8),
+                // _buildExportButton(
+                //   icon: Icons.download,
+                //   label: 'Export',
+                //   onTap: () => _showExportDialog(),
+                // ),
+              ],
+            ),
+          )
+
         ],
       ),
     );
@@ -347,7 +410,6 @@ class _DataGridState extends State<DataGrid> {
   Widget _buildActionButton({
     required IconData icon,
     required String label,
-    required Color color,
     required VoidCallback? onTap,
   }) {
     return InkWell(
@@ -356,12 +418,8 @@ class _DataGridState extends State<DataGrid> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: color,
+          // color: color,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: color,
-            width: 1,
-          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -369,13 +427,13 @@ class _DataGridState extends State<DataGrid> {
             Icon(
               icon,
               size: 18,
-              color: Colors.white,
+              color: const Color(0xff4B4B4B),
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xff4B4B4B),
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
@@ -388,7 +446,7 @@ class _DataGridState extends State<DataGrid> {
 
   Widget _buildMenuButton() {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert),
+      icon: const Icon(Icons.menu),
       onSelected: (value) {
         switch (value) {
           case 'refresh':
@@ -759,41 +817,41 @@ class _DataGridState extends State<DataGrid> {
                         padding: const EdgeInsets.only(right: 40),
                         child: column.buildHeader(context),
                       ),
-                      if (widget.showSortControls && column.sortable)
-                        Positioned(
-                          right: column.filterable ? 24 : 4,
-                          top: 4,
-                          child: DataGridSortControls(
-                            field: column.dataField,
-                            currentSort: currentSort,
-                            priority: sortPriority,
-                            onSort: () => _onSortColumn(column),
-                            onRemoveSort: () => _onRemoveSort(column.dataField),
-                            showPriority: _controller.sortState.sorts.length > 1,
-                          ),
-                        ),
-                      if (column.filterable)
-                        Positioned(
-                          right: 4,
-                          top: 4,
-                          child: GestureDetector(
-                            onTap: () => _showColumnFilter(column),
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: _hasColumnFilter(column.dataField)
-                                    ? Colors.blue
-                                    : Colors.grey,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: const Icon(
-                                Icons.filter_list,
-                                size: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                      // if (widget.showSortControls && column.sortable)
+                      //   Positioned(
+                      //     right: column.filterable ? 24 : 4,
+                      //     top: 4,
+                      //     child: DataGridSortControls(
+                      //       field: column.dataField,
+                      //       currentSort: currentSort,
+                      //       priority: sortPriority,
+                      //       onSort: () => _onSortColumn(column),
+                      //       onRemoveSort: () => _onRemoveSort(column.dataField),
+                      //       showPriority: _controller.sortState.sorts.length > 1,
+                      //     ),
+                      //   ),
+                      // if (column.filterable)
+                      //   Positioned(
+                      //     right: 4,
+                      //     top: 4,
+                      //     child: GestureDetector(
+                      //       onTap: () => _showColumnFilter(column),
+                      //       child: Container(
+                      //         padding: const EdgeInsets.all(2),
+                      //         decoration: BoxDecoration(
+                      //           color: _hasColumnFilter(column.dataField)
+                      //               ? Colors.blue
+                      //               : Colors.grey,
+                      //           borderRadius: BorderRadius.circular(4),
+                      //         ),
+                      //         child: const Icon(
+                      //           Icons.filter_list,
+                      //           size: 12,
+                      //           color: Colors.white,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
                     ],
                   ),
                 ),
@@ -1059,7 +1117,6 @@ class _DataGridState extends State<DataGrid> {
 
   Widget _buildGroupedBody(List<DataGridColumn> columns) {
     final groupedData = _controller.getGroupedData();
-    
     if (groupedData.isEmpty) {
       return const Center(
         child: Padding(
@@ -1068,7 +1125,6 @@ class _DataGridState extends State<DataGrid> {
         ),
       );
     }
-    
     return Column(
       children: groupedData.asMap().entries.map<Widget>((entry) {
         final index = entry.key;
@@ -1108,7 +1164,6 @@ class _DataGridState extends State<DataGrid> {
             onCellEdit: widget.onCellEdit,
           );
         }
-        
         return const SizedBox.shrink();
       }).toList(),
     );

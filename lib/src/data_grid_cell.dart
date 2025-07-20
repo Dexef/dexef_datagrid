@@ -14,6 +14,7 @@ class DataGridCell extends StatelessWidget {
   final VoidCallback? onDoubleTap;
   final bool isEditing;
   final String? errorMessage;
+  final bool showMoreVert;
 
   const DataGridCell({
     super.key,
@@ -26,6 +27,7 @@ class DataGridCell extends StatelessWidget {
     this.onDoubleTap,
     this.isEditing = false,
     this.errorMessage,
+    this.showMoreVert = false,
   });
 
   @override
@@ -42,22 +44,40 @@ class DataGridCell extends StatelessWidget {
           height: config.rowHeight,
           decoration: BoxDecoration(
             color: backgroundColor,
-            border: config.showBorders
+            border: config.showHorizontalBorders && !config.showBorders
                 ? Border(
-                    right: BorderSide(
-                      color: config.borderColor,
-                      width: config.borderWidth,
-                    ),
                     bottom: BorderSide(
                       color: config.borderColor,
                       width: config.borderWidth,
                     ),
                   )
-                : null,
+                : config.showBorders
+                    ? Border(
+                        right: BorderSide(
+                          color: config.borderColor,
+                          width: config.borderWidth,
+                        ),
+                        bottom: BorderSide(
+                          color: config.borderColor,
+                          width: config.borderWidth,
+                        ),
+                      )
+                    : null,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: column.buildCell(context, value),
+            child: showMoreVert 
+                ? Row(
+                    children: [
+                      Expanded(child: column.buildCell(context, value)),
+                      const Icon(
+                        Icons.more_vert,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  )
+                : column.buildCell(context, value),
           ),
         ),
       ),
@@ -69,10 +89,7 @@ class DataGridCell extends StatelessWidget {
       return Colors.blue.withOpacity(0.2);
     }
     
-    if (isAlternateRow && config.showAlternateRows) {
-      return config.alternateRowBackgroundColor;
-    }
-    
-    return config.rowBackgroundColor;
+    // Always return white background, no alternate row coloring
+    return Colors.white;
   }
 } 
