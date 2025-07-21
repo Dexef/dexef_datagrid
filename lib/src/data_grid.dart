@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../model/data_grid_model.dart';
@@ -122,7 +123,8 @@ class _DataGridState extends State<DataGrid> {
 
     // Set pagination and virtual scroll modes
     _controller.setPaginationMode(widget.paginationMode);
-    _controller.setVirtualScrollMode(widget.virtualScrollMode, config: widget.virtualConfig);
+    _controller.setVirtualScrollMode(widget.virtualScrollMode,
+        config: widget.virtualConfig);
 
     // Set server data callback if provided
     if (widget.onServerDataRequest != null) {
@@ -151,7 +153,8 @@ class _DataGridState extends State<DataGrid> {
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, child) {
-        if (widget.loadingWidget != null && _controller.source?.isLoading == true) {
+        if (widget.loadingWidget != null &&
+            _controller.source?.isLoading == true) {
           return widget.loadingWidget!;
         }
 
@@ -160,7 +163,8 @@ class _DataGridState extends State<DataGrid> {
         }
 
         // Filter visible columns
-        final visibleColumns = widget.columns.where((col) => col.visible).toList();
+        final visibleColumns =
+            widget.columns.where((col) => col.visible).toList();
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -169,7 +173,7 @@ class _DataGridState extends State<DataGrid> {
             children: [
               // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
               const SizedBox(height: 8),
-              const Text (
+              const Text(
                 'Customers',
                 textAlign: TextAlign.start,
                 style: TextStyle(
@@ -180,13 +184,15 @@ class _DataGridState extends State<DataGrid> {
               const SizedBox(height: 8),
               _buildSearchBar(),
               _buildHeader(visibleColumns),
-              if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
+              if (widget.showSelectionIndicator &&
+                  _controller.selectionState.hasSelection)
                 DataGridSelectionIndicator(
                   selectedCount: _controller.selectionState.selectedCount,
                   totalCount: _controller.source?.rowCount ?? 0,
                   onClearSelection: () => _controller.clearSelection(),
                 ),
               if (widget.showFilterRow) _buildFilterRow(visibleColumns),
+              Container(height: 2, width: double.infinity, color: Colors.grey.shade300,),
               Expanded(
                 child: _buildBody(visibleColumns),
               ),
@@ -196,10 +202,12 @@ class _DataGridState extends State<DataGrid> {
                 DataGridPaginationControls(
                   pagination: _controller.paginationState,
                   onPaginationChanged: (pagination) {
-                    if (pagination.currentPage != _controller.paginationState.currentPage) {
+                    if (pagination.currentPage !=
+                        _controller.paginationState.currentPage) {
                       _controller.goToPage(pagination.currentPage);
                     }
-                    if (pagination.pageSize != _controller.paginationState.pageSize) {
+                    if (pagination.pageSize !=
+                        _controller.paginationState.pageSize) {
                       _controller.setPageSize(pagination.pageSize);
                     }
                   },
@@ -255,7 +263,7 @@ class _DataGridState extends State<DataGrid> {
                 ),
                 isDense: true,
                 enabledBorder: OutlineInputBorder(
-                  borderSide:const BorderSide(
+                  borderSide: const BorderSide(
                     color: Color(0xffE3E4E3),
                   ),
                   borderRadius: BorderRadius.circular(22),
@@ -313,7 +321,7 @@ class _DataGridState extends State<DataGrid> {
                 _buildActionButton(
                   icon: Icons.share,
                   label: 'Share',
-                  onTap: widget.onShare,
+                  onTap: _showExportDialog,
                 ),
                 const SizedBox(width: 8),
                 // Menu button
@@ -348,7 +356,6 @@ class _DataGridState extends State<DataGrid> {
               ],
             ),
           )
-
         ],
       ),
     );
@@ -438,13 +445,13 @@ class _DataGridState extends State<DataGrid> {
       onSelected: (value) {
         switch (value) {
           case 'refresh':
-          // Handle refresh
+            // Handle refresh
             break;
           case 'settings':
-          // Handle settings
+            // Handle settings
             break;
           case 'help':
-          // Handle help
+            // Handle help
             break;
         }
       },
@@ -566,7 +573,8 @@ class _DataGridState extends State<DataGrid> {
     );
   }
 
-  void _handleExport(ExportFormat format, ExportTemplate template, List<String> columns, Map<String, String> headers) {
+  void _handleExport(ExportFormat format, ExportTemplate template,
+      List<String> columns, Map<String, String> headers) {
     print('Exporting: $format, $template, $columns, $headers');
 
     switch (format) {
@@ -592,7 +600,8 @@ class _DataGridState extends State<DataGrid> {
 
     // Add data rows
     for (final row in data) {
-      final rowData = columns.map((col) => row[col]?.toString() ?? '').join(',');
+      final rowData =
+          columns.map((col) => row[col]?.toString() ?? '').join(',');
       csvData.writeln(rowData);
     }
 
@@ -740,14 +749,14 @@ class _DataGridState extends State<DataGrid> {
     return Container(
       height: widget.config.headerHeight,
       decoration: BoxDecoration(
-        color: widget.config.headerBackgroundColor,
+        color: Colors.white, // Set header background to white
         border: widget.config.showBorders
             ? Border(
-          bottom: BorderSide(
-            color: widget.config.borderColor,
-            width: widget.config.borderWidth,
-          ),
-        )
+                bottom: BorderSide(
+                  color: widget.config.borderColor,
+                  width: widget.config.borderWidth,
+                ),
+              )
             : null,
       ),
       child: Row(
@@ -758,18 +767,20 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: widget.config.borderColor,
-                      width: widget.config.borderWidth,
-                    ),
-                  ),
-                )
+                        border: Border(
+                          right: BorderSide(
+                            color: widget.config.borderColor,
+                            width: widget.config.borderWidth,
+                          ),
+                        ),
+                      )
                     : null,
                 child: DataGridSelectAllCheckbox(
                   isSelected: _controller.selectionState.isSelectAll,
-                  isIndeterminate: _controller.selectionState.selectedCount > 0 &&
-                      _controller.selectionState.selectedCount < (_controller.source?.rowCount ?? 0),
+                  isIndeterminate:
+                      _controller.selectionState.selectedCount > 0 &&
+                          _controller.selectionState.selectedCount <
+                              (_controller.source?.rowCount ?? 0),
                   onChanged: (value) {
                     if (value == true) {
                       _controller.selectAll();
@@ -789,13 +800,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: widget.config.borderColor,
-                      width: widget.config.borderWidth,
-                    ),
-                  ),
-                )
+                        border: Border(
+                          right: BorderSide(
+                            color: widget.config.borderColor,
+                            width: widget.config.borderWidth,
+                          ),
+                        ),
+                      )
                     : null,
                 child: GestureDetector(
                   onTap: column.sortable ? () => _onHeaderTap(column) : null,
@@ -855,14 +866,14 @@ class _DataGridState extends State<DataGrid> {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Colors.white, // Set filter row background to white
         border: widget.config.showBorders
             ? Border(
-          bottom: BorderSide(
-            color: widget.config.borderColor,
-            width: widget.config.borderWidth,
-          ),
-        )
+                bottom: BorderSide(
+                  color: widget.config.borderColor,
+                  width: widget.config.borderWidth,
+                ),
+              )
             : null,
       ),
       child: Row(
@@ -873,13 +884,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: widget.config.borderColor,
-                      width: widget.config.borderWidth,
-                    ),
-                  ),
-                )
+                        border: Border(
+                          right: BorderSide(
+                            color: widget.config.borderColor,
+                            width: widget.config.borderWidth,
+                          ),
+                        ),
+                      )
                     : null,
               ),
             ),
@@ -889,13 +900,13 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 decoration: widget.config.showBorders
                     ? BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: widget.config.borderColor,
-                      width: widget.config.borderWidth,
-                    ),
-                  ),
-                )
+                        border: Border(
+                          right: BorderSide(
+                            color: widget.config.borderColor,
+                            width: widget.config.borderWidth,
+                          ),
+                        ),
+                      )
                     : null,
                 child: _buildFilterCell(column),
               ),
@@ -911,7 +922,9 @@ class _DataGridState extends State<DataGrid> {
       return const SizedBox.shrink();
     }
 
-    final hasFilter = _controller.filterState.columnFilters[column.dataField]?.isNotEmpty ?? false;
+    final hasFilter =
+        _controller.filterState.columnFilters[column.dataField]?.isNotEmpty ??
+            false;
     final isActive = _activeFilterField == column.dataField;
 
     return Padding(
@@ -920,30 +933,34 @@ class _DataGridState extends State<DataGrid> {
         child: GestureDetector(
           onTap: () => _showFilterDialog(column),
           child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: hasFilter ? Colors.blue : Colors.transparent,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Icon(
-              Icons.filter_list,
-              size: 16,
-              color: hasFilter ? Colors.white : Colors.grey[600],
-            ),
-          ),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: hasFilter ? Colors.blue : Colors.transparent,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: SvgPicture.asset(
+                "assets/images/filter_grid.svg",
+              )
+              // Icon(
+              //   Icons.filter_list,
+              //   size: 16,
+              //   color: hasFilter ? Colors.white : Colors.grey[600],
+              // ),
+              ),
         ),
       ),
     );
   }
 
   void _showFilterDialog(DataGridColumn column) {
-    final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+    final currentFilters =
+        _controller.filterState.columnFilters[column.dataField] ?? [];
     String filterValue = '';
-    
+
     // Get current filter value if exists
     if (currentFilters.isNotEmpty) {
       final firstFilter = currentFilters.first;
-      if (firstFilter.type == FilterType.contains || 
+      if (firstFilter.type == FilterType.contains ||
           firstFilter.type == FilterType.equals ||
           firstFilter.type == FilterType.startsWith ||
           firstFilter.type == FilterType.endsWith) {
@@ -975,10 +992,11 @@ class _DataGridState extends State<DataGrid> {
               ),
               const SizedBox(height: 16),
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter filter value...',
-                  border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  border: OutlineInputBorder(),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 controller: TextEditingController(text: filterValue),
                 onChanged: (value) {
@@ -992,9 +1010,12 @@ class _DataGridState extends State<DataGrid> {
                   TextButton(
                     onPressed: () {
                       // Clear filter for this column
-                      final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+                      final currentFilters = _controller
+                              .filterState.columnFilters[column.dataField] ??
+                          [];
                       for (final filter in currentFilters) {
-                        _controller.removeColumnFilter(column.dataField, filter);
+                        _controller.removeColumnFilter(
+                            column.dataField, filter);
                       }
                       Navigator.of(context).pop();
                     },
@@ -1017,9 +1038,12 @@ class _DataGridState extends State<DataGrid> {
                         _controller.addColumnFilter(column.dataField, filter);
                       } else {
                         // Clear filter for this column
-                        final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+                        final currentFilters = _controller
+                                .filterState.columnFilters[column.dataField] ??
+                            [];
                         for (final filter in currentFilters) {
-                          _controller.removeColumnFilter(column.dataField, filter);
+                          _controller.removeColumnFilter(
+                              column.dataField, filter);
                         }
                       }
                       Navigator.of(context).pop();
@@ -1287,7 +1311,9 @@ class _DataGridState extends State<DataGrid> {
           const Spacer(),
           if (widget.showSortControls)
             DataGridSortPriorityIndicator(
-              activeSorts: _controller.sortState.sorts.where((s) => s.order != SortOrder.none).toList(),
+              activeSorts: _controller.sortState.sorts
+                  .where((s) => s.order != SortOrder.none)
+                  .toList(),
               onTap: _showSortDialog,
             ),
           const SizedBox(width: 12),
@@ -1329,7 +1355,8 @@ class _DataGridState extends State<DataGrid> {
   }
 
   void _onHeaderTap(DataGridColumn column) {
-    final columnIndex = widget.columns.indexWhere((c) => c.dataField == column.dataField);
+    final columnIndex =
+        widget.columns.indexWhere((c) => c.dataField == column.dataField);
     if (columnIndex != -1) {
       _controller.sortByColumn(columnIndex);
       if (widget.onHeaderTap != null) {
@@ -1354,7 +1381,8 @@ class _DataGridState extends State<DataGrid> {
         backgroundColor: Colors.transparent,
         child: Container(
           width: 400,
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 20),
+          padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: 12, vertical: 20),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -1434,16 +1462,18 @@ class _DataGridState extends State<DataGrid> {
   // Helper methods for sorting
   SortOrder _getCurrentSortForColumn(String field) {
     final sort = _controller.sortState.sorts.firstWhere(
-          (s) => s.field == field,
-      orElse: () => DataGridSort(field: field, order: SortOrder.none, priority: 0),
+      (s) => s.field == field,
+      orElse: () =>
+          DataGridSort(field: field, order: SortOrder.none, priority: 0),
     );
     return sort.order;
   }
 
   int? _getSortPriorityForColumn(String field) {
     final sort = _controller.sortState.sorts.firstWhere(
-          (s) => s.field == field && s.order != SortOrder.none,
-      orElse: () => DataGridSort(field: field, order: SortOrder.none, priority: -1),
+      (s) => s.field == field && s.order != SortOrder.none,
+      orElse: () =>
+          DataGridSort(field: field, order: SortOrder.none, priority: -1),
     );
     return sort.priority >= 0 ? sort.priority : null;
   }
@@ -1452,8 +1482,11 @@ class _DataGridState extends State<DataGrid> {
     final currentSort = _getCurrentSortForColumn(column.dataField);
     final newSort = DataGridSort(
       field: column.dataField,
-      order: currentSort == SortOrder.none ? SortOrder.ascending :
-      currentSort == SortOrder.ascending ? SortOrder.descending : SortOrder.none,
+      order: currentSort == SortOrder.none
+          ? SortOrder.ascending
+          : currentSort == SortOrder.ascending
+              ? SortOrder.descending
+              : SortOrder.none,
       priority: _controller.sortState.sorts.length,
     );
     _controller.addSort(newSort);
@@ -1497,7 +1530,7 @@ class _DataGridState extends State<DataGrid> {
   // Helper methods for grouping
   void _toggleGroupExpanded(String field) {
     final group = _controller.sortState.groups.firstWhere(
-          (g) => g.field == field,
+      (g) => g.field == field,
       orElse: () => DataGridGroup(field: field),
     );
     _controller.updateGroup(group.toggleExpanded());
@@ -1535,4 +1568,4 @@ class _DataGridState extends State<DataGrid> {
   void _clearGroups() {
     _controller.clearGroups();
   }
-} 
+}

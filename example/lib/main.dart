@@ -156,7 +156,6 @@ class _DataGridExampleState extends State<DataGridExample> {
   @override
   Widget build(BuildContext context) {
     return DataGrid(
-
       source: _source,
       columns: _buildColumns(),
       useOptimizedGrid: false,
