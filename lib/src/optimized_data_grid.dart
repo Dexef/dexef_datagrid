@@ -110,6 +110,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   final ScrollController _bodyScrollController = ScrollController();
 
   String _searchText = '';
+  String? _activeFilterField; // Track which filter is currently active
   
   // Performance optimization: Cache previous data for diffing
   List<Map<String, dynamic>> _previousData = [];
@@ -869,6 +870,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     }
 
     final width = column.width ?? widget.config.minColumnWidth;
+    final hasFilter = _controller.filterState.columnFilters[column.dataField]?.isNotEmpty ?? false;
+    final isActive = _activeFilterField == column.dataField;
     
     return RepaintBoundary(
       child: SizedBox(
@@ -886,29 +889,122 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
               : null,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Filter ${column.caption}',
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                isDense: true,
+            child: Center(
+              child: GestureDetector(
+                onTap: () => _showFilterDialog(column),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: hasFilter ? Colors.blue : Colors.transparent,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Icon(
+                    Icons.filter_list,
+                    size: 16,
+                    color: hasFilter ? Colors.white : Colors.grey[600],
+                  ),
+                ),
               ),
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  final filter = DataGridFilter.text(
-                    field: column.dataField,
-                    type: FilterType.contains,
-                    value: value,
-                  );
-                  _controller.addColumnFilter(column.dataField, filter);
-                } else {
-                  final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
-                  for (final filter in currentFilters) {
-                    _controller.removeColumnFilter(column.dataField, filter);
-                  }
-                }
-              },
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showFilterDialog(DataGridColumn column) {
+    final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+    String filterValue = '';
+    
+    // Get current filter value if exists
+    if (currentFilters.isNotEmpty) {
+      final firstFilter = currentFilters.first;
+      if (firstFilter.type == FilterType.contains || 
+          firstFilter.type == FilterType.equals ||
+          firstFilter.type == FilterType.startsWith ||
+          firstFilter.type == FilterType.endsWith) {
+        filterValue = firstFilter.value?.toString() ?? '';
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          width: 300,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Filter ${column.caption}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Enter filter value...',
+                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                controller: TextEditingController(text: filterValue),
+                onChanged: (value) {
+                  filterValue = value;
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      // Clear filter for this column
+                      final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+                      for (final filter in currentFilters) {
+                        _controller.removeColumnFilter(column.dataField, filter);
+                      }
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Clear'),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (filterValue.isNotEmpty) {
+                        final filter = DataGridFilter.text(
+                          field: column.dataField,
+                          type: FilterType.contains,
+                          value: filterValue,
+                        );
+                        _controller.addColumnFilter(column.dataField, filter);
+                      } else {
+                        // Clear filter for this column
+                        final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+                        for (final filter in currentFilters) {
+                          _controller.removeColumnFilter(column.dataField, filter);
+                        }
+                      }
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Apply'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
