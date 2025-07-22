@@ -184,13 +184,12 @@ class _DataGridState extends State<DataGrid> {
               const SizedBox(height: 8),
               _buildSearchBar(),
               _buildHeader(visibleColumns),
-              if (widget.showSelectionIndicator &&
-                  _controller.selectionState.hasSelection)
-                DataGridSelectionIndicator(
-                  selectedCount: _controller.selectionState.selectedCount,
-                  totalCount: _controller.source?.rowCount ?? 0,
-                  onClearSelection: () => _controller.clearSelection(),
-                ),
+              // if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
+              //   DataGridSelectionIndicator(
+              //     selectedCount: _controller.selectionState.selectedCount,
+              //     totalCount: _controller.source?.rowCount ?? 0,
+              //     onClearSelection: () => _controller.clearSelection(),
+              //   ),
               if (widget.showFilterRow) _buildFilterRow(visibleColumns),
               Container(height: 2, width: double.infinity, color: Colors.grey.shade300,),
               Expanded(

@@ -192,8 +192,10 @@ class DataGridCellSelectionHighlight extends StatelessWidget {
       borderColor = Colors.red;
       borderWidth = 2;
     } else if (isSelected) {
-      borderColor = Theme.of(context).primaryColor;
-      borderWidth = 2;
+      borderColor = Colors.transparent;
+      // borderColor = Theme.of(context).primaryColor;
+      // borderWidth = 2;
+      borderWidth = 0 ;
     } else if (isFocused) {
       borderColor = Theme.of(context).focusColor;
       borderWidth = 1;
