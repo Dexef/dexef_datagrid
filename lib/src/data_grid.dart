@@ -190,7 +190,7 @@ class _DataGridState extends State<DataGrid> {
               //     totalCount: _controller.source?.rowCount ?? 0,
               //     onClearSelection: () => _controller.clearSelection(),
               //   ),
-              if (widget.showFilterRow) _buildFilterRow(visibleColumns),
+              // if (widget.showFilterRow) _buildFilterRow(visibleColumns),
               Container(height: 2, width: double.infinity, color: Colors.grey.shade300,),
               Expanded(
                 child: _buildBody(visibleColumns),
@@ -222,11 +222,12 @@ class _DataGridState extends State<DataGrid> {
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Row(
         children: [
           // Add New button
           Container(
+            width: 172,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
               color: const Color(0XFFF7F7F7),
@@ -235,6 +236,7 @@ class _DataGridState extends State<DataGrid> {
                 width: 1,
               ),
             ),
+            alignment: Alignment.center,
             child: _buildActionButton(
               icon: Icons.add,
               label: 'Add New',
