@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../model/data_grid_model.dart';
 import '../model/data_grid_config.dart';
+import 'style/style_size.dart';
+import 'widgets/default_text.dart';
 
 /// DataGrid header widget for building column headers
 class DataGridHeader extends StatelessWidget {
@@ -26,14 +28,14 @@ class DataGridHeader extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                column.caption,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: config.headerTextColor,
+              child:DefaultText(
+                text:column.caption,
+                isTextTheme: true,
+                themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: config.headerTextColor,
+                    fontSize: AppFontSize().setFontSize(context,webFontSize: 12),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
             ),
             if (child != null) child!,

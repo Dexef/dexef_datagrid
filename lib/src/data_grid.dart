@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:typed_data';
+import 'package:dexef_datagrid/src/style/style_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pdf/pdf.dart';
@@ -23,6 +24,7 @@ import 'grouping/data_grid_group_widgets.dart';
 import 'pagination/data_grid_pagination_widgets.dart';
 import 'pagination/data_grid_virtual_scroll.dart';
 import 'export/data_grid_export_dialog.dart';
+import 'widgets/default_text.dart';
 
 /// A customizable data grid widget for displaying tabular data
 class DataGrid extends StatefulWidget {
@@ -181,12 +183,12 @@ class _DataGridState extends State<DataGrid> {
             children: [
               // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
               const SizedBox(height: 8),
-              const Text(
-                'Customers',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color(0xff666666),
+              DefaultText(
+                text: 'Customers',
+                isTextTheme: true,
+                themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color:  Color(0xff666666),
+                    fontSize: AppFontSize().setFontSize(context,webFontSize: 14)
                 ),
               ),
               const SizedBox(height: 8),
@@ -398,10 +400,11 @@ class _DataGridState extends State<DataGrid> {
               color: isSelected ? Colors.white : Colors.grey.shade600,
             ),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey.shade600,
+            DefaultText(
+              text:label,
+              isTextTheme: true,
+              themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color:  isSelected ? Colors.white : Colors.grey.shade600,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
@@ -434,12 +437,13 @@ class _DataGridState extends State<DataGrid> {
               color: const Color(0xff4B4B4B),
             ),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Color(0xff4B4B4B),
+            DefaultText(
+              text: label,
+              isTextTheme: true,
+              themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Color(0xff4B4B4B),
+                  fontSize: AppFontSize().setFontSize(context,webFontSize: 12),
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
               ),
             ),
           ],
@@ -472,33 +476,34 @@ class _DataGridState extends State<DataGrid> {
         }
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'refresh',
           child: Row(
             children: [
               Icon(Icons.refresh, size: 18),
               SizedBox(width: 8),
-              Text('Refresh'),
+              DefaultText(text:'Refresh' ,fontColor: Colors.black,),
+              // Text('Refresh'),
             ],
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'settings',
           child: Row(
             children: [
               Icon(Icons.settings, size: 18),
               SizedBox(width: 8),
-              Text('Settings'),
+              DefaultText(text:'Settings' ,fontColor: Colors.black,),
             ],
           ),
         ),
-        const PopupMenuItem(
+         PopupMenuItem(
           value: 'help',
           child: Row(
             children: [
               Icon(Icons.help, size: 18),
               SizedBox(width: 8),
-              Text('Help'),
+              DefaultText(text:'Help' ,fontColor: Colors.black,),
             ],
           ),
         ),
@@ -534,12 +539,12 @@ class _DataGridState extends State<DataGrid> {
               color: Colors.white,
             ),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
+            DefaultText(
+              text:label,
+              isTextTheme: true,
+              themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize:  AppFontSize().setFontSize(context,webFontSize: 12),
               ),
             ),
           ],
@@ -648,7 +653,7 @@ class _DataGridState extends State<DataGrid> {
               pw.Text(
                 'Data Export Report',
                 style: pw.TextStyle(
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -1001,10 +1006,11 @@ class _DataGridState extends State<DataGrid> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Filter ${column.caption}',
-                style: const TextStyle(
-                  fontSize: 16,
+              DefaultText(
+                text:'Filter ${column.caption}',
+                isTextTheme: true,
+                themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontSize:  AppFontSize().setFontSize(context,webFontSize: 14),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -1037,12 +1043,12 @@ class _DataGridState extends State<DataGrid> {
                       }
                       Navigator.of(context).pop();
                     },
-                    child: const Text('Clear'),
+                    child: DefaultText(text:'Clear' ,fontColor: Colors.black,),
                   ),
                   const SizedBox(width: 8),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child:DefaultText(text:'Cancel' ,fontColor: Colors.black,),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -1066,7 +1072,7 @@ class _DataGridState extends State<DataGrid> {
                       }
                       Navigator.of(context).pop();
                     },
-                    child: const Text('Apply'),
+                    child:DefaultText(text:'Apply' ,fontColor: Colors.black,),
                   ),
                 ],
               ),
@@ -1083,13 +1089,13 @@ class _DataGridState extends State<DataGrid> {
 
     // Show loading indicator if pagination is loading
     if (_controller.paginationState.isLoading) {
-      return const Center(
+      return  Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading data...'),
+            DefaultText(text:'Loading data...' ,fontColor: Colors.black,),
           ],
         ),
       );
@@ -1097,7 +1103,7 @@ class _DataGridState extends State<DataGrid> {
 
     // Show skeleton loader for initial load
     if (source.isLoading && source.data.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -1107,7 +1113,7 @@ class _DataGridState extends State<DataGrid> {
               child: CircularProgressIndicator(strokeWidth: 3),
             ),
             SizedBox(height: 16),
-            Text('Loading data...'),
+            DefaultText(text:'Loading data...' ,fontColor: Colors.black,),
           ],
         ),
       );
@@ -1199,10 +1205,10 @@ class _DataGridState extends State<DataGrid> {
     final displayData = _controller.getDisplayData();
 
     if (displayData.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text('No data to display'),
+          child: DefaultText(text:'No data to display' ,fontColor: Colors.black,),
         ),
       );
     }
@@ -1243,10 +1249,10 @@ class _DataGridState extends State<DataGrid> {
   Widget _buildGroupedBody(List<DataGridColumn> columns) {
     final groupedData = _controller.getGroupedData();
     if (groupedData.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text('No data to display'),
+          child:  DefaultText(text:'No data to display' ,fontColor: Colors.black,),
         ),
       );
     }
@@ -1303,28 +1309,28 @@ class _DataGridState extends State<DataGrid> {
             ElevatedButton.icon(
               onPressed: _showFilterPanel,
               icon: const Icon(Icons.filter_list),
-              label: const Text('Advanced Filter'),
+              label:  DefaultText(text:'Advanced Filter' ,fontColor: Colors.black,),
             ),
           const SizedBox(width: 12),
           if (widget.showSearchPanel)
             ElevatedButton.icon(
               onPressed: _showSearchPanel,
               icon: const Icon(Icons.search),
-              label: const Text('Global Search'),
+              label:  DefaultText(text:'Global Search' ,fontColor: Colors.black,),
             ),
           const SizedBox(width: 12),
           if (widget.showSortControls)
             ElevatedButton.icon(
               onPressed: _showSortDialog,
               icon: const Icon(Icons.sort),
-              label: const Text('Sort'),
+              label:  DefaultText(text:'Sort' ,fontColor: Colors.black,),
             ),
           const SizedBox(width: 12),
           if (widget.showGroupControls)
             ElevatedButton.icon(
               onPressed: _showGroupDialog,
               icon: const Icon(Icons.group_work),
-              label: const Text('Group'),
+              label: DefaultText(text:'Group' ,fontColor: Colors.black,),
             ),
           const Spacer(),
           if (widget.showSortControls)
@@ -1359,13 +1365,7 @@ class _DataGridState extends State<DataGrid> {
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            Text(
-              'No data available',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
-            ),
+            DefaultText(text:'No data available' ,fontColor: Colors.grey[600],),
           ],
         ),
       ),

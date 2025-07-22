@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../model/data_grid_model.dart';
+import '../style/style_size.dart';
+import '../widgets/default_text.dart';
 
 /// Inline cell editor widget
 class DataGridCellEditor extends StatefulWidget {
@@ -271,6 +273,13 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          DefaultText(
+            text: column.caption,
+            isTextTheme:true,
+            themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+            ),
+          ),
           Text(
             column.caption,
             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -280,11 +289,12 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
           if (errorMessage != null)
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                errorMessage,
-                style: const TextStyle(
+              child: DefaultText(
+                text: errorMessage,
+                isTextTheme:true,
+                themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: Colors.red,
-                  fontSize: 12,
+                  fontSize: AppFontSize().setFontSize(context,webFontSize: 10),
                 ),
               ),
             ),

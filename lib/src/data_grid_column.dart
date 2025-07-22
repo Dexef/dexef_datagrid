@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/data_grid_config.dart';
+import 'widgets/default_text.dart';
 
 /// Represents a column in the data grid
 class DataGridColumn {
@@ -76,10 +77,8 @@ class DataGridColumn {
       cellBuilder: (value) {
         final number = value is num ? value : double.tryParse(value?.toString() ?? '');
         if (number == null) return const Text('-');
-        return Text(
-          number.toStringAsFixed(2),
-          textAlign: TextAlign.right,
-        );
+        return DefaultText(text:  number.toStringAsFixed(2),fontColor: Colors.black,);
+
       },
     );
   }
@@ -110,9 +109,8 @@ class DataGridColumn {
         
         if (date == null) return const Text('-');
         
-        return Text(
-          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}',
-        );
+        return  DefaultText(text:  '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}' ,fontColor: Colors.black,);
+
       },
     );
   }
@@ -169,11 +167,7 @@ class DataGridColumn {
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Text(
-        value?.toString() ?? '',
-        style: config.cellTextStyle,
-        overflow: TextOverflow.ellipsis,
-      ),
+      child:DefaultText(text:value?.toString() ?? '',isTextTheme:true,themeStyle: config.headerTextStyle,overFlow: TextOverflow.ellipsis,),
     );
   }
 
@@ -188,11 +182,7 @@ class DataGridColumn {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              header,
-              style: config.headerTextStyle,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: DefaultText(text:header,isTextTheme:true,themeStyle: config.headerTextStyle,overFlow: TextOverflow.ellipsis,),
           ),
           if (isSorted && sortable)
             Icon(
