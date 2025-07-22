@@ -39,6 +39,8 @@ class DataGridCheckboxColumn extends StatelessWidget {
           value: isSelected,
           tristate: isSelectAll,
           onChanged: onChanged,
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          activeColor: Colors.blue,
         ),
       ),
     );
@@ -66,20 +68,21 @@ class DataGridSelectAllCheckbox extends StatelessWidget {
       width: 40,
       height: config.headerHeight,
       decoration: config.showBorders
-          ? BoxDecoration(
-              border: Border(
-                right: BorderSide(
-                  color: config.borderColor,
-                  width: config.borderWidth,
-                ),
-              ),
-            )
-          : null,
+        ? BoxDecoration(
+          border: Border(
+            right: BorderSide(
+              color: config.borderColor,
+              width: config.borderWidth,
+            ),
+          ),
+        ):null,
       child: Center(
         child: Checkbox(
           value: isSelected,
           tristate: true,
           onChanged: onChanged,
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          activeColor: Colors.blue,
         ),
       ),
     );
@@ -154,7 +157,7 @@ class DataGridRowSelectionHighlight extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color? backgroundColor;
-    
+
     if (isSelected) {
       backgroundColor = Theme.of(context).primaryColor.withOpacity(0.1);
     } else if (isFocused) {
@@ -187,7 +190,7 @@ class DataGridCellSelectionHighlight extends StatelessWidget {
   Widget build(BuildContext context) {
     Color? borderColor;
     double? borderWidth;
-    
+
     if (hasError) {
       borderColor = Colors.red;
       borderWidth = 2;
@@ -195,7 +198,7 @@ class DataGridCellSelectionHighlight extends StatelessWidget {
       borderColor = Colors.transparent;
       // borderColor = Theme.of(context).primaryColor;
       // borderWidth = 2;
-      borderWidth = 0 ;
+      borderWidth = 0;
     } else if (isFocused) {
       borderColor = Theme.of(context).focusColor;
       borderWidth = 1;
@@ -213,4 +216,4 @@ class DataGridCellSelectionHighlight extends StatelessWidget {
       child: child,
     );
   }
-} 
+}

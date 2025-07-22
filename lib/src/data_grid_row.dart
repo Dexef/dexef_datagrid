@@ -61,16 +61,17 @@ class DataGridRow extends StatelessWidget {
                 SizedBox(
                   width: 50,
                   child: Container(
-                    decoration: config.showBorders
-                        ? BoxDecoration(
-                            border: Border(
-                              right: BorderSide(
-                                color: config.borderColor,
-                                width: config.borderWidth,
-                              ),
-                            ),
-                          )
-                        : null,
+                    decoration: config.showBorders ? BoxDecoration(
+                      color: Colors.blue.withOpacity(0.2),
+                        border: Border(
+                          right: BorderSide(
+                            color: config.borderColor,
+                            width: config.borderWidth,
+                          ),
+                        ),
+                      ):BoxDecoration(
+                      color: isSelected ? Colors.blue.withOpacity(0.2) : Colors.white   // change background of checkbox
+                    ),
                     child: DataGridCheckboxColumn(
                       rowIndex: rowIndex,
                       isSelected: isSelected,

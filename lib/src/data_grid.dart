@@ -440,7 +440,14 @@ class _DataGridState extends State<DataGrid> {
 
   Widget _buildMenuButton() {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.menu),
+      color: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
+      position: PopupMenuPosition.under,
+      tooltip: '',
       onSelected: (value) {
         switch (value) {
           case 'refresh':
@@ -486,6 +493,7 @@ class _DataGridState extends State<DataGrid> {
           ),
         ),
       ],
+      child: const Icon(Icons.menu),
     );
   }
 
