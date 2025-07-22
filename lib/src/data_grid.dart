@@ -65,7 +65,15 @@ class DataGrid extends StatefulWidget {
     super.key,
     this.source,
     required this.columns,
-    this.config = const DataGridConfig(),
+    this.config = const DataGridConfig(
+      rowHeight: 74,
+      headerHeight: 56,
+      minColumnWidth: 120,
+      showBorders: false,
+      showHorizontalBorders: true,
+      showAlternateRows: true,
+      alternateRowBackgroundColor: Color(0xFFF5F5F5),
+    ),
     this.controller,
     this.onRowTap,
     this.onCellTap,
@@ -116,7 +124,6 @@ class _DataGridState extends State<DataGrid> {
   @override
   void initState() {
     super.initState();
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     _controller = widget.controller ?? DataGridController();
     if (widget.source != null) {
       _controller.setSource(widget.source!);
@@ -866,7 +873,8 @@ class _DataGridState extends State<DataGrid> {
                 ),
               ),
             );
-          }),
+          }
+          ),
         ],
       ),
     );
