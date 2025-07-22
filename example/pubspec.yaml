@@ -2,7 +2,7 @@ name: dexef_datagrid_example
 description: "Example app for the Dexef DataGrid package"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.5.0
