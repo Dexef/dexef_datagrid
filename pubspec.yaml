@@ -1,6 +1,6 @@
 name: dexef_datagrid
 description: A comprehensive and highly customizable Flutter DataGrid widget with advanced features like filtering, sorting, grouping, selection, editing, pagination, virtualization, and export functionality.
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
