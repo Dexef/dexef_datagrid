@@ -116,6 +116,7 @@ class _DataGridState extends State<DataGrid> {
   @override
   void initState() {
     super.initState();
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     _controller = widget.controller ?? DataGridController();
     if (widget.source != null) {
       _controller.setSource(widget.source!);
