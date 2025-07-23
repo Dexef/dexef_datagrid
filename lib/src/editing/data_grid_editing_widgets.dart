@@ -430,9 +430,13 @@ class DataGridValidationErrorIndicator extends StatelessWidget {
           const Icon(Icons.error, color: Colors.red, size: 16),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.red, fontSize: 12),
+            child: DefaultText(
+              text:errorMessage,
+              isTextTheme:true,
+              themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Colors.red,
+                fontSize:  AppFontSize().setFontSize(context,webFontSize: 10),
+              ),
             ),
           ),
           if (onDismiss != null)
