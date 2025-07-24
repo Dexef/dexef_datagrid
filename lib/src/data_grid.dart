@@ -62,6 +62,7 @@ class DataGrid extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onPrint;
   final VoidCallback? onShare;
+  final VoidCallback? onRefresh;
 
   const DataGrid({
     super.key,
@@ -107,6 +108,7 @@ class DataGrid extends StatefulWidget {
     this.onDelete,
     this.onPrint,
     this.onShare,
+    this.onRefresh,
   });
 
   @override
@@ -192,7 +194,7 @@ class _DataGridState extends State<DataGrid> {
                 ),
               ),
               const SizedBox(height: 8),
-              _buildSearchBar(),
+              _buildSearchBar(onRefresh: widget.onRefresh),
               _buildHeader(visibleColumns),
               // if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
               //   DataGridSelectionIndicator(
@@ -230,7 +232,7 @@ class _DataGridState extends State<DataGrid> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar({required VoidCallback? onRefresh,}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Row(
@@ -258,7 +260,7 @@ class _DataGridState extends State<DataGrid> {
             child: TextField(
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.home_outlined),
-                suffixIcon: const Icon(Icons.favorite_border_outlined),
+                // suffixIcon: const Icon(Icons.favorite_border_outlined),
                 fillColor: const Color(0xffF7F7F7),
                 filled: true,
                 hintText: 'Enter customer name or phone',
@@ -336,7 +338,7 @@ class _DataGridState extends State<DataGrid> {
                 ),
                 const SizedBox(width: 8),
                 // Menu button
-                _buildMenuButton(),
+                _buildMenuButton(onRefresh: onRefresh),
                 const SizedBox(width: 8),
                 // Navigation buttons
                 // _buildNavButton(
@@ -452,7 +454,7 @@ class _DataGridState extends State<DataGrid> {
     );
   }
 
-  Widget _buildMenuButton() {
+  Widget _buildMenuButton({required VoidCallback? onRefresh,}) {
     return PopupMenuButton<String>(
       color: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -465,7 +467,7 @@ class _DataGridState extends State<DataGrid> {
       onSelected: (value) {
         switch (value) {
           case 'refresh':
-            // Handle refresh
+            widget.onRefresh!();
             break;
           case 'settings':
             // Handle settings
