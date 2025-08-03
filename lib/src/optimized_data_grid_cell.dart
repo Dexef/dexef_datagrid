@@ -60,16 +60,16 @@ class OptimizedDataGridCell extends StatelessWidget {
                       )
                     : config.showBorders
                         ? Border(
-                            right: BorderSide(
-                              color: config.borderColor,
-                              width: config.borderWidth,
-                            ),
-                            bottom: BorderSide(
-                              color: config.borderColor,
-                              width: config.borderWidth,
-                            ),
-                          )
-                        : null,
+                        right: BorderSide(
+                          color: config.borderColor,
+                          width: config.borderWidth,
+                        ),
+                        bottom: BorderSide(
+                          color: config.borderColor,
+                          width: config.borderWidth,
+                        ),
+                      )
+                    : null,
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

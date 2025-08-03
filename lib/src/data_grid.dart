@@ -13,7 +13,6 @@ import '../model/data_grid_selection.dart';
 import '../model/data_grid_pagination.dart';
 import '../model/data_grid_config.dart';
 import 'data_grid_controller.dart';
-
 import 'data_grid_row.dart';
 import 'selection/data_grid_selection_widgets.dart';
 import 'sorting/data_grid_sort_widgets.dart';
@@ -189,8 +188,10 @@ class _DataGridState extends State<DataGrid> {
                 text: 'Customers',
                 isTextTheme: true,
                 themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color:  Color(0xff666666),
-                    fontSize: AppFontSize().setFontSize(context,webFontSize: 14)
+                    color: const Color(0xff666666),
+                    fontSize: AppFontSize().setFontSize(context,webFontSize: 18),
+                  fontFamily: 'DexPro',
+
                 ),
               ),
               const SizedBox(height: 8),

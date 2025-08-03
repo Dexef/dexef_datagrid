@@ -113,6 +113,7 @@ class _DataGridRowState extends State<DataGridRow> {
                     child: Container(
                       decoration: widget.config.showBorders
                           ? BoxDecoration(
+
                               border: Border(
                                 right: BorderSide(
                                   color: widget.config.borderColor,
