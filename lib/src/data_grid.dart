@@ -1210,7 +1210,7 @@ class _DataGridState extends State<DataGrid> {
     if (displayData.isEmpty) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: DefaultText(text:'No data to display' ,fontColor: Colors.black,),
         ),
       );
