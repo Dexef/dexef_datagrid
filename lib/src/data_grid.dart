@@ -270,37 +270,40 @@ class _DataGridState extends State<DataGrid> {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.home_outlined),
-                // suffixIcon: const Icon(Icons.favorite_border_outlined),
-                fillColor: const Color(0xffF7F7F7),
-                filled: true,
-                hintText: 'Enter customer name or phone',
-                hintStyle: const TextStyle(
-                  color: Color(0xff999FA7),
-                  fontSize: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    color: Color(0xffE3E4E3),
+            child: SizedBox(
+              height: 42,
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.home_outlined),
+                  // suffixIcon: const Icon(Icons.favorite_border_outlined),
+                  fillColor: const Color(0xffF7F7F7),
+                  filled: true,
+                  hintText: 'Enter customer name or phone',
+                  hintStyle: const TextStyle(
+                    color: Color(0xff999FA7),
+                    fontSize: 14,
                   ),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                isDense: true,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    color: Color(0xffE3E4E3),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color(0xffE3E4E3),
+                    ),
+                    borderRadius: BorderRadius.circular(22),
                   ),
-                  borderRadius: BorderRadius.circular(22),
+                  isDense: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color(0xffE3E4E3),
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchText = value;
+                    _controller.setGlobalSearch(_searchText);
+                  });
+                },
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchText = value;
-                  _controller.setGlobalSearch(_searchText);
-                });
-              },
             ),
           ),
           const SizedBox(width: 8),
@@ -439,7 +442,8 @@ class _DataGridState extends State<DataGrid> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         decoration: BoxDecoration(
           // color: color,
           borderRadius: BorderRadius.circular(8),
