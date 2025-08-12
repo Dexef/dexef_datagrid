@@ -1,9 +1,12 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../model/data_grid_model.dart';
 import '../model/data_grid_filters.dart';
 import '../model/data_grid_sorting.dart';
@@ -11,14 +14,22 @@ import '../model/data_grid_selection.dart';
 import '../model/data_grid_pagination.dart';
 import '../model/data_grid_config.dart';
 import 'data_grid_controller.dart';
-
 import 'optimized_data_grid_row.dart';
 import 'selection/data_grid_selection_widgets.dart';
 import 'sorting/data_grid_sort_widgets.dart';
 import 'filters/data_grid_filter_widgets.dart';
+import 'filters/data_grid_filter_panel.dart' hide DataGridSearchPanel;
+import 'filters/data_grid_search_panel.dart';
 import 'grouping/data_grid_group_widgets.dart';
 import 'pagination/data_grid_pagination_widgets.dart';
+import 'pagination/data_grid_virtual_scroll.dart';
 import 'export/data_grid_export_dialog.dart';
+import 'widgets/default_text.dart';
+import 'style/style_size.dart';
+
+// Conditional imports for web-specific functionality
+import 'export/data_grid_export_web.dart'
+    if (dart.library.io) 'export/data_grid_export_mobile.dart';
 
 /// Optimized DataGrid with performance enhancements:
 /// - Virtual scrolling for large datasets
@@ -111,11 +122,11 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
 
   String _searchText = '';
   String? _activeFilterField; // Track which filter is currently active
-  
+
   // Performance optimization: Cache previous data for diffing
   List<Map<String, dynamic>> _previousData = [];
   List<Map<String, dynamic>> _currentData = [];
-  
+
   // Track expanded groups
   final Set<String> _expandedGroups = {};
 
@@ -126,10 +137,11 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     if (widget.source != null) {
       _controller.setSource(widget.source!);
     }
-    
+
     _controller.setPaginationMode(widget.paginationMode);
-    _controller.setVirtualScrollMode(widget.virtualScrollMode, config: widget.virtualConfig);
-    
+    _controller.setVirtualScrollMode(widget.virtualScrollMode,
+        config: widget.virtualConfig);
+
     if (widget.onServerDataRequest != null) {
       _controller.setServerDataCallback(widget.onServerDataRequest!);
     }
@@ -156,7 +168,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, child) {
-        if (widget.loadingWidget != null && _controller.source?.isLoading == true) {
+        if (widget.loadingWidget != null &&
+            _controller.source?.isLoading == true) {
           return widget.loadingWidget!;
         }
 
@@ -164,13 +177,15 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
           return widget.emptyWidget ?? _buildEmptyWidget();
         }
 
-        final visibleColumns = widget.columns.where((col) => col.visible).toList();
+        final visibleColumns =
+            widget.columns.where((col) => col.visible).toList();
 
         return Column(
           children: [
             _buildSearchBar(),
             _buildOptimizedHeader(visibleColumns),
-            if (widget.showSelectionIndicator && _controller.selectionState.hasSelection)
+            if (widget.showSelectionIndicator &&
+                _controller.selectionState.hasSelection)
               DataGridSelectionIndicator(
                 selectedCount: _controller.selectionState.selectedCount,
                 totalCount: _controller.source?.rowCount ?? 0,
@@ -180,17 +195,20 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
             Expanded(
               child: _buildOptimizedBody(visibleColumns),
             ),
-            if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
-            if (widget.showPaginationControls && 
-                widget.paginationMode != PaginationMode.none && 
+            if (widget.showFilterPanel || widget.showSearchPanel)
+              _buildFilterButtons(),
+            if (widget.showPaginationControls &&
+                widget.paginationMode != PaginationMode.none &&
                 _controller.source?.hasData == true)
               DataGridPaginationControls(
                 pagination: _controller.paginationState,
                 onPaginationChanged: (pagination) {
-                  if (pagination.currentPage != _controller.paginationState.currentPage) {
+                  if (pagination.currentPage !=
+                      _controller.paginationState.currentPage) {
                     _controller.goToPage(pagination.currentPage);
                   }
-                  if (pagination.pageSize != _controller.paginationState.pageSize) {
+                  if (pagination.pageSize !=
+                      _controller.paginationState.pageSize) {
                     _controller.setPageSize(pagination.pageSize);
                   }
                 },
@@ -222,7 +240,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: 'Search in table...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 isDense: true,
               ),
               onChanged: (value) {
@@ -485,13 +504,13 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
 
   void _exportToCSV() {
     if (_controller.source == null) return;
-    
+
     final data = _controller.getDisplayData();
     if (data.isEmpty) return;
 
     final columns = widget.columns.where((col) => col.visible).toList();
     final headers = columns.map((col) => col.caption).join(',');
-    
+
     final rows = data.map((row) {
       return columns.map((col) {
         final value = row[col.dataField];
@@ -500,10 +519,10 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     }).join('\n');
 
     final csvContent = '$headers\n$rows';
-    
+
     // Create and download the CSV file
     _downloadFile('data_export.csv', csvContent, 'text/csv');
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('CSV export completed!'),
@@ -511,8 +530,6 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
       ),
     );
   }
-
-
 
   void _showExportDialog() {
     showDialog(
@@ -527,9 +544,10 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     );
   }
 
-  void _handleExport(ExportFormat format, ExportTemplate template, List<String> columns, Map<String, String> headers) {
+  void _handleExport(ExportFormat format, ExportTemplate template,
+      List<String> columns, Map<String, String> headers) {
     print('Exporting: $format, $template, $columns, $headers');
-    
+
     switch (format) {
       case ExportFormat.csv:
         _exportToCsv(columns, headers);
@@ -546,17 +564,18 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   void _exportToCsv(List<String> columns, Map<String, String> headers) {
     final data = _controller.getDisplayData();
     final csvData = StringBuffer();
-    
+
     // Add headers
     final headerRow = columns.map((col) => headers[col] ?? col).join(',');
     csvData.writeln(headerRow);
-    
+
     // Add data rows
     for (final row in data) {
-      final rowData = columns.map((col) => row[col]?.toString() ?? '').join(',');
+      final rowData =
+          columns.map((col) => row[col]?.toString() ?? '').join(',');
       csvData.writeln(rowData);
     }
-    
+
     _downloadFile('data_export.csv', csvData.toString(), 'text/csv');
   }
 
@@ -568,10 +587,10 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
 
   void _exportToPdf(List<String> columns, Map<String, String> headers) async {
     final data = _controller.getDisplayData();
-    
+
     // Create PDF document
     final pdf = pw.Document();
-    
+
     // Add title page
     pdf.addPage(
       pw.Page(
@@ -598,7 +617,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
         },
       ),
     );
-    
+
     // Add data table page
     pdf.addPage(
       pw.Page(
@@ -638,7 +657,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                     children: columns.map((col) {
                       final value = row[col];
                       String displayValue = '';
-                      
+
                       if (value != null) {
                         if (value is DateTime) {
                           displayValue = value.toString().split(' ')[0];
@@ -648,7 +667,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                           displayValue = value.toString();
                         }
                       }
-                      
+
                       return pw.Expanded(
                         child: pw.Text(
                           displayValue,
@@ -664,37 +683,23 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
         },
       ),
     );
-    
+
     // Generate PDF bytes
     final pdfBytes = await pdf.save();
-    
+
     // Download the PDF
     _downloadPdfFile('data_export.pdf', pdfBytes);
   }
 
   void _downloadFile(String filename, String content, String mimeType) {
-    // Create a blob URL and trigger download
+    // Use platform-specific export
     final bytes = utf8.encode(content);
-    final blob = html.Blob([bytes], mimeType);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    
-    final anchor = html.AnchorElement(href: url)
-      ..setAttribute('download', filename)
-      ..click();
-    
-    html.Url.revokeObjectUrl(url);
+    DataGridExportPlatform.downloadFile(filename, bytes, mimeType);
   }
 
   void _downloadPdfFile(String filename, Uint8List pdfBytes) {
-    // Create a blob URL and trigger download for PDF
-    final blob = html.Blob([pdfBytes], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    
-    final anchor = html.AnchorElement(href: url)
-      ..setAttribute('download', filename)
-      ..click();
-    
-    html.Url.revokeObjectUrl(url);
+    // Use platform-specific export
+    DataGridExportPlatform.downloadPdfFile(filename, pdfBytes);
   }
 
   Widget _buildOptimizedHeader(List<DataGridColumn> columns) {
@@ -734,7 +739,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
       child: DataGridSelectAllCheckbox(
         isSelected: _controller.selectionState.isSelectAll,
         isIndeterminate: _controller.selectionState.selectedCount > 0 &&
-            _controller.selectionState.selectedCount < (_controller.source?.rowCount ?? 0),
+            _controller.selectionState.selectedCount <
+                (_controller.source?.rowCount ?? 0),
         onChanged: (value) {
           if (value == true) {
             _controller.selectAll();
@@ -751,7 +757,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     final width = column.width ?? widget.config.minColumnWidth;
     final currentSort = _getCurrentSortForColumn(column.dataField);
     final sortPriority = _getSortPriorityForColumn(column.dataField);
-    
+
     return RepaintBoundary(
       child: SizedBox(
         width: width,
@@ -870,9 +876,11 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     }
 
     final width = column.width ?? widget.config.minColumnWidth;
-    final hasFilter = _controller.filterState.columnFilters[column.dataField]?.isNotEmpty ?? false;
+    final hasFilter =
+        _controller.filterState.columnFilters[column.dataField]?.isNotEmpty ??
+            false;
     final isActive = _activeFilterField == column.dataField;
-    
+
     return RepaintBoundary(
       child: SizedBox(
         width: width,
@@ -913,13 +921,14 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   }
 
   void _showFilterDialog(DataGridColumn column) {
-    final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+    final currentFilters =
+        _controller.filterState.columnFilters[column.dataField] ?? [];
     String filterValue = '';
-    
+
     // Get current filter value if exists
     if (currentFilters.isNotEmpty) {
       final firstFilter = currentFilters.first;
-      if (firstFilter.type == FilterType.contains || 
+      if (firstFilter.type == FilterType.contains ||
           firstFilter.type == FilterType.equals ||
           firstFilter.type == FilterType.startsWith ||
           firstFilter.type == FilterType.endsWith) {
@@ -954,7 +963,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                 decoration: InputDecoration(
                   hintText: 'Enter filter value...',
                   border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 controller: TextEditingController(text: filterValue),
                 onChanged: (value) {
@@ -968,9 +978,12 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                   TextButton(
                     onPressed: () {
                       // Clear filter for this column
-                      final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+                      final currentFilters = _controller
+                              .filterState.columnFilters[column.dataField] ??
+                          [];
                       for (final filter in currentFilters) {
-                        _controller.removeColumnFilter(column.dataField, filter);
+                        _controller.removeColumnFilter(
+                            column.dataField, filter);
                       }
                       Navigator.of(context).pop();
                     },
@@ -993,9 +1006,12 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                         _controller.addColumnFilter(column.dataField, filter);
                       } else {
                         // Clear filter for this column
-                        final currentFilters = _controller.filterState.columnFilters[column.dataField] ?? [];
+                        final currentFilters = _controller
+                                .filterState.columnFilters[column.dataField] ??
+                            [];
                         for (final filter in currentFilters) {
-                          _controller.removeColumnFilter(column.dataField, filter);
+                          _controller.removeColumnFilter(
+                              column.dataField, filter);
                         }
                       }
                       Navigator.of(context).pop();
@@ -1081,7 +1097,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
 
   Widget _buildOptimizedNormalBody(List<DataGridColumn> columns) {
     final displayData = _controller.getDisplayData();
-    
+
     if (displayData.isEmpty) {
       return const Center(
         child: Padding(
@@ -1090,7 +1106,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
         ),
       );
     }
-    
+
     return Column(
       children: displayData.asMap().entries.map((entry) {
         final index = entry.key;
@@ -1128,7 +1144,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
 
   Widget _buildOptimizedGroupedBody(List<DataGridColumn> columns) {
     final groupedData = _controller.getGroupedData();
-    
+
     if (groupedData.isEmpty) {
       return const Center(
         child: Padding(
@@ -1137,12 +1153,12 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
         ),
       );
     }
-    
+
     return Column(
       children: groupedData.asMap().entries.map<Widget>((entry) {
         final index = entry.key;
         final item = entry.value;
-        
+
         if (item is DataGridGroupRow) {
           return RepaintBoundary(
             child: DataGridGroupHeader(
@@ -1180,7 +1196,7 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
             onCellEdit: widget.onCellEdit,
           );
         }
-        
+
         return const SizedBox.shrink();
       }).toList(),
     );
@@ -1222,7 +1238,9 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
             const Spacer(),
             if (widget.showSortControls)
               DataGridSortPriorityIndicator(
-                activeSorts: _controller.sortState.sorts.where((s) => s.order != SortOrder.none).toList(),
+                activeSorts: _controller.sortState.sorts
+                    .where((s) => s.order != SortOrder.none)
+                    .toList(),
                 onTap: _showSortDialog,
               ),
             const SizedBox(width: 8),
@@ -1233,7 +1251,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
                 onClearGroups: _clearGroups,
               ),
             const SizedBox(width: 8),
-            Text('Showing ${_controller.filteredRowCount} of ${_controller.totalRowCount} rows'),
+            Text(
+                'Showing ${_controller.filteredRowCount} of ${_controller.totalRowCount} rows'),
           ],
         ),
       ),
@@ -1268,7 +1287,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
 
   // Helper methods
   void _onHeaderTap(DataGridColumn column) {
-    final columnIndex = widget.columns.indexWhere((c) => c.dataField == column.dataField);
+    final columnIndex =
+        widget.columns.indexWhere((c) => c.dataField == column.dataField);
     if (columnIndex != -1) {
       _controller.sortByColumn(columnIndex);
       if (widget.onHeaderTap != null) {
@@ -1287,7 +1307,8 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   }
 
   void _onSortColumn(DataGridColumn column) {
-    final columnIndex = widget.columns.indexWhere((c) => c.dataField == column.dataField);
+    final columnIndex =
+        widget.columns.indexWhere((c) => c.dataField == column.dataField);
     if (columnIndex != -1) {
       _controller.sortByColumn(columnIndex);
     }
@@ -1300,12 +1321,14 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   DataGridSort? _getCurrentSortForColumn(String field) {
     return _controller.sortState.sorts.firstWhere(
       (sort) => sort.field == field,
-      orElse: () => DataGridSort(field: field, order: SortOrder.none, priority: 0),
+      orElse: () =>
+          DataGridSort(field: field, order: SortOrder.none, priority: 0),
     );
   }
 
   int _getSortPriorityForColumn(String field) {
-    final index = _controller.sortState.sorts.indexWhere((sort) => sort.field == field);
+    final index =
+        _controller.sortState.sorts.indexWhere((sort) => sort.field == field);
     return index >= 0 ? index + 1 : 0;
   }
 
@@ -1435,6 +1458,4 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
       isExpanded: _expandedGroups.contains(item.group.field),
     );
   }
-
-
-} 
+}

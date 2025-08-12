@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
     );
   }
-
 }
 
 class HomePage extends StatefulWidget {
@@ -264,8 +263,7 @@ class _DataGridExampleState extends State<DataGridExample> {
                     fontSize: 16,
                     fontFamily: 'DexPro',
                     color: Color(0xff464646),
-                    fontWeight: FontWeight.w500
-                ),
+                    fontWeight: FontWeight.w500),
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
@@ -332,7 +330,8 @@ class _DataGridExampleState extends State<DataGridExample> {
                 child: Text('View Details'),
               ),
             ],
-            child: const Icon(Icons.more_vert, color: Color(0xff5D718D), size: 25),
+            child:
+                const Icon(Icons.more_vert, color: Color(0xff5D718D), size: 25),
           );
         },
       ),
@@ -362,7 +361,11 @@ class _DataGridExampleState extends State<DataGridExample> {
             children: [
               Text(
                 value.toString(),
-                style: const TextStyle(fontSize: 16, color: Color(0xff464646) ,fontFamily: 'DexPro',fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff464646),
+                    fontFamily: 'DexPro',
+                    fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
               Text(
@@ -406,7 +409,11 @@ class _DataGridExampleState extends State<DataGridExample> {
             children: [
               Text(
                 '${date.day} ${_getMonthName(date.month)}, ${date.year}',
-                style: const TextStyle(fontSize: 16, color: Color(0xff464646),fontFamily: 'DexPro', fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff464646),
+                    fontFamily: 'DexPro',
+                    fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
               Text(
@@ -415,7 +422,6 @@ class _DataGridExampleState extends State<DataGridExample> {
                   fontSize: 14,
                   color: Color(0xff999FA7),
                   fontFamily: 'DexPro',
-
                 ),
                 textAlign: TextAlign.center,
               ),
