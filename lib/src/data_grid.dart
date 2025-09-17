@@ -274,7 +274,7 @@ class _DataGridState extends State<DataGrid> {
               height: 42,
               child: TextField(
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.home_outlined),
+                  prefixIcon: const Icon(Icons.search),
                   // suffixIcon: const Icon(Icons.favorite_border_outlined),
                   fillColor: const Color(0xffF7F7F7),
                   filled: true,

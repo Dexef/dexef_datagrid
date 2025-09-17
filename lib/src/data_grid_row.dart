@@ -70,7 +70,7 @@ class _DataGridRowState extends State<DataGridRow> {
             });
           },
           child: Container(
-            color: isHover ? Colors.red : Colors.transparent,
+            // color: isHover ? Colors.transparent : Colors.transparent,
             height: widget.config.rowHeight,
             width: double.infinity,
             child: Row(
