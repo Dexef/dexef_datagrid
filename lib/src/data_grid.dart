@@ -273,7 +273,6 @@ class _DataGridState extends State<DataGrid> {
             child: SizedBox(
               height: 42,
               child: Theme(
-                // Prevent host app InputDecorationTheme/useMaterial3 from changing paddings
                 data: Theme.of(context).copyWith(useMaterial3: false, inputDecorationTheme: const InputDecorationTheme()),
                 child: TextField(
                   maxLines: 1,
@@ -284,11 +283,11 @@ class _DataGridState extends State<DataGrid> {
                     isCollapsed: true, // ignore default paddings
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12), // control height
                     prefixIcon: const Icon(Icons.search, size: 20),
-                    prefixIconConstraints: const BoxConstraints(
-                      minWidth: 36,
-                      minHeight: 36,
-                      maxHeight: 36,
-                    ),
+                    // prefixIconConstraints: const BoxConstraints(
+                    //   minWidth: 36,
+                    //   minHeight: 44,
+                    //   maxHeight: 54,
+                    // ),
                     filled: true,
                     fillColor: const Color(0xffF7F7F7),
                     hintText: 'Enter customer name or phone',
