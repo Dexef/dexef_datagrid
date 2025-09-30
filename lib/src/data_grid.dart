@@ -272,38 +272,43 @@ class _DataGridState extends State<DataGrid> {
           Expanded(
             child: SizedBox(
               height: 42,
-              child: TextField(
-                decoration: InputDecoration(
-                  alignLabelWithHint: true,
-                  prefixIcon: const Icon(Icons.search),
-                  // suffixIcon: const Icon(Icons.favorite_border_outlined),
-                  fillColor: const Color(0xffF7F7F7),
-                  filled: true,
-                  hintText: 'Enter customer name or phone',
-                  hintStyle: const TextStyle(
-                    color: Color(0xff999FA7),
-                    fontSize: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xffE3E4E3),
+              child: Theme(
+                // Prevent host app InputDecorationTheme/useMaterial3 from changing paddings
+                data: Theme.of(context).copyWith(useMaterial3: false, inputDecorationTheme: const InputDecorationTheme()),
+                child: TextField(
+                  maxLines: 1,
+                  textAlignVertical: TextAlignVertical.center,
+                  style: const TextStyle(height: 1.0, fontSize: 14), // stable line height
+                  decoration: InputDecoration(
+                    isDense: true,
+                    isCollapsed: true, // ignore default paddings
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12), // control height
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                      maxHeight: 36,
                     ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  isDense: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xffE3E4E3),
+                    filled: true,
+                    fillColor: const Color(0xffF7F7F7),
+                    hintText: 'Enter customer name or phone',
+                    hintStyle: const TextStyle(color: Color(0xff999FA7), fontSize: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: const BorderSide(color: Color(0xffE3E4E3)),
                     ),
-                    borderRadius: BorderRadius.circular(22),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: const BorderSide(color: Color(0xffE3E4E3)),
+                    ),
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchText = value;
+                      _controller.setGlobalSearch(_searchText);
+                    });
+                  },
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchText = value;
-                    _controller.setGlobalSearch(_searchText);
-                  });
-                },
               ),
             ),
           ),
