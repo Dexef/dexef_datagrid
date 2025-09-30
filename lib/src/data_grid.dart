@@ -323,6 +323,7 @@ class _DataGridState extends State<DataGrid> {
                   icon: Icons.content_copy,
                   label: 'Duplicate',
                   onTap: widget.onDuplicate,
+                  isActive: false
                 ),
                 const SizedBox(width: 8),
                 // Edit button
@@ -330,6 +331,7 @@ class _DataGridState extends State<DataGrid> {
                   icon: Icons.edit,
                   label: 'Edit',
                   onTap: widget.onEdit,
+                  isActive: false
                 ),
                 const SizedBox(width: 8),
                 // Delete button
@@ -337,6 +339,8 @@ class _DataGridState extends State<DataGrid> {
                   icon: Icons.delete,
                   label: 'Delete',
                   onTap: widget.onDelete,
+                  isActive: false
+
                 ),
                 const SizedBox(width: 8),
                 // Print button
@@ -344,6 +348,7 @@ class _DataGridState extends State<DataGrid> {
                   icon: Icons.print,
                   label: 'Print',
                   onTap: widget.onPrint,
+                  isActive: false
                 ),
                 const SizedBox(width: 8),
                 // Share button
@@ -437,37 +442,41 @@ class _DataGridState extends State<DataGrid> {
     required IconData icon,
     required String label,
     required VoidCallback? onTap,
+    bool isActive = true,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        height: 40,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-        decoration: BoxDecoration(
-          // color: color,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color: const Color(0xff4B4B4B),
-            ),
-            const SizedBox(width: 6),
-            DefaultText(
-              text: label,
-              isTextTheme: true,
-              themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Color(0xff4B4B4B),
-                    fontSize:
-                        AppFontSize().setFontSize(context, webFontSize: 12),
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ],
+    return MouseRegion(
+      cursor: isActive ? SystemMouseCursors.click :  SystemMouseCursors.forbidden,
+      child: GestureDetector(
+        onTap: onTap,
+        // borderRadius: BorderRadius.circular(8),
+        child: Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+          decoration: BoxDecoration(
+            // color: color,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: const Color(0xff4B4B4B),
+              ),
+              const SizedBox(width: 6),
+              DefaultText(
+                text: label,
+                isTextTheme: true,
+                themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Color(0xff4B4B4B),
+                      fontSize:
+                          AppFontSize().setFontSize(context, webFontSize: 12),
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );
