@@ -11,11 +11,12 @@ dependencies:
     sdk: flutter
   csv:
   excel:
-  pdf:
-  printing:
+  pdf: 3.10.7
+  printing: 5.11.0
   share_plus:
   path_provider:
   flutter_svg:
+  http: 1.2.2
 
 dev_dependencies:
   flutter_test:

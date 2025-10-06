@@ -91,21 +91,21 @@ class DataGridController extends ChangeNotifier {
   void setSource(DataGridSource source) {
     _source = source;
     _initializeColumnSettings();
-    
+
     // Initialize pagination state if in client mode
     if (_paginationMode == PaginationMode.client && source.hasData) {
       // Use total source data count for pagination calculation
       final totalRecords = source.rowCount;
-      
+
       // Set initial page size to 25 if data length is greater than 20
       int initialPageSize = 20; // Default page size
       if (totalRecords > 20) {
         initialPageSize = 25;
       }
-      
+
       final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
-      
+
       // Force recalculation of pagination state
       _paginationState = DataGridPaginationState(
         currentPage: 1,
@@ -115,7 +115,7 @@ class DataGridController extends ChangeNotifier {
         isLoading: false,
       );
     }
-    
+
     notifyListeners();
   }
 
@@ -138,7 +138,7 @@ class DataGridController extends ChangeNotifier {
   void toggleRowSelection(int rowIndex) {
     // Get the original data index from the display index
     final originalIndex = _getOriginalDataIndex(rowIndex);
-    
+
     if (_selectionState.selectedRows.contains(originalIndex)) {
       deselectRow(originalIndex);
     } else {
@@ -148,11 +148,12 @@ class DataGridController extends ChangeNotifier {
 
   // Selection methods
   void selectRow(int rowIndex) {
-    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount) return;
-    
+    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount)
+      return;
+
     final newSelectedRows = Set<int>.from(_selectionState.selectedRows);
     newSelectedRows.add(rowIndex);
-    
+
     _selectionState = _selectionState.copyWith(selectedRows: newSelectedRows);
     notifyListeners();
   }
@@ -160,7 +161,7 @@ class DataGridController extends ChangeNotifier {
   void deselectRow(int rowIndex) {
     final newSelectedRows = Set<int>.from(_selectionState.selectedRows);
     newSelectedRows.remove(rowIndex);
-    
+
     _selectionState = _selectionState.copyWith(selectedRows: newSelectedRows);
     notifyListeners();
   }
@@ -172,8 +173,9 @@ class DataGridController extends ChangeNotifier {
 
   void selectAll() {
     if (_source == null) return;
-    
-    final allRows = Set<int>.from(Iterable.generate(_source!.rowCount, (index) => index));
+
+    final allRows =
+        Set<int>.from(Iterable.generate(_source!.rowCount, (index) => index));
     _selectionState = _selectionState.copyWith(
       selectedRows: allRows,
       isSelectAll: true,
@@ -183,30 +185,29 @@ class DataGridController extends ChangeNotifier {
 
   void selectRange(int startIndex, int endIndex) {
     if (_source == null) return;
-    
+
     final start = startIndex < endIndex ? startIndex : endIndex;
     final end = startIndex < endIndex ? endIndex : startIndex;
-    
+
     final newSelectedRows = Set<int>.from(_selectionState.selectedRows);
     for (int i = start; i <= end; i++) {
       if (i >= 0 && i < _source!.rowCount) {
         newSelectedRows.add(i);
       }
     }
-    
+
     _selectionState = _selectionState.copyWith(selectedRows: newSelectedRows);
     notifyListeners();
   }
 
-
-
   // Editing methods
   void startCellEdit(int rowIndex, String field) {
-    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount) return;
-    
+    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount)
+      return;
+
     final rowData = _source!.getRow(rowIndex);
     if (rowData == null) return;
-    
+
     _editState = _editState.copyWith(
       mode: EditMode.cell,
       editingRow: Map<String, dynamic>.from(rowData),
@@ -217,11 +218,12 @@ class DataGridController extends ChangeNotifier {
   }
 
   void startRowEdit(int rowIndex) {
-    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount) return;
-    
+    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount)
+      return;
+
     final rowData = _source!.getRow(rowIndex);
     if (rowData == null) return;
-    
+
     _editState = _editState.copyWith(
       mode: EditMode.row,
       editingRow: Map<String, dynamic>.from(rowData),
@@ -233,29 +235,30 @@ class DataGridController extends ChangeNotifier {
 
   void updateEditField(String field, dynamic value) {
     if (_editState.mode == EditMode.none) return;
-    
+
     _editState = _editState.updateField(field, value);
     notifyListeners();
   }
 
   void saveEdit() {
     if (_editState.mode == EditMode.none || _source == null) return;
-    
+
     // Validate the edit - create a simple config map
     final columnConfigs = <String, Map<String, dynamic>>{};
     // TODO: Get columns from widget and create config map
     _editState = _editState.validate(columnConfigs);
-    
+
     if (!_editState.isValid) {
       notifyListeners();
       return;
     }
-    
+
     // Update the data source
     if (_editState.editingRow != null && _editState.editingRowIndex != null) {
       final updatedData = List<Map<String, dynamic>>.from(_source!.data);
-      updatedData[_editState.editingRowIndex!] = Map<String, dynamic>.from(_editState.editingRow!);
-      
+      updatedData[_editState.editingRowIndex!] =
+          Map<String, dynamic>.from(_editState.editingRow!);
+
       _source = DataGridSource(
         data: updatedData,
         totalCount: updatedData.length,
@@ -263,7 +266,7 @@ class DataGridController extends ChangeNotifier {
         error: _source!.error,
       );
     }
-    
+
     _editState = _editState.clear();
     notifyListeners();
   }
@@ -278,12 +281,13 @@ class DataGridController extends ChangeNotifier {
   }
 
   bool isEditingRow(int rowIndex) {
-    return _editState.mode != EditMode.none && _editState.editingRowIndex == rowIndex;
+    return _editState.mode != EditMode.none &&
+        _editState.editingRowIndex == rowIndex;
   }
 
   bool isEditingCell(int rowIndex, String field) {
-    return _editState.mode == EditMode.cell && 
-           _editState.editingRowIndex == rowIndex;
+    return _editState.mode == EditMode.cell &&
+        _editState.editingRowIndex == rowIndex;
   }
 
   // Pagination methods
@@ -291,19 +295,21 @@ class DataGridController extends ChangeNotifier {
     _paginationMode = mode;
     if (mode == PaginationMode.none) {
       _paginationState = const DataGridPaginationState();
-    } else if (mode == PaginationMode.client && _source != null && _source!.hasData) {
+    } else if (mode == PaginationMode.client &&
+        _source != null &&
+        _source!.hasData) {
       // Initialize pagination state for client mode
       final totalRecords = _source!.rowCount;
-      
+
       // Set initial page size to 25 if data length is greater than 20
       int initialPageSize = 20; // Default page size
       if (totalRecords > 20) {
         initialPageSize = 25;
       }
-      
+
       final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
-      
+
       _paginationState = DataGridPaginationState(
         currentPage: 1,
         pageSize: initialPageSize,
@@ -315,7 +321,8 @@ class DataGridController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setVirtualScrollMode(VirtualScrollMode mode, {VirtualScrollConfig? config}) {
+  void setVirtualScrollMode(VirtualScrollMode mode,
+      {VirtualScrollConfig? config}) {
     _virtualScrollMode = mode;
     if (config != null) {
       _virtualConfig = config;
@@ -330,16 +337,17 @@ class DataGridController extends ChangeNotifier {
   void setPageSize(int pageSize) {
     // Ensure pageSize is valid
     if (pageSize <= 0) return;
-    
+
     if (_paginationMode == PaginationMode.client) {
       // Use total source data count for pagination calculation
       final totalRecords = _source?.rowCount ?? 0;
       final totalPages = (totalRecords / pageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
-      
+
       // Ensure current page is within valid range
-      final newCurrentPage = _paginationState.currentPage.clamp(1, safeTotalPages);
-      
+      final newCurrentPage =
+          _paginationState.currentPage.clamp(1, safeTotalPages);
+
       _paginationState = _paginationState.copyWith(
         pageSize: pageSize,
         totalRecords: totalRecords,
@@ -384,17 +392,24 @@ class DataGridController extends ChangeNotifier {
     final request = DataGridServerRequest(
       page: _paginationState.currentPage,
       pageSize: _paginationState.pageSize,
-      sorts: _sortState.sorts.map((s) => {
-        'field': s.field,
-        'order': s.order.index,
-        'priority': s.priority,
-      }).toList(),
+      sorts: _sortState.sorts
+          .map((s) => {
+                'field': s.field,
+                'order': s.order.index,
+                'priority': s.priority,
+              })
+          .toList(),
       filterState: {
-        'columnFilters': _filterState.columnFilters.map((key, value) => MapEntry(key, value.map((f) => {
-          'field': f.field,
-          'type': f.type.index,
-          'value': f.value,
-        }).toList())),
+        'columnFilters':
+            _filterState.columnFilters.map((key, value) => MapEntry(
+                key,
+                value
+                    .map((f) => {
+                          'field': f.field,
+                          'type': f.type.index,
+                          'value': f.value,
+                        })
+                    .toList())),
       },
       requestId: DateTime.now().millisecondsSinceEpoch.toString(),
     );
@@ -444,7 +459,7 @@ class DataGridController extends ChangeNotifier {
         totalCount: response.totalRecords,
         isLoading: false,
       );
-      
+
       _paginationState = _paginationState.copyWith(
         isLoading: false,
         totalRecords: response.totalRecords,
@@ -457,17 +472,24 @@ class DataGridController extends ChangeNotifier {
         final request = DataGridServerRequest(
           page: _paginationState.currentPage,
           pageSize: _paginationState.pageSize,
-          sorts: _sortState.sorts.map((s) => {
-            'field': s.field,
-            'order': s.order.index,
-            'priority': s.priority,
-          }).toList(),
+          sorts: _sortState.sorts
+              .map((s) => {
+                    'field': s.field,
+                    'order': s.order.index,
+                    'priority': s.priority,
+                  })
+              .toList(),
           filterState: {
-            'columnFilters': _filterState.columnFilters.map((key, value) => MapEntry(key, value.map((f) => {
-              'field': f.field,
-              'type': f.type.index,
-              'value': f.value,
-            }).toList())),
+            'columnFilters':
+                _filterState.columnFilters.map((key, value) => MapEntry(
+                    key,
+                    value
+                        .map((f) => {
+                              'field': f.field,
+                              'type': f.type.index,
+                              'value': f.value,
+                            })
+                        .toList())),
           },
         );
         _paginationCache!.cache(request.cacheKey, response);
@@ -478,53 +500,79 @@ class DataGridController extends ChangeNotifier {
 
   void setGlobalSearch(String search) {
     _globalSearch = search.trim().toLowerCase();
-    
+
     // Recalculate pagination for client mode when search changes
     if (_paginationMode == PaginationMode.client && _source != null) {
       // Use total source data count for pagination calculation
       final totalRecords = _source!.rowCount;
       final totalPages = (totalRecords / _paginationState.pageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
-      
+
       _paginationState = _paginationState.copyWith(
         totalRecords: totalRecords,
         totalPages: safeTotalPages,
         currentPage: _paginationState.currentPage.clamp(1, safeTotalPages),
       );
     }
-    
+
     notifyListeners();
   }
 
   // Get filtered data without pagination
   List<Map<String, dynamic>> _getFilteredData() {
     if (_source == null) return [];
-    
+
     // Apply filters
-    var filteredData = _source!.data.where((row) => _filterState.apply(row)).toList();
-    
+    var filteredData =
+        _source!.data.where((row) => _filterState.apply(row)).toList();
+
     // Apply global search
     if (_globalSearch.isNotEmpty) {
       filteredData = filteredData.where((row) {
-        return row.values.any((value) => value != null && value.toString().toLowerCase().contains(_globalSearch));
+        return row.values.any((value) =>
+            value != null &&
+            value.toString().toLowerCase().contains(_globalSearch));
       }).toList();
     }
-    
+
     // Apply sorting
     filteredData = _sortState.sortData(filteredData);
-    
+
     return filteredData;
+  }
+
+  // Returns all rows after filters/sorts, without pagination
+  List<Map<String, dynamic>> getAllDisplayData(
+      {bool onlyVisibleFields = true}) {
+    if (_source == null) return [];
+
+    final filteredData = _getFilteredData();
+    if (!onlyVisibleFields || filteredData.isEmpty) return filteredData;
+
+    final visibleFields = _source!.data.first.keys
+        .where((field) => _columnVisibility[field] ?? true)
+        .toList();
+
+    return filteredData.map((row) {
+      final filteredRow = <String, dynamic>{};
+      for (final field in visibleFields) {
+        filteredRow[field] = row[field];
+      }
+      return filteredRow;
+    }).toList();
   }
 
   // Get display data with pagination support
   List<Map<String, dynamic>> getDisplayData() {
     if (_source == null) return [];
-    
-    final visibleFields = _source!.data.first.keys.where((field) => _columnVisibility[field] ?? true).toList();
-    
+
+    final visibleFields = _source!.data.first.keys
+        .where((field) => _columnVisibility[field] ?? true)
+        .toList();
+
     // Get filtered data
     final filteredData = _getFilteredData();
-    
+
     // Filter to visible fields
     final displayData = filteredData.map((row) {
       final filteredRow = <String, dynamic>{};
@@ -533,17 +581,18 @@ class DataGridController extends ChangeNotifier {
       }
       return filteredRow;
     }).toList();
-    
+
     // Apply client-side pagination
     if (_paginationMode == PaginationMode.client && displayData.isNotEmpty) {
       final startIndex = _paginationState.startIndex;
       final endIndex = _paginationState.endIndex;
-      
+
       if (startIndex < displayData.length) {
-        return displayData.sublist(startIndex, (endIndex + 1).clamp(0, displayData.length));
+        return displayData.sublist(
+            startIndex, (endIndex + 1).clamp(0, displayData.length));
       }
     }
-    
+
     return displayData;
   }
 
@@ -565,10 +614,12 @@ class DataGridController extends ChangeNotifier {
 
   /// Sorts the data by a specific column
   void sortByColumn(int columnIndex) {
-    if (_source == null || columnIndex < 0 || columnIndex >= _source!.data.first.keys.length) return;
+    if (_source == null ||
+        columnIndex < 0 ||
+        columnIndex >= _source!.data.first.keys.length) return;
 
     final field = _source!.data.first.keys.elementAt(columnIndex);
-    
+
     if (_sortColumnIndex == columnIndex) {
       _sortAscending = !_sortAscending;
     } else {
@@ -580,7 +631,7 @@ class DataGridController extends ChangeNotifier {
     _source!.data.sort((a, b) {
       final aValue = a[field];
       final bValue = b[field];
-      
+
       int comparison = 0;
       if (aValue == null && bValue == null) {
         comparison = 0;
@@ -591,7 +642,7 @@ class DataGridController extends ChangeNotifier {
       } else {
         comparison = aValue.toString().compareTo(bValue.toString());
       }
-      
+
       return _sortAscending ? comparison : -comparison;
     });
 
@@ -652,30 +703,29 @@ class DataGridController extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   /// Gets the grouped data
   List<dynamic> getGroupedData() {
     if (_source == null) return [];
-    
-    final visibleFields = _source!.data.first.keys.where((field) => _columnVisibility[field] ?? true).toList();
-    
+
     // Apply filters
-    var filteredData = _source!.data.where((row) => _filterState.apply(row)).toList();
-    
+    var filteredData =
+        _source!.data.where((row) => _filterState.apply(row)).toList();
+
     // Apply sorting
     filteredData = _sortState.sortData(filteredData);
-    
+
     // Apply grouping
     final groupedData = _sortState.groupData(filteredData);
-    
+
     return groupedData;
   }
 
   /// Gets the visible fields
   List<String> getVisibleFields() {
     if (_source == null) return [];
-    return _source!.data.first.keys.where((field) => _columnVisibility[field] ?? true).toList();
+    return _source!.data.first.keys
+        .where((field) => _columnVisibility[field] ?? true)
+        .toList();
   }
 
   /// Checks if a row is selected
@@ -688,29 +738,29 @@ class DataGridController extends ChangeNotifier {
   /// Gets the original data index from display index
   int _getOriginalDataIndex(int displayIndex) {
     if (_source == null) return displayIndex;
-    
+
     // Get the filtered and sorted data (without pagination)
-    final visibleFields = _source!.data.first.keys.where((field) => _columnVisibility[field] ?? true).toList();
-    
-    // Apply filters
-    var filteredData = _source!.data.where((row) => _filterState.apply(row)).toList();
-    
+    var filteredData =
+        _source!.data.where((row) => _filterState.apply(row)).toList();
+
     // Apply global search
     if (_globalSearch.isNotEmpty) {
       filteredData = filteredData.where((row) {
-        return row.values.any((value) => value != null && value.toString().toLowerCase().contains(_globalSearch));
+        return row.values.any((value) =>
+            value != null &&
+            value.toString().toLowerCase().contains(_globalSearch));
       }).toList();
     }
-    
+
     // Apply sorting
     filteredData = _sortState.sortData(filteredData);
-    
+
     // Find the original index
     if (displayIndex >= 0 && displayIndex < filteredData.length) {
       final displayRow = filteredData[displayIndex];
       return _source!.data.indexOf(displayRow);
     }
-    
+
     return displayIndex;
   }
 
@@ -743,6 +793,4 @@ class DataGridController extends ChangeNotifier {
     _filterState = _filterState.clear();
     notifyListeners();
   }
-
-
-} 
+}

@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import '../model/data_grid_model.dart';
 import '../model/data_grid_filters.dart';
 import '../model/data_grid_sorting.dart';
@@ -68,6 +66,8 @@ class DataGrid extends StatefulWidget {
   final VoidCallback? onPrint;
   final VoidCallback? onShare;
   final VoidCallback? onRefresh;
+  // Optional: جلب كل البيانات من API عند التصدير/الطباعة (بدون الاعتماد على الصفحة الحالية)
+  final Future<List<Map<String, dynamic>>> Function()? fetchAllDataForExport;
 
   const DataGrid({
     super.key,
@@ -114,6 +114,7 @@ class DataGrid extends StatefulWidget {
     this.onPrint,
     this.onShare,
     this.onRefresh,
+    this.fetchAllDataForExport,
   });
 
   @override
@@ -128,7 +129,6 @@ class _DataGridState extends State<DataGrid> {
   // Removed unused variables
 
   String _searchText = '';
-  String? _activeFilterField; // Track which filter is currently active
 
   @override
   void initState() {
@@ -273,15 +273,19 @@ class _DataGridState extends State<DataGrid> {
             child: SizedBox(
               height: 42,
               child: Theme(
-                data: Theme.of(context).copyWith(useMaterial3: false, inputDecorationTheme: const InputDecorationTheme()),
+                data: Theme.of(context).copyWith(
+                    useMaterial3: false,
+                    inputDecorationTheme: const InputDecorationTheme()),
                 child: TextField(
                   maxLines: 1,
                   textAlignVertical: TextAlignVertical.center,
-                  style: const TextStyle(height: 1.0, fontSize: 14), // stable line height
+                  style: const TextStyle(
+                      height: 1.0, fontSize: 14), // stable line height
                   decoration: InputDecoration(
                     isDense: true,
                     isCollapsed: true, // ignore default paddings
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12), // control height
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12), // control height
                     prefixIcon: const Icon(Icons.search, size: 20),
                     // prefixIconConstraints: const BoxConstraints(
                     //   minWidth: 36,
@@ -291,7 +295,8 @@ class _DataGridState extends State<DataGrid> {
                     filled: true,
                     fillColor: const Color(0xffF7F7F7),
                     hintText: 'Enter customer name or phone',
-                    hintStyle: const TextStyle(color: Color(0xff999FA7), fontSize: 14),
+                    hintStyle:
+                        const TextStyle(color: Color(0xff999FA7), fontSize: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
                       borderSide: const BorderSide(color: Color(0xffE3E4E3)),
@@ -325,36 +330,31 @@ class _DataGridState extends State<DataGrid> {
               children: [
                 // Duplicate button
                 _buildActionButton(
-                  icon: Icons.content_copy,
-                  label: 'Duplicate',
-                  onTap: widget.onDuplicate,
-                  isActive: false
-                ),
+                    icon: Icons.content_copy,
+                    label: 'Duplicate',
+                    onTap: widget.onDuplicate,
+                    isActive: false),
                 const SizedBox(width: 8),
                 // Edit button
                 _buildActionButton(
-                  icon: Icons.edit,
-                  label: 'Edit',
-                  onTap: widget.onEdit,
-                  isActive: false
-                ),
+                    icon: Icons.edit,
+                    label: 'Edit',
+                    onTap: widget.onEdit,
+                    isActive: false),
                 const SizedBox(width: 8),
                 // Delete button
                 _buildActionButton(
-                  icon: Icons.delete,
-                  label: 'Delete',
-                  onTap: widget.onDelete,
-                  isActive: false
-
-                ),
+                    icon: Icons.delete,
+                    label: 'Delete',
+                    onTap: widget.onDelete,
+                    isActive: false),
                 const SizedBox(width: 8),
                 // Print button
                 _buildActionButton(
-                  icon: Icons.print,
-                  label: 'Print',
-                  onTap: widget.onPrint,
-                  isActive: false
-                ),
+                    icon: Icons.print,
+                    label: 'Print',
+                    onTap: widget.onPrint ?? _printAllRows,
+                    isActive: false),
                 const SizedBox(width: 8),
                 // Share button
                 _buildActionButton(
@@ -450,7 +450,8 @@ class _DataGridState extends State<DataGrid> {
     bool isActive = true,
   }) {
     return MouseRegion(
-      cursor: isActive ? SystemMouseCursors.click :  SystemMouseCursors.forbidden,
+      cursor:
+          isActive ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
       child: GestureDetector(
         onTap: onTap,
         // borderRadius: BorderRadius.circular(8),
@@ -684,9 +685,22 @@ class _DataGridState extends State<DataGrid> {
   }
 
   void _exportToPdf(List<String> columns, Map<String, String> headers) async {
-    final data = _controller.getDisplayData();
+    // نحافظ على نفس تصميم الـ PDF تماماً
+    // استبدال مصدر البيانات ليكون القائمة الكاملة (من API) بدلاً من الصفحة الحالية
+    List<Map<String, dynamic>> data;
+    if (widget.fetchAllDataForExport != null) {
+      try {
+        data = await widget.fetchAllDataForExport!();
+      } catch (e) {
+        // في حال فشل الجلب الكامل، نfallback لبيانات الجدول المتاحة بدون تقسيم صفحات UI
+        data = _controller.getAllDisplayData(onlyVisibleFields: true);
+      }
+    } else {
+      // في حالة عدم توفير دالة جلب كامل من التطبيق، نستخدم جميع البيانات المتاحة محلياً
+      data = _controller.getAllDisplayData(onlyVisibleFields: true);
+    }
 
-    // Create PDF document
+    // Create PDF document (نفس التصميم)
     final pdf = pw.Document();
 
     // Add title page
@@ -716,68 +730,66 @@ class _DataGridState extends State<DataGrid> {
       ),
     );
 
-    // Add data table page
+    // Add data table pages using MultiPage (نفس عناصر التصميم لكن مع صفحات متعددة تلقائياً)
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4.landscape,
         build: (pw.Context context) {
-          return pw.Column(
-            children: [
-              // Table header
-              pw.Container(
+          return [
+            // Table header (كما هو)
+            pw.Container(
+              padding: const pw.EdgeInsets.all(8),
+              decoration: pw.BoxDecoration(
+                color: PdfColors.grey300,
+                border: pw.Border.all(color: PdfColors.black),
+              ),
+              child: pw.Row(
+                children: columns.map((col) {
+                  return pw.Expanded(
+                    child: pw.Text(
+                      headers[col] ?? col,
+                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            // Table data (القائمة الكاملة)
+            ...data.map((row) {
+              return pw.Container(
                 padding: const pw.EdgeInsets.all(8),
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.grey300,
-                  border: pw.Border.all(color: PdfColors.black),
+                decoration: const pw.BoxDecoration(
+                  border: pw.Border(
+                    bottom: pw.BorderSide(color: PdfColors.grey),
+                  ),
                 ),
                 child: pw.Row(
                   children: columns.map((col) {
+                    final value = row[col];
+                    String displayValue = '';
+
+                    if (value != null) {
+                      if (value is DateTime) {
+                        displayValue = value.toString().split(' ')[0];
+                      } else if (value is bool) {
+                        displayValue = value ? 'Yes' : 'No';
+                      } else {
+                        displayValue = value.toString();
+                      }
+                    }
+
                     return pw.Expanded(
                       child: pw.Text(
-                        headers[col] ?? col,
-                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        displayValue,
                         textAlign: pw.TextAlign.center,
                       ),
                     );
                   }).toList(),
                 ),
-              ),
-              // Table data
-              ...data.map((row) {
-                return pw.Container(
-                  padding: const pw.EdgeInsets.all(8),
-                  decoration: const pw.BoxDecoration(
-                    border: pw.Border(
-                      bottom: pw.BorderSide(color: PdfColors.grey),
-                    ),
-                  ),
-                  child: pw.Row(
-                    children: columns.map((col) {
-                      final value = row[col];
-                      String displayValue = '';
-
-                      if (value != null) {
-                        if (value is DateTime) {
-                          displayValue = value.toString().split(' ')[0];
-                        } else if (value is bool) {
-                          displayValue = value ? 'Yes' : 'No';
-                        } else {
-                          displayValue = value.toString();
-                        }
-                      }
-
-                      return pw.Expanded(
-                        child: pw.Text(
-                          displayValue,
-                          textAlign: pw.TextAlign.center,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              }),
-            ],
-          );
+              );
+            }),
+          ];
         },
       ),
     );
@@ -848,8 +860,8 @@ class _DataGridState extends State<DataGrid> {
               ),
             ),
           ...columns.map((column) {
-            final currentSort = _getCurrentSortForColumn(column.dataField);
-            final sortPriority = _getSortPriorityForColumn(column.dataField);
+            // final currentSort = _getCurrentSortForColumn(column.dataField);
+            // final sortPriority = _getSortPriorityForColumn(column.dataField);
             return Expanded(
               flex: column.width?.toInt() ?? 1,
               child: Container(
@@ -980,7 +992,7 @@ class _DataGridState extends State<DataGrid> {
     final hasFilter =
         _controller.filterState.columnFilters[column.dataField]?.isNotEmpty ??
             false;
-    final isActive = _activeFilterField == column.dataField;
+    // final isActive = _activeFilterField == column.dataField;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -1312,7 +1324,7 @@ class _DataGridState extends State<DataGrid> {
     }
     return Column(
       children: groupedData.asMap().entries.map<Widget>((entry) {
-        final index = entry.key;
+        // final index = entry.key;
         final item = entry.value;
 
         if (item is DataGridGroupRow) {
@@ -1654,5 +1666,20 @@ class _DataGridState extends State<DataGrid> {
 
   void _clearGroups() {
     _controller.clearGroups();
+  }
+
+  void _printAllRows() {
+    if (_controller.source == null) return;
+    final data = _controller.getAllDisplayData(onlyVisibleFields: true);
+    final firstTwenty = data.take(20).toList();
+    debugPrint(
+        'Printing first ${firstTwenty.length} of ${data.length} customers');
+    for (final row in firstTwenty) {
+      debugPrint(row.toString());
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text('Printed first ${firstTwenty.length} rows to console')),
+    );
   }
 }
