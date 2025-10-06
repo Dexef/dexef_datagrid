@@ -661,7 +661,14 @@ class _DataGridState extends State<DataGrid> {
   }
 
   void _exportToCsv(List<String> columns, Map<String, String> headers) {
-    final data = _controller.getDisplayData();
+    // استخدم كل البيانات الكاملة للتصدير (ليس الصفحة الحالية)
+    // إذا توفّرت دالة fetchAllDataForExport سيتم استخدامها لجلب كل الصفحات من الAPI
+    final List<Map<String, dynamic>> data = (() {
+      // ملاحظة: هذا الاستدعاء متزامن هنا، لذا سنستخدم النسخة المتوفرة محلياً
+      // مسار الجلب الكامل موجود في _exportToExcel/_exportToPdf (غير متزامن)
+      // هنا نستخدم البيانات الكاملة المتاحة بعد الفلترة/الفرز بدون تقسيم صفحات UI
+      return _controller.getAllDisplayData(onlyVisibleFields: true);
+    })();
     final csvData = StringBuffer();
 
     // Add headers
@@ -679,9 +686,37 @@ class _DataGridState extends State<DataGrid> {
   }
 
   void _exportToExcel(List<String> columns, Map<String, String> headers) {
-    // For now, export as CSV with .xlsx extension
-    // In a real implementation, you would use the excel package
-    _exportToCsv(columns, headers);
+    // نجلب كل البيانات (كل الصفحات) قبل التصدير
+    () async {
+      List<Map<String, dynamic>> data;
+      if (widget.fetchAllDataForExport != null) {
+        try {
+          data = await widget.fetchAllDataForExport!();
+        } catch (_) {
+          data = _controller.getAllDisplayData(onlyVisibleFields: true);
+        }
+      } else {
+        data = _controller.getAllDisplayData(onlyVisibleFields: true);
+      }
+
+      // توليد CSV بنفس التصميم المنطقي الحالي (أعمدة مختارة بنفس الترتيب)
+      final csvData = StringBuffer();
+      final headerRow = columns.map((col) => headers[col] ?? col).join(',');
+      csvData.writeln(headerRow);
+      for (final row in data) {
+        final rowData =
+            columns.map((col) => row[col]?.toString() ?? '').join(',');
+        csvData.writeln(rowData);
+      }
+
+      _downloadFile('data_export.xlsx', csvData.toString(), 'text/csv');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Excel export completed! Rows: ${data.length}'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }();
   }
 
   void _exportToPdf(List<String> columns, Map<String, String> headers) async {
