@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:excel/excel.dart' hide Border;
 import '../model/data_grid_model.dart';
 import '../model/data_grid_filters.dart';
 import '../model/data_grid_sorting.dart';
@@ -71,6 +72,8 @@ class OptimizedDataGrid extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onPrint;
   final VoidCallback? onShare;
+  // Optional: جلب كل البيانات من API عند التصدير/الطباعة (بدون الاعتماد على الصفحة الحالية)
+  final Future<List<Map<String, dynamic>>> Function()? fetchAllDataForExport;
 
   const OptimizedDataGrid({
     super.key,
@@ -108,6 +111,7 @@ class OptimizedDataGrid extends StatefulWidget {
     this.onDelete,
     this.onPrint,
     this.onShare,
+    this.fetchAllDataForExport,
   });
 
   @override
@@ -579,10 +583,61 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
     _downloadFile('data_export.csv', csvData.toString(), 'text/csv');
   }
 
-  void _exportToExcel(List<String> columns, Map<String, String> headers) {
-    // For now, export as CSV with .xlsx extension
-    // In a real implementation, you would use the excel package
-    _exportToCsv(columns, headers);
+  void _exportToExcel(List<String> columns, Map<String, String> headers) async {
+    try {
+      List<Map<String, dynamic>> data;
+      if (widget.fetchAllDataForExport != null) {
+        try {
+          data = await widget.fetchAllDataForExport!();
+        } catch (_) {
+          data = _controller.getAllDisplayData(onlyVisibleFields: true);
+        }
+      } else {
+        data = _controller.getAllDisplayData(onlyVisibleFields: true);
+      }
+
+      // Create Excel workbook using the excel package
+      final excel = Excel.createExcel();
+      final sheet = excel['Sheet1'];
+
+      // Add headers
+      final headerRow = columns.map((col) => headers[col] ?? col).toList();
+      sheet.appendRow(headerRow);
+
+      // Add data rows
+      for (final row in data) {
+        final rowData = columns.map((col) {
+          final value = row[col];
+          if (value == null) return '';
+          if (value is DateTime) {
+            return value.toString().split(' ')[0]; // Format date as YYYY-MM-DD
+          }
+          return value.toString();
+        }).toList();
+        sheet.appendRow(rowData);
+      }
+
+      // Save Excel file as bytes
+      final excelBytes = excel.encode();
+      if (excelBytes != null) {
+        _downloadExcelFile('data_export.xlsx', Uint8List.fromList(excelBytes));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Excel export completed! Rows: ${data.length}'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        throw Exception('Failed to generate Excel file');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Excel export failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _exportToPdf(List<String> columns, Map<String, String> headers) async {
@@ -700,6 +755,12 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   void _downloadPdfFile(String filename, Uint8List pdfBytes) {
     // Use platform-specific export
     DataGridExportPlatform.downloadPdfFile(filename, pdfBytes);
+  }
+
+  void _downloadExcelFile(String filename, Uint8List excelBytes) {
+    // Use platform-specific export with correct MIME type for Excel
+    DataGridExportPlatform.downloadFile(filename, excelBytes,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   }
 
   Widget _buildOptimizedHeader(List<DataGridColumn> columns) {
