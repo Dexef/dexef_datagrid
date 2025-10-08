@@ -759,43 +759,16 @@ class _DataGridState extends State<DataGrid> {
       data = _controller.getAllDisplayData(onlyVisibleFields: true);
     }
 
-    // Create PDF document (نفس التصميم)
+    // Create PDF document - Start directly with data table (no cover page)
     final pdf = pw.Document();
 
-    // Add title page
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                'Data Export Report',
-                style: pw.TextStyle(
-                  fontSize: 20,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 20),
-              pw.Text(
-                'Generated on: ${DateTime.now().toString()}',
-                style: const pw.TextStyle(fontSize: 12),
-              ),
-              pw.SizedBox(height: 40),
-            ],
-          );
-        },
-      ),
-    );
-
-    // Add data table pages using MultiPage (نفس عناصر التصميم لكن مع صفحات متعددة تلقائياً)
+    // Add data table pages using MultiPage (start immediately on page 1)
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4.landscape,
         build: (pw.Context context) {
           return [
-            // Table header (كما هو)
+            // Table header
             pw.Container(
               padding: const pw.EdgeInsets.all(8),
               decoration: pw.BoxDecoration(

@@ -643,98 +643,69 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
   void _exportToPdf(List<String> columns, Map<String, String> headers) async {
     final data = _controller.getDisplayData();
 
-    // Create PDF document
+    // Create PDF document - Start directly with data table (no cover page)
     final pdf = pw.Document();
 
-    // Add title page
+    // Add data table page using MultiPage (start immediately on page 1)
     pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                'Data Export Report',
-                style: pw.TextStyle(
-                  fontSize: 24,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 20),
-              pw.Text(
-                'Generated on: ${DateTime.now().toString()}',
-                style: const pw.TextStyle(fontSize: 12),
-              ),
-              pw.SizedBox(height: 40),
-            ],
-          );
-        },
-      ),
-    );
-
-    // Add data table page
-    pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4.landscape,
         build: (pw.Context context) {
-          return pw.Column(
-            children: [
-              // Table header
-              pw.Container(
+          return [
+            // Table header
+            pw.Container(
+              padding: const pw.EdgeInsets.all(8),
+              decoration: pw.BoxDecoration(
+                color: PdfColors.grey300,
+                border: pw.Border.all(color: PdfColors.black),
+              ),
+              child: pw.Row(
+                children: columns.map((col) {
+                  return pw.Expanded(
+                    child: pw.Text(
+                      headers[col] ?? col,
+                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            // Table data
+            ...data.map((row) {
+              return pw.Container(
                 padding: const pw.EdgeInsets.all(8),
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.grey300,
-                  border: pw.Border.all(color: PdfColors.black),
+                decoration: const pw.BoxDecoration(
+                  border: pw.Border(
+                    bottom: pw.BorderSide(color: PdfColors.grey),
+                  ),
                 ),
                 child: pw.Row(
                   children: columns.map((col) {
+                    final value = row[col];
+                    String displayValue = '';
+
+                    if (value != null) {
+                      if (value is DateTime) {
+                        displayValue = value.toString().split(' ')[0];
+                      } else if (value is bool) {
+                        displayValue = value ? 'Yes' : 'No';
+                      } else {
+                        displayValue = value.toString();
+                      }
+                    }
+
                     return pw.Expanded(
                       child: pw.Text(
-                        headers[col] ?? col,
-                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        displayValue,
                         textAlign: pw.TextAlign.center,
                       ),
                     );
                   }).toList(),
                 ),
-              ),
-              // Table data
-              ...data.map((row) {
-                return pw.Container(
-                  padding: const pw.EdgeInsets.all(8),
-                  decoration: const pw.BoxDecoration(
-                    border: pw.Border(
-                      bottom: pw.BorderSide(color: PdfColors.grey),
-                    ),
-                  ),
-                  child: pw.Row(
-                    children: columns.map((col) {
-                      final value = row[col];
-                      String displayValue = '';
-
-                      if (value != null) {
-                        if (value is DateTime) {
-                          displayValue = value.toString().split(' ')[0];
-                        } else if (value is bool) {
-                          displayValue = value ? 'Yes' : 'No';
-                        } else {
-                          displayValue = value.toString();
-                        }
-                      }
-
-                      return pw.Expanded(
-                        child: pw.Text(
-                          displayValue,
-                          textAlign: pw.TextAlign.center,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              }),
-            ],
-          );
+              );
+            }),
+          ];
         },
       ),
     );
