@@ -180,7 +180,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         rowHeight: 74,
         headerHeight: 56,
         minColumnWidth: 120,
-        showBorders: false,
+        showBorders: true,
         showHorizontalBorders: true,
         showAlternateRows: true,
         alternateRowBackgroundColor: Color(0xFFF5F5F5),
@@ -202,6 +202,9 @@ class _DataGridExampleState extends State<DataGridExample> {
       },
       onCellEdit: (rowIndex, field, value) {
         print('Cell edited: row=$rowIndex, field=$field, value=$value');
+        setState(() {
+          _source.data[rowIndex][field] = value;
+        });
       },
       onAddNew: () {
         print('Add new item');
@@ -242,6 +245,44 @@ class _DataGridExampleState extends State<DataGridExample> {
     );
   }
 
+  static const _avatarColors = [
+    Color(0xff4CAF50),
+    Color(0xff2196F3),
+    Color(0xffFF9800),
+    Color(0xff9C27B0),
+    Color(0xffE91E63),
+    Color(0xff00BCD4),
+    Color(0xffFF5722),
+    Color(0xff607D8B),
+  ];
+
+  Widget _buildInitialsCircle(String name) {
+    final parts = name.split(' ');
+    final initials = parts.length >= 2
+        ? '${parts.first[0]}${parts.last[0]}'.toUpperCase()
+        : name.substring(0, 2).toUpperCase();
+    final color = _avatarColors[name.hashCode.abs() % _avatarColors.length];
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: TextStyle(
+            fontSize: 13,
+            fontFamily: 'DexPro',
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ),
+    );
+  }
+
   List<DataGridColumn> _buildColumns() {
     return [
       // Customer column with name and ID
@@ -251,87 +292,33 @@ class _DataGridExampleState extends State<DataGridExample> {
         width: 180,
         filterable: true,
         cellBuilder: (context, value) {
-          final rowData =
-              _source.data.firstWhere((row) => row['customerName'] == value);
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+          return Row(
             children: [
-              Text(
-                value.toString(),
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'DexPro',
-                    color: Color(0xff464646),
-                    fontWeight: FontWeight.w500),
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                'ID: 	${rowData['customerId'].toString()}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'DexPro',
-                  color: Color(0xff999FA7),
+              const SizedBox(width: 8),
+              _buildInitialsCircle(value.toString()),
+              const SizedBox(width: 16),
+              Flexible(
+                child: Text(
+                  value.toString(),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'DexPro',
+                      color: Color(0xff464646),
+                      fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           );
         },
-      ),
-      // New column for more_vert menu
-      DataGridColumn.custom(
-        dataField: 'customerMenu',
-        caption: '',
-        width: 50,
-        filterable: false,
-        sortable: false,
-        cellBuilder: (context, value) {
-          final rowData = _source.data.firstWhere(
-              (row) =>
-                  row['customerName'] == value || row['customerMenu'] == value,
-              orElse: () => <String, dynamic>{});
-          final customerId = rowData != null ? rowData['customerId'] : '';
-          return PopupMenuButton<String>(
-            color: Colors.white,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-            ),
-            position: PopupMenuPosition.under,
-            tooltip: '',
-            onSelected: (selected) {
-              if (selected == 'edit') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Edit customer $customerId')),
-                );
-              } else if (selected == 'delete') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Delete customer $customerId')),
-                );
-              } else if (selected == 'viewDetails') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('View details for customer $customerId')),
-                );
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Text('Edit Customer'),
-              ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Text('Delete Customer'),
-              ),
-              const PopupMenuItem(
-                value: 'viewDetails',
-                child: Text('View Details'),
-              ),
+        editCellBuilder: (context, value, editor) {
+          return Row(
+            children: [
+              const SizedBox(width: 8),
+              _buildInitialsCircle(value.toString()),
+              const SizedBox(width: 8),
+              Expanded(child: editor),
             ],
-            child:
-                const Icon(Icons.more_vert, color: Color(0xff5D718D), size: 25),
           );
         },
       ),
@@ -352,32 +339,16 @@ class _DataGridExampleState extends State<DataGridExample> {
           ),
         ),
         cellBuilder: (context, value) {
-          final rowData = _source.data.firstWhere(
-              (row) => row['phone1'] == value,
-              orElse: () => <String, dynamic>{});
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                value.toString(),
-                style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xff464646),
-                    fontFamily: 'DexPro',
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                rowData['phone2'].toString(),
-                style: const TextStyle(
-                  fontSize: 14,
+          return Center(
+            child: Text(
+              value.toString(),
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xff464646),
                   fontFamily: 'DexPro',
-                  color: Color(0xff999FA7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
           );
         },
       ),
@@ -398,34 +369,17 @@ class _DataGridExampleState extends State<DataGridExample> {
           ),
         ),
         cellBuilder: (context, value) {
-          final rowData = _source.data
-              .firstWhere((row) => row['lastPurchaseDate'] == value);
           final date = value as DateTime;
-          final daysAgo = rowData['daysAgo'] as int;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${date.day} ${_getMonthName(date.month)}, ${date.year}',
-                style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xff464646),
-                    fontFamily: 'DexPro',
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                '$daysAgo days ago',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xff999FA7),
+          return Center(
+            child: Text(
+              '${date.day} ${_getMonthName(date.month)}, ${date.year}',
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xff464646),
                   fontFamily: 'DexPro',
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
           );
         },
       ),
@@ -716,7 +670,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
         rowHeight: 74,
         headerHeight: 56,
         minColumnWidth: 120,
-        showBorders: false,
+        showBorders: true,
         showHorizontalBorders: true,
         showAlternateRows: true,
         alternateRowBackgroundColor: Color(0xFFF5F5F5),
@@ -738,6 +692,9 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
       },
       onCellEdit: (rowIndex, field, value) {
         print('Cell edited: row=$rowIndex, field=$field, value=$value');
+        setState(() {
+          _source.data[rowIndex][field] = value;
+        });
       },
     );
   }

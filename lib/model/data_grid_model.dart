@@ -16,6 +16,7 @@ class DataGridColumn {
   final bool resizable;
   final bool visible;
   final Widget Function(BuildContext, dynamic)? cellBuilder;
+  final Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder;
   final Widget Function(BuildContext)? headerBuilder;
   final String? format; // for dates and numbers
 
@@ -29,6 +30,7 @@ class DataGridColumn {
     this.resizable = true,
     this.visible = true,
     this.cellBuilder,
+    this.editCellBuilder,
     this.headerBuilder,
     this.format,
   });
@@ -146,6 +148,7 @@ class DataGridColumn {
     required String dataField,
     required String caption,
     required Widget Function(BuildContext, dynamic) cellBuilder,
+    Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder,
     double? width,
     bool sortable = false,
     bool filterable = false,
@@ -163,6 +166,7 @@ class DataGridColumn {
       resizable: resizable,
       visible: visible,
       cellBuilder: cellBuilder,
+      editCellBuilder: editCellBuilder,
       headerBuilder: headerBuilder,
     );
   }

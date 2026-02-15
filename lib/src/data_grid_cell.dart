@@ -34,10 +34,12 @@ class DataGridCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final backgroundColor = _getBackgroundColor();
     
-    return GestureDetector(
-      onTap: onTap,
-      onDoubleTap: onDoubleTap,
-      child: DataGridCellSelectionHighlight(
+    return MouseRegion(
+      cursor: onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+      child: GestureDetector(
+        onTap: onTap,
+        onDoubleTap: onDoubleTap,
+        child: DataGridCellSelectionHighlight(
         isSelected: isSelected,
         hasError: errorMessage != null,
         child: Container(
@@ -80,6 +82,7 @@ class DataGridCell extends StatelessWidget {
                 : column.buildCell(context, value),
           ),
         ),
+      ),
       ),
     );
   }

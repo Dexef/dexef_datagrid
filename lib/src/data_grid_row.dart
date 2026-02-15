@@ -3,6 +3,7 @@ import '../model/data_grid_config.dart';
 import '../model/data_grid_model.dart';
 import '../model/data_grid_selection.dart';
 import 'data_grid_cell.dart';
+import 'editing/data_grid_editing_widgets.dart';
 import 'selection/data_grid_selection_widgets.dart';
 
 /// Represents a row in the data grid
@@ -43,14 +44,90 @@ class DataGridRow extends StatefulWidget {
 }
 
 class _DataGridRowState extends State<DataGridRow> {
- bool isHover = false;
+  bool isHover = false;
+  String? _editingField;
+  dynamic _editingValue;
+
+  void _startEditing(String field, dynamic value) {
+    setState(() {
+      _editingField = field;
+      _editingValue = value;
+    });
+  }
+
+  void _cancelEditing() {
+    setState(() {
+      _editingField = null;
+      _editingValue = null;
+    });
+  }
+
+  void _saveEditing() {
+    if (!mounted || _editingField == null) return;
+    if (widget.onCellEdit != null) {
+      widget.onCellEdit!(widget.rowIndex, _editingField!, _editingValue);
+    }
+    setState(() {
+      _editingField = null;
+      _editingValue = null;
+    });
+  }
+
+  Widget _buildEditingCell(BuildContext context, DataGridColumn column, dynamic value) {
+    final hasEditBuilder = column.editCellBuilder != null;
+    final editor = DataGridCellEditor(
+      field: column.dataField,
+      value: value,
+      column: column,
+      textAlign: hasEditBuilder ? TextAlign.start : TextAlign.center,
+      onValueChanged: (field, newValue) {
+        _editingValue = newValue;
+      },
+      onSave: _saveEditing,
+      onCancel: _cancelEditing,
+    );
+
+    final content = hasEditBuilder
+        ? column.editCellBuilder!(context, value, editor)
+        : Center(child: editor);
+
+    return Container(
+      height: widget.config.rowHeight,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: widget.config.showHorizontalBorders && !widget.config.showBorders
+            ? Border(
+                bottom: BorderSide(
+                  color: widget.config.borderColor,
+                  width: widget.config.borderWidth,
+                ),
+              )
+            : widget.config.showBorders
+                ? Border(
+                    right: BorderSide(
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
+                    ),
+                    bottom: BorderSide(
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
+                    ),
+                  )
+                : null,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: content,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return DataGridRowSelectionHighlight(
       isSelected: widget.isSelected,
       child: GestureDetector(
-        onTap: () {
+        onTap: widget.editMode != EditMode.none ? null : () {
           if (widget.selectionMode != SelectionMode.none && widget.onRowSelect != null) {
             widget.onRowSelect!(widget.rowIndex);
           }
@@ -70,7 +147,6 @@ class _DataGridRowState extends State<DataGridRow> {
             });
           },
           child: Container(
-            // color: isHover ? Colors.transparent : Colors.transparent,
             height: widget.config.rowHeight,
             width: double.infinity,
             child: Row(
@@ -89,7 +165,7 @@ class _DataGridRowState extends State<DataGridRow> {
                             ),
                           ),
                         ):BoxDecoration(
-                        color: widget.isSelected ? Colors.blue.withOpacity(0.2) : Colors.white   // change background of checkbox
+                        color: widget.isSelected ? Colors.blue.withOpacity(0.2) : Colors.white
                       ),
                       child: DataGridCheckboxColumn(
                         rowIndex: widget.rowIndex,
@@ -107,13 +183,13 @@ class _DataGridRowState extends State<DataGridRow> {
                   final columnIndex = entry.key;
                   final column = entry.value;
                   final value = widget.rowData[column.dataField];
+                  final isEditingThisCell = _editingField == column.dataField;
 
                   return Expanded(
                     flex: column.width?.toInt() ?? 1,
                     child: Container(
                       decoration: widget.config.showBorders
                           ? BoxDecoration(
-
                               border: Border(
                                 right: BorderSide(
                                   color: widget.config.borderColor,
@@ -122,17 +198,20 @@ class _DataGridRowState extends State<DataGridRow> {
                               ),
                             )
                           : null,
-                      child: DataGridCell(
-                        value: value,
-                        column: column,
-                        config: widget.config,
-                        isSelected: widget.isSelected,
-                        isAlternateRow: widget.isAlternateRow,
-                        onTap: widget.onCellTap != null ? () => widget.onCellTap!(widget.rowIndex) : null,
-                        onDoubleTap: widget.editMode != EditMode.none && widget.onCellEdit != null
-                            ? () => widget.onCellEdit!(widget.rowIndex, column.dataField, value)
-                            : null,
-                      ),
+                      child: isEditingThisCell
+                          ? _buildEditingCell(context, column, value)
+                          : DataGridCell(
+                              value: value,
+                              column: column,
+                              config: widget.config,
+                              isSelected: widget.isSelected,
+                              isAlternateRow: widget.isAlternateRow,
+                              onTap: widget.editMode != EditMode.none && widget.onCellEdit != null
+                                  ? () => _startEditing(column.dataField, value)
+                                  : widget.onCellTap != null
+                                      ? () => widget.onCellTap!(widget.rowIndex)
+                                      : null,
+                            ),
                     ),
                   );
                 }),

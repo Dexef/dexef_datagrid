@@ -12,6 +12,7 @@ class DataGridCellEditor extends StatefulWidget {
   final VoidCallback onSave;
   final VoidCallback onCancel;
   final String? errorMessage;
+  final TextAlign textAlign;
 
   const DataGridCellEditor({
     super.key,
@@ -22,6 +23,7 @@ class DataGridCellEditor extends StatefulWidget {
     required this.onSave,
     required this.onCancel,
     this.errorMessage,
+    this.textAlign = TextAlign.center,
   });
 
   @override
@@ -31,70 +33,43 @@ class DataGridCellEditor extends StatefulWidget {
 class _DataGridCellEditorState extends State<DataGridCellEditor> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  bool _saved = false;
+
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus && !_saved && mounted) {
+      _saved = true;
+      widget.onSave();
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.value?.toString() ?? '');
     _focusNode = FocusNode();
-    
-    // Auto-focus when widget is created
+    _focusNode.addListener(_onFocusChanged);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
+      if (mounted) {
+        _focusNode.requestFocus();
+        _controller.selection = TextSelection.collapsed(
+          offset: _controller.text.length,
+        );
+      }
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _focusNode.removeListener(_onFocusChanged);
     _focusNode.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: widget.errorMessage != null ? Colors.red : Theme.of(context).primaryColor,
-          width: 2,
-        ),
-        color: Colors.white,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildEditor(),
-          if (widget.errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                widget.errorMessage!,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.check, size: 16),
-                onPressed: widget.onSave,
-                tooltip: 'Save',
-              ),
-              IconButton(
-                icon: const Icon(Icons.close, size: 16),
-                onPressed: widget.onCancel,
-                tooltip: 'Cancel',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return _buildEditor();
   }
 
   Widget _buildEditor() {
@@ -116,14 +91,24 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
     return TextField(
       controller: _controller,
       focusNode: _focusNode,
+      textAlign: widget.textAlign,
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff464646)),
       decoration: const InputDecoration(
+        isDense: true,
         border: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       ),
       onChanged: (value) {
         widget.onValueChanged(widget.field, value);
       },
-      onSubmitted: (_) => widget.onSave(),
+      onSubmitted: (_) {
+        if (!_saved) {
+          _saved = true;
+          widget.onSave();
+        }
+      },
     );
   }
 
@@ -132,15 +117,25 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       controller: _controller,
       focusNode: _focusNode,
       keyboardType: TextInputType.number,
+      textAlign: widget.textAlign,
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff464646)),
       decoration: const InputDecoration(
+        isDense: true,
         border: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       ),
       onChanged: (value) {
         final number = double.tryParse(value);
         widget.onValueChanged(widget.field, number);
       },
-      onSubmitted: (_) => widget.onSave(),
+      onSubmitted: (_) {
+        if (!_saved) {
+          _saved = true;
+          widget.onSave();
+        }
+      },
     );
   }
 
