@@ -177,8 +177,8 @@ class _DataGridExampleState extends State<DataGridExample> {
       useOptimizedGrid: false,
       controller: _controller,
       config: const DataGridConfig(
-        rowHeight: 74,
-        headerHeight: 56,
+        rowHeight: 44,
+        headerHeight: 40,
         minColumnWidth: 120,
         showBorders: true,
         showHorizontalBorders: true,
@@ -668,7 +668,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
       controller: _controller,
       config: const DataGridConfig(
         rowHeight: 74,
-        headerHeight: 56,
+        headerHeight: 40,
         minColumnWidth: 120,
         showBorders: true,
         showHorizontalBorders: true,

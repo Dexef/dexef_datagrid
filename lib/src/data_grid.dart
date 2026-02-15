@@ -869,66 +869,53 @@ class _DataGridState extends State<DataGrid> {
   Widget _buildHeader(List<DataGridColumn> columns) {
     return Container(
       height: widget.config.headerHeight,
-      decoration: BoxDecoration(
-        color: Colors.white, // Set header background to white
-        border: widget.config.showBorders
-            ? Border(
-                bottom: BorderSide(
-                  color: widget.config.borderColor,
-                  width: widget.config.borderWidth,
-                ),
-              )
-            : null,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: const BoxDecoration(
+        color: Color(0xFFEDF2F7),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
       ),
       child: Row(
         children: [
-          if (widget.selectionMode == SelectionMode.multiple)
+          if (widget.selectionMode == SelectionMode.multiple) ...[
             SizedBox(
               width: 50,
-              child: Container(
-                decoration: widget.config.showBorders
-                    ? BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: widget.config.borderColor,
-                            width: widget.config.borderWidth,
-                          ),
-                        ),
-                      )
-                    : null,
-                child: DataGridSelectAllCheckbox(
-                  isSelected: _controller.selectionState.isSelectAll,
-                  isIndeterminate:
-                      _controller.selectionState.selectedCount > 0 &&
-                          _controller.selectionState.selectedCount <
-                              (_controller.source?.rowCount ?? 0),
-                  onChanged: (value) {
-                    if (value == true) {
-                      _controller.selectAll();
-                    } else {
-                      _controller.clearSelection();
-                    }
-                  },
-                  config: widget.config,
-                ),
+              child: DataGridSelectAllCheckbox(
+                isSelected: _controller.selectionState.isSelectAll,
+                isIndeterminate:
+                    _controller.selectionState.selectedCount > 0 &&
+                        _controller.selectionState.selectedCount <
+                            (_controller.source?.rowCount ?? 0),
+                onChanged: (value) {
+                  if (value == true) {
+                    _controller.selectAll();
+                  } else {
+                    _controller.clearSelection();
+                  }
+                },
+                config: widget.config,
               ),
             ),
-          ...columns.map((column) {
-            // final currentSort = _getCurrentSortForColumn(column.dataField);
-            // final sortPriority = _getSortPriorityForColumn(column.dataField);
-            return Expanded(
-              flex: column.width?.toInt() ?? 1,
-              child: Container(
-                decoration: widget.config.showBorders
-                    ? BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: widget.config.borderColor,
-                            width: widget.config.borderWidth,
-                          ),
-                        ),
-                      )
-                    : null,
+            SizedBox(
+              width: 8,
+              height: widget.config.headerHeight,
+              child: const ColoredBox(color: Colors.white),
+            ),
+          ],
+          ...columns.asMap().entries.expand((entry) {
+            final index = entry.key;
+            final column = entry.value;
+            return [
+              if (index > 0)
+                SizedBox(
+                  width: 3,
+                  height: widget.config.headerHeight,
+                  child: const ColoredBox(color: Colors.white),
+                ),
+              Expanded(
+                flex: column.width?.toInt() ?? 1,
                 child: GestureDetector(
                   onTap: column.sortable ? () => _onHeaderTap(column) : null,
                   child: Stack(
@@ -976,7 +963,7 @@ class _DataGridState extends State<DataGrid> {
                   ),
                 ),
               ),
-            );
+            ];
           }),
         ],
       ),
