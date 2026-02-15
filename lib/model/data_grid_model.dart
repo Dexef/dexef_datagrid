@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Data types supported by the data grid
-enum DataType { string, number, date, boolean, custom }
+enum DataType { string, number, date, boolean, list, custom }
 
 // Sort order is now defined in data_grid_sorting.dart
 
@@ -19,6 +19,7 @@ class DataGridColumn {
   final Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder;
   final Widget Function(BuildContext)? headerBuilder;
   final String? format; // for dates and numbers
+  final List<String>? listItems; // for list/dropdown columns
 
   const DataGridColumn({
     required this.dataField,
@@ -33,6 +34,7 @@ class DataGridColumn {
     this.editCellBuilder,
     this.headerBuilder,
     this.format,
+    this.listItems,
   });
 
   /// Creates a text column
@@ -149,17 +151,19 @@ class DataGridColumn {
     required String caption,
     required Widget Function(BuildContext, dynamic) cellBuilder,
     Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder,
+    DataType dataType = DataType.custom,
     double? width,
     bool sortable = false,
     bool filterable = false,
     bool resizable = true,
     bool visible = true,
     Widget Function(BuildContext)? headerBuilder,
+    List<String>? listItems,
   }) {
     return DataGridColumn(
       dataField: dataField,
       caption: caption,
-      dataType: DataType.custom,
+      dataType: dataType,
       width: width,
       sortable: sortable,
       filterable: filterable,
@@ -168,6 +172,7 @@ class DataGridColumn {
       cellBuilder: cellBuilder,
       editCellBuilder: editCellBuilder,
       headerBuilder: headerBuilder,
+      listItems: listItems,
     );
   }
 
@@ -186,6 +191,7 @@ class DataGridColumn {
         return _buildDateCell(context, value);
       case DataType.boolean:
         return _buildBooleanCell(context, value);
+      case DataType.list:
       case DataType.custom:
         return _buildStringCell(context, value); // fallback
     }

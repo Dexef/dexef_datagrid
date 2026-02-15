@@ -104,6 +104,7 @@ class OptimizedDataGridCell extends StatelessWidget {
         return _buildDateWidget();
       case DataType.boolean:
         return _buildBooleanWidget();
+      case DataType.list:
       case DataType.custom:
         return column.buildCell(context, value);
     }

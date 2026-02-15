@@ -336,6 +336,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'phone1',
         caption: 'Contact',
+        dataType: DataType.string,
         width: 92,
         filterable: true,
         headerBuilder: (context) => const Center(
@@ -366,6 +367,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'lastPurchaseDate',
         caption: 'Last Purchase',
+        dataType: DataType.date,
         width: 100,
         filterable: true,
         headerBuilder: (context) => const Center(
@@ -397,6 +399,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'orders',
         caption: 'Orders',
+        dataType: DataType.number,
         width: 40,
         sortable: true,
         filterable: true,
@@ -429,6 +432,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'totalSpent',
         caption: 'Total Spent',
+        dataType: DataType.number,
         width: 80,
         filterable: true,
         headerBuilder: (context) => const Center(
@@ -461,6 +465,8 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'status',
         caption: 'Status',
+        dataType: DataType.list,
+        listItems: const ['Regular', 'Premium', 'VIP', 'New', 'Inactive'],
         width: 80,
         filterable: true,
         headerBuilder: (context) => const Center(

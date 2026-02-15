@@ -587,6 +587,7 @@ class DataGridFilterWidgetFactory {
           onFilterChanged: onFilterChanged,
           onFilterCleared: onFilterCleared,
         );
+      case DataType.list:
       case DataType.custom:
         return DataGridTextFilterWidget(
           field: field,

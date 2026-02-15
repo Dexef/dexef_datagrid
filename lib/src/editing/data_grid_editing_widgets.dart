@@ -80,6 +80,8 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
         return _buildDateEditor();
       case DataType.number:
         return _buildNumberEditor();
+      case DataType.list:
+        return _buildListEditor();
       case DataType.string:
       case DataType.custom:
       default:
@@ -136,6 +138,187 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
           widget.onSave();
         }
       },
+    );
+  }
+
+  static const List<Color> _listItemColors = [
+    Color(0xFF5AACD4), // light blue
+    Color(0xFF9B59B6), // purple
+    Color(0xFF2ECC71), // green
+    Color(0xFFE8A838), // orange
+    Color(0xFF3A7BD5), // blue
+    Color(0xFF1ABC9C), // teal
+    Color(0xFFE74C3C), // red
+    Color(0xFFF39C12), // yellow
+  ];
+
+  final GlobalKey _listKey = GlobalKey();
+  bool _listMenuOpened = false;
+
+  void _showListMenu() async {
+    if (_listMenuOpened) return;
+    _listMenuOpened = true;
+
+    final items = widget.column.listItems ?? [];
+    final renderBox = _listKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    final screenSize = MediaQuery.of(context).size;
+
+    // Calculate position, ensure it stays within screen bounds
+    double top = offset.dy + size.height + 4;
+    double left = offset.dx - 8;
+    const double menuWidth = 200.0;
+    final double menuHeight = (items.length * 42.0) + 100;
+
+    if (top + menuHeight > screenSize.height) {
+      top = offset.dy - menuHeight - 4;
+    }
+    if (left + menuWidth > screenSize.width) {
+      left = screenSize.width - menuWidth - 8;
+    }
+    if (left < 8) left = 8;
+
+    final result = await showGeneralDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: '',
+      barrierColor: Colors.transparent,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Stack(
+          children: [
+            Positioned(
+              left: left,
+              top: top,
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(12),
+                shadowColor: Colors.black26,
+                child: Container(
+                  width: menuWidth,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...items.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final item = entry.value;
+                        final color = _listItemColors[index % _listItemColors.length];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).pop(item),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: color,
+                              ),
+                              child: Text(
+                                item,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 6),
+                        child: Divider(height: 1),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Row(
+                              children: [
+                                SizedBox(width: 8),
+                                Icon(Icons.edit, size: 18, color: Colors.black54),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Edit Labels',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => Navigator.of(context).pop(),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 8),
+                              Icon(Icons.auto_awesome, size: 18, color: Colors.black54),
+                              SizedBox(width: 8),
+                              Text(
+                                'Auto-assign labels',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != null) {
+      widget.onValueChanged(widget.field, result);
+    }
+    if (!_saved && mounted) {
+      _saved = true;
+      widget.onSave();
+    }
+  }
+
+  Widget _buildListEditor() {
+    final currentValue = widget.value?.toString() ?? '';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _showListMenu();
+    });
+
+    return Container(
+      key: _listKey,
+      child: Text(
+        currentValue,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Color(0xff0075F4),
+        ),
+        textAlign: widget.textAlign,
+      ),
     );
   }
 
@@ -306,11 +489,36 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
         return _buildDateField(column, controller);
       case DataType.number:
         return _buildNumberField(column, controller, focusNode);
+      case DataType.list:
+        return _buildListField(column, controller);
       case DataType.string:
       case DataType.custom:
       default:
         return _buildTextField(column, controller, focusNode);
     }
+  }
+
+  Widget _buildListField(DataGridColumn column, TextEditingController controller) {
+    final items = column.listItems ?? [];
+    final currentValue = widget.rowData[column.dataField]?.toString() ?? '';
+
+    return DropdownButtonFormField<String>(
+      value: items.contains(currentValue) ? currentValue : null,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      items: items.map((item) => DropdownMenuItem(
+        value: item,
+        child: Text(item),
+      )).toList(),
+      onChanged: (value) {
+        if (value != null) {
+          controller.text = value;
+          widget.onValueChanged(column.dataField, value);
+        }
+      },
+    );
   }
 
   Widget _buildTextField(DataGridColumn column, TextEditingController controller, FocusNode focusNode) {
