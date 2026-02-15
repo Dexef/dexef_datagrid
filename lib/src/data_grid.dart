@@ -204,7 +204,7 @@ class _DataGridState extends State<DataGrid> {
               const SizedBox(height: 8),
               _buildSearchBar(onRefresh: widget.onRefresh),
               _buildHeader(visibleColumns),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               Expanded(
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(
@@ -252,7 +252,7 @@ class _DataGridState extends State<DataGrid> {
     required VoidCallback? onRefresh,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 32),
       child: Row(
         children: [
           // Add New button
@@ -924,7 +924,6 @@ class _DataGridState extends State<DataGrid> {
               Expanded(
                 flex: column.width?.toInt() ?? 1,
                 child: Container(
-                  height: widget.config.headerHeight,
                   decoration: const BoxDecoration(
                     color: Color(0xFFEDF2F7),
                     borderRadius: BorderRadius.only(
