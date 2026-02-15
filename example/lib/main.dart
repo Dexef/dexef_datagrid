@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
               onViewChanged: _onViewChanged,
               onExport: _onExport,
             )
-          : OptimizedDataGridExample(
+          : DataGridExample(
               currentView: _currentView,
               onViewChanged: _onViewChanged,
               onExport: _onExport,
@@ -177,7 +177,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       useOptimizedGrid: false,
       controller: _controller,
       config: const DataGridConfig(
-        rowHeight: 52,
+        rowHeight: 48,
         headerHeight: 40,
         minColumnWidth: 120,
         showBorders: true,
@@ -289,7 +289,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'customerName',
         caption: 'Customer',
-        width: 180,
+        width: 160,
         filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
@@ -336,7 +336,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'phone1',
         caption: 'Contact',
-        width: 140,
+        width: 92,
         filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
@@ -366,7 +366,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'lastPurchaseDate',
         caption: 'Last Purchase',
-        width: 140,
+        width: 100,
         filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
@@ -397,7 +397,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'orders',
         caption: 'Orders',
-        width: 80,
+        width: 40,
         sortable: true,
         filterable: true,
         headerBuilder: (context) => const Center(
@@ -429,7 +429,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'totalSpent',
         caption: 'Total Spent',
-        width: 120,
+        width: 80,
         filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
@@ -461,7 +461,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       DataGridColumn.custom(
         dataField: 'status',
         caption: 'Status',
-        width: 100,
+        width: 80,
         filterable: true,
         headerBuilder: (context) => const Center(
           child: Text(
@@ -561,491 +561,491 @@ class _DataGridExampleState extends State<DataGridExample> {
   }
 }
 
-class OptimizedDataGridExample extends StatefulWidget {
-  final String? currentView;
-  final Function(String)? onViewChanged;
-  final VoidCallback? onExport;
+// class OptimizedDataGridExample extends StatefulWidget {
+//   final String? currentView;
+//   final Function(String)? onViewChanged;
+//   final VoidCallback? onExport;
 
-  const OptimizedDataGridExample({
-    super.key,
-    this.currentView,
-    this.onViewChanged,
-    this.onExport,
-  });
+//   const OptimizedDataGridExample({
+//     super.key,
+//     this.currentView,
+//     this.onViewChanged,
+//     this.onExport,
+//   });
 
-  @override
-  State<OptimizedDataGridExample> createState() =>
-      _OptimizedDataGridExampleState();
-}
+//   @override
+//   State<OptimizedDataGridExample> createState() =>
+//       _OptimizedDataGridExampleState();
+// }
 
-class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
-  late DataGridController _controller;
-  late DataGridSource _source;
+// class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
+//   late DataGridController _controller;
+//   late DataGridSource _source;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = DataGridController();
-    _source = _createDataSource();
-    _controller.setSource(_source);
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = DataGridController();
+//     _source = _createDataSource();
+//     _controller.setSource(_source);
+//   }
 
-  DataGridSource _createDataSource() {
-    final data = <Map<String, dynamic>>[];
+//   DataGridSource _createDataSource() {
+//     final data = <Map<String, dynamic>>[];
 
-    final customerNames = [
-      'Mohamed Gamal',
-      'Ahmed Abd El Rahman',
-      'Fatima Hassan',
-      'Omar Khalil',
-      'Aisha Mahmoud',
-      'Youssef Ibrahim',
-      'Nour El Din',
-      'Mariam Ali',
-      'Karim Mostafa',
-      'Layla Ahmed',
-      'Hassan Mohamed',
-      'Zainab Omar',
-      'Tarek Hussein',
-      'Rania Salah',
-      'Amr El Sayed',
-      'Dina Mahmoud',
-      'Khaled Hassan',
-      'Nada Ibrahim',
-      'Wael Ali',
-      'Heba Mostafa'
-    ];
+//     final customerNames = [
+//       'Mohamed Gamal',
+//       'Ahmed Abd El Rahman',
+//       'Fatima Hassan',
+//       'Omar Khalil',
+//       'Aisha Mahmoud',
+//       'Youssef Ibrahim',
+//       'Nour El Din',
+//       'Mariam Ali',
+//       'Karim Mostafa',
+//       'Layla Ahmed',
+//       'Hassan Mohamed',
+//       'Zainab Omar',
+//       'Tarek Hussein',
+//       'Rania Salah',
+//       'Amr El Sayed',
+//       'Dina Mahmoud',
+//       'Khaled Hassan',
+//       'Nada Ibrahim',
+//       'Wael Ali',
+//       'Heba Mostafa'
+//     ];
 
-    final phoneNumbers = [
-      ['01007773678', '01000246222'],
-      ['01234567890', '01123456789'],
-      ['01567890123', '01456789012'],
-      ['01987654321', '01876543210'],
-      ['01345678901', '01234567890'],
-      ['01789012345', '01678901234'],
-      ['01123456789', '01012345678'],
-      ['01543210987', '01432109876'],
-      ['01890123456', '01789012345'],
-      ['01210987654', '01109876543'],
-      ['01654321098', '01543210987'],
-      ['01901234567', '01890123456'],
-      ['01321098765', '01210987654'],
-      ['01765432109', '01654321098'],
-      ['01098765432', '01987654321'],
-      ['01432109876', '01321098765'],
-      ['01876543210', '01765432109'],
-      ['01234567890', '01123456789'],
-      ['01678901234', '01567890123'],
-      ['01987654321', '01876543210']
-    ];
+//     final phoneNumbers = [
+//       ['01007773678', '01000246222'],
+//       ['01234567890', '01123456789'],
+//       ['01567890123', '01456789012'],
+//       ['01987654321', '01876543210'],
+//       ['01345678901', '01234567890'],
+//       ['01789012345', '01678901234'],
+//       ['01123456789', '01012345678'],
+//       ['01543210987', '01432109876'],
+//       ['01890123456', '01789012345'],
+//       ['01210987654', '01109876543'],
+//       ['01654321098', '01543210987'],
+//       ['01901234567', '01890123456'],
+//       ['01321098765', '01210987654'],
+//       ['01765432109', '01654321098'],
+//       ['01098765432', '01987654321'],
+//       ['01432109876', '01321098765'],
+//       ['01876543210', '01765432109'],
+//       ['01234567890', '01123456789'],
+//       ['01678901234', '01567890123'],
+//       ['01987654321', '01876543210']
+//     ];
 
-    final statuses = ['Regular', 'Premium', 'VIP', 'New', 'Inactive'];
+//     final statuses = ['Regular', 'Premium', 'VIP', 'New', 'Inactive'];
 
-    for (int i = 1; i <= 1000; i++) {
-      final customerIndex = (i - 1) % customerNames.length;
-      final phoneIndex = (i - 1) % phoneNumbers.length;
-      final statusIndex = (i - 1) % statuses.length;
+//     for (int i = 1; i <= 1000; i++) {
+//       final customerIndex = (i - 1) % customerNames.length;
+//       final phoneIndex = (i - 1) % phoneNumbers.length;
+//       final statusIndex = (i - 1) % statuses.length;
 
-      final lastPurchaseDate =
-          DateTime(2025, 1, 5).subtract(Duration(days: (i % 30) + 1));
-      final daysAgo = DateTime.now().difference(lastPurchaseDate).inDays;
+//       final lastPurchaseDate =
+//           DateTime(2025, 1, 5).subtract(Duration(days: (i % 30) + 1));
+//       final daysAgo = DateTime.now().difference(lastPurchaseDate).inDays;
 
-      data.add({
-        'id': i,
-        'customerName': customerNames[customerIndex],
-        'customerId': '#${i.toString().padLeft(3, '0')}',
-        'phone1': phoneNumbers[phoneIndex][0],
-        'phone2': phoneNumbers[phoneIndex][1],
-        'lastPurchaseDate': lastPurchaseDate,
-        'daysAgo': daysAgo,
-        'orders': 10 + (i % 20),
-        'totalSpent': 1500.0 + (i * 100.0),
-        'status': statuses[statusIndex],
-      });
-    }
+//       data.add({
+//         'id': i,
+//         'customerName': customerNames[customerIndex],
+//         'customerId': '#${i.toString().padLeft(3, '0')}',
+//         'phone1': phoneNumbers[phoneIndex][0],
+//         'phone2': phoneNumbers[phoneIndex][1],
+//         'lastPurchaseDate': lastPurchaseDate,
+//         'daysAgo': daysAgo,
+//         'orders': 10 + (i % 20),
+//         'totalSpent': 1500.0 + (i * 100.0),
+//         'status': statuses[statusIndex],
+//       });
+//     }
 
-    return DataGridSource(
-      data: data,
-      totalCount: data.length,
-    );
-  }
+//     return DataGridSource(
+//       data: data,
+//       totalCount: data.length,
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return OptimizedDataGrid(
-      source: _source,
-      columns: _buildColumns(),
-      controller: _controller,
-      config: const DataGridConfig(
-        rowHeight: 52,
-        headerHeight: 40,
-        minColumnWidth: 120,
-        showBorders: true,
-        showHorizontalBorders: true,
-        showAlternateRows: true,
-        alternateRowBackgroundColor: Color(0xFFF5F5F5),
-      ),
-      selectionMode: SelectionMode.multiple,
-      editMode: EditMode.cell,
-      showFilterRow: false,
-      showFilterPanel: true,
-      showSearchPanel: true,
-      showSortControls: true,
-      showGroupControls: true,
-      paginationMode: PaginationMode.client,
-      virtualScrollMode: VirtualScrollMode.none,
-      showPaginationControls: true,
-      currentView: widget.currentView,
-      onViewChanged: widget.onViewChanged,
-      onSelectionChanged: (selectedRows) {
-        print('Selected rows: $selectedRows');
-      },
-      onCellEdit: (rowIndex, field, value) {
-        print('Cell edited: row=$rowIndex, field=$field, value=$value');
-        setState(() {
-          _source.data[rowIndex][field] = value;
-        });
-      },
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return OptimizedDataGrid(
+//       source: _source,
+//       columns: _buildColumns(),
+//       controller: _controller,
+//       config: const DataGridConfig(
+//         rowHeight: 48,
+//         headerHeight: 40,
+//         minColumnWidth: 120,
+//         showBorders: true,
+//         showHorizontalBorders: true,
+//         showAlternateRows: true,
+//         alternateRowBackgroundColor: Color(0xFFF5F5F5),
+//       ),
+//       selectionMode: SelectionMode.multiple,
+//       editMode: EditMode.cell,
+//       showFilterRow: false,
+//       showFilterPanel: true,
+//       showSearchPanel: true,
+//       showSortControls: true,
+//       showGroupControls: true,
+//       paginationMode: PaginationMode.client,
+//       virtualScrollMode: VirtualScrollMode.none,
+//       showPaginationControls: true,
+//       currentView: widget.currentView,
+//       onViewChanged: widget.onViewChanged,
+//       onSelectionChanged: (selectedRows) {
+//         print('Selected rows: $selectedRows');
+//       },
+//       onCellEdit: (rowIndex, field, value) {
+//         print('Cell edited: row=$rowIndex, field=$field, value=$value');
+//         setState(() {
+//           _source.data[rowIndex][field] = value;
+//         });
+//       },
+//     );
+//   }
 
-  List<DataGridColumn> _buildColumns() {
-    return [
-      // Customer column with name and ID
-      DataGridColumn.custom(
-        dataField: 'customerName',
-        caption: 'Customer',
-        width: 180,
-        cellBuilder: (context, value) {
-          final rowData =
-              _source.data.firstWhere((row) => row['customerName'] == value);
-          return Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      value.toString(),
-                      style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff464646),
-                          fontWeight: FontWeight.w500),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      'ID: ${rowData['customerId'].toString()}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xff999FA7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () => _showCustomerMenu(context, value),
-                child: const Icon(
-                  Icons.more_vert,
-                  color: Color(0xff5D718D),
-                  size: 25,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      // New column for more_vert menu
-      DataGridColumn.custom(
-        dataField: 'customerMenu',
-        caption: '',
-        width: 50,
-        filterable: false,
-        sortable: false,
-        cellBuilder: (context, value) {
-          final rowData = _source.data.firstWhere(
-              (row) =>
-                  row['customerName'] == value || row['customerMenu'] == value,
-              orElse: () => <String, dynamic>{});
-          final customerId = rowData != null ? rowData['customerId'] : '';
-          return PopupMenuButton<String>(
-            icon:
-                const Icon(Icons.more_vert, color: Color(0xff5D718D), size: 25),
-            onSelected: (selected) {
-              if (selected == 'edit') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Edit customer $customerId')),
-                );
-              } else if (selected == 'delete') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Delete customer $customerId')),
-                );
-              } else if (selected == 'viewDetails') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('View details for customer $customerId')),
-                );
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Text('Edit Customer'),
-              ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Text('Delete Customer'),
-              ),
-              const PopupMenuItem(
-                value: 'viewDetails',
-                child: Text('View Details'),
-              ),
-            ],
-          );
-        },
-      ),
-      // Contact column with two phone numbers
-      DataGridColumn.custom(
-        dataField: 'phone1',
-        caption: 'Contact',
-        width: 140,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Contact',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          final rowData = _source.data.firstWhere(
-              (row) => row['phone1'] == value,
-              orElse: () => <String, dynamic>{});
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                value.toString(),
-                style: const TextStyle(fontSize: 16, color: Color(0xff464646)),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                rowData['phone2'].toString(),
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xff999FA7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
-        },
-      ),
-      // Last Purchase column with date and days ago
-      DataGridColumn.custom(
-        dataField: 'lastPurchaseDate',
-        caption: 'Last Purchase',
-        width: 140,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Last Purchase',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          final rowData = _source.data
-              .firstWhere((row) => row['lastPurchaseDate'] == value);
-          final date = value as DateTime;
-          final daysAgo = rowData['daysAgo'] as int;
+//   List<DataGridColumn> _buildColumns() {
+//     return [
+//       // Customer column with name and ID
+//       DataGridColumn.custom(
+//         dataField: 'customerName',
+//         caption: 'Customer',
+//         width: 180,
+//         cellBuilder: (context, value) {
+//           final rowData =
+//               _source.data.firstWhere((row) => row['customerName'] == value);
+//           return Row(
+//             children: [
+//               Expanded(
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Text(
+//                       value.toString(),
+//                       style: const TextStyle(
+//                           fontSize: 16,
+//                           color: Color(0xff464646),
+//                           fontWeight: FontWeight.w500),
+//                       overflow: TextOverflow.ellipsis,
+//                     ),
+//                     Text(
+//                       'ID: ${rowData['customerId'].toString()}',
+//                       style: const TextStyle(
+//                         fontSize: 14,
+//                         color: Color(0xff999FA7),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               GestureDetector(
+//                 onTap: () => _showCustomerMenu(context, value),
+//                 child: const Icon(
+//                   Icons.more_vert,
+//                   color: Color(0xff5D718D),
+//                   size: 25,
+//                 ),
+//               ),
+//             ],
+//           );
+//         },
+//       ),
+//       // New column for more_vert menu
+//       DataGridColumn.custom(
+//         dataField: 'customerMenu',
+//         caption: '',
+//         width: 50,
+//         filterable: false,
+//         sortable: false,
+//         cellBuilder: (context, value) {
+//           final rowData = _source.data.firstWhere(
+//               (row) =>
+//                   row['customerName'] == value || row['customerMenu'] == value,
+//               orElse: () => <String, dynamic>{});
+//           final customerId = rowData != null ? rowData['customerId'] : '';
+//           return PopupMenuButton<String>(
+//             icon:
+//                 const Icon(Icons.more_vert, color: Color(0xff5D718D), size: 25),
+//             onSelected: (selected) {
+//               if (selected == 'edit') {
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                   SnackBar(content: Text('Edit customer $customerId')),
+//                 );
+//               } else if (selected == 'delete') {
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                   SnackBar(content: Text('Delete customer $customerId')),
+//                 );
+//               } else if (selected == 'viewDetails') {
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                   SnackBar(
+//                       content: Text('View details for customer $customerId')),
+//                 );
+//               }
+//             },
+//             itemBuilder: (context) => [
+//               const PopupMenuItem(
+//                 value: 'edit',
+//                 child: Text('Edit Customer'),
+//               ),
+//               const PopupMenuItem(
+//                 value: 'delete',
+//                 child: Text('Delete Customer'),
+//               ),
+//               const PopupMenuItem(
+//                 value: 'viewDetails',
+//                 child: Text('View Details'),
+//               ),
+//             ],
+//           );
+//         },
+//       ),
+//       // Contact column with two phone numbers
+//       DataGridColumn.custom(
+//         dataField: 'phone1',
+//         caption: 'Contact',
+//         width: 120,
+//         headerBuilder: (context) => const Center(
+//           child: Text(
+//             'Contact',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 14,
+//               color: Colors.black87,
+//             ),
+//           ),
+//         ),
+//         cellBuilder: (context, value) {
+//           final rowData = _source.data.firstWhere(
+//               (row) => row['phone1'] == value,
+//               orElse: () => <String, dynamic>{});
+//           return Column(
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text(
+//                 value.toString(),
+//                 style: const TextStyle(fontSize: 16, color: Color(0xff464646)),
+//                 textAlign: TextAlign.center,
+//               ),
+//               Text(
+//                 rowData['phone2'].toString(),
+//                 style: const TextStyle(
+//                   fontSize: 14,
+//                   color: Color(0xff999FA7),
+//                 ),
+//                 textAlign: TextAlign.center,
+//               ),
+//             ],
+//           );
+//         },
+//       ),
+//       // Last Purchase column with date and days ago
+//       DataGridColumn.custom(
+//         dataField: 'lastPurchaseDate',
+//         caption: 'Last Purchase',
+//         width: 140,
+//         headerBuilder: (context) => const Center(
+//           child: Text(
+//             'Last Purchase',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 14,
+//               color: Colors.black87,
+//             ),
+//           ),
+//         ),
+//         cellBuilder: (context, value) {
+//           final rowData = _source.data
+//               .firstWhere((row) => row['lastPurchaseDate'] == value);
+//           final date = value as DateTime;
+//           final daysAgo = rowData['daysAgo'] as int;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${date.day} ${_getMonthName(date.month)}, ${date.year}',
-                style: const TextStyle(fontSize: 16, color: Color(0xff464646)),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                '$daysAgo days ago',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xff999FA7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
-        },
-      ),
-      // Orders column
-      DataGridColumn.custom(
-        dataField: 'orders',
-        caption: 'Orders',
-        width: 80,
-        sortable: true,
-        filterable: true,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Orders',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          return Center(
-            child: Text(
-              value.toString(),
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color(0xff464646),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          );
-        },
-      ),
-      // Total Spent column with currency formatting
-      DataGridColumn.custom(
-        dataField: 'totalSpent',
-        caption: 'Total Spent',
-        width: 120,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Total Spent',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          final amount = value as double;
-          return Center(
-            child: Text(
-              '\$${amount.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: Color(0xff464646),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          );
-        },
-      ),
-      // Status column with blue text
-      DataGridColumn.custom(
-        dataField: 'status',
-        caption: 'Status',
-        width: 100,
-        headerBuilder: (context) => const Center(
-          child: Text(
-            'Status',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        cellBuilder: (context, value) {
-          return Center(
-            child: Text(
-              value.toString(),
-              style: const TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          );
-        },
-      ),
-    ];
-  }
+//           return Column(
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text(
+//                 '${date.day} ${_getMonthName(date.month)}, ${date.year}',
+//                 style: const TextStyle(fontSize: 16, color: Color(0xff464646)),
+//                 textAlign: TextAlign.center,
+//               ),
+//               Text(
+//                 '$daysAgo days ago',
+//                 style: const TextStyle(
+//                   fontSize: 14,
+//                   color: Color(0xff999FA7),
+//                 ),
+//                 textAlign: TextAlign.center,
+//               ),
+//             ],
+//           );
+//         },
+//       ),
+//       // Orders column
+//       DataGridColumn.custom(
+//         dataField: 'orders',
+//         caption: 'Orders',
+//         width: 80,
+//         sortable: true,
+//         filterable: true,
+//         headerBuilder: (context) => const Center(
+//           child: Text(
+//             'Orders',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 14,
+//               color: Colors.black87,
+//             ),
+//           ),
+//         ),
+//         cellBuilder: (context, value) {
+//           return Center(
+//             child: Text(
+//               value.toString(),
+//               style: const TextStyle(
+//                 fontSize: 16,
+//                 color: Color(0xff464646),
+//               ),
+//               textAlign: TextAlign.center,
+//             ),
+//           );
+//         },
+//       ),
+//       // Total Spent column with currency formatting
+//       DataGridColumn.custom(
+//         dataField: 'totalSpent',
+//         caption: 'Total Spent',
+//         width: 120,
+//         headerBuilder: (context) => const Center(
+//           child: Text(
+//             'Total Spent',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 14,
+//               color: Colors.black87,
+//             ),
+//           ),
+//         ),
+//         cellBuilder: (context, value) {
+//           final amount = value as double;
+//           return Center(
+//             child: Text(
+//               '\$${amount.toStringAsFixed(2)}',
+//               style: const TextStyle(
+//                 fontWeight: FontWeight.w500,
+//                 fontSize: 16,
+//                 color: Color(0xff464646),
+//               ),
+//               textAlign: TextAlign.center,
+//             ),
+//           );
+//         },
+//       ),
+//       // Status column with blue text
+//       DataGridColumn.custom(
+//         dataField: 'status',
+//         caption: 'Status',
+//         width: 100,
+//         headerBuilder: (context) => const Center(
+//           child: Text(
+//             'Status',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 14,
+//               color: Colors.black87,
+//             ),
+//           ),
+//         ),
+//         cellBuilder: (context, value) {
+//           return Center(
+//             child: Text(
+//               value.toString(),
+//               style: const TextStyle(
+//                 color: Colors.blue,
+//                 fontWeight: FontWeight.w500,
+//                 fontSize: 16,
+//               ),
+//               textAlign: TextAlign.center,
+//             ),
+//           );
+//         },
+//       ),
+//     ];
+//   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return months[month - 1];
-  }
+//   String _getMonthName(int month) {
+//     const months = [
+//       'Jan',
+//       'Feb',
+//       'Mar',
+//       'Apr',
+//       'May',
+//       'Jun',
+//       'Jul',
+//       'Aug',
+//       'Sep',
+//       'Oct',
+//       'Nov',
+//       'Dec'
+//     ];
+//     return months[month - 1];
+//   }
 
-  void _showCustomerMenu(BuildContext context, dynamic value) {
-    final customerData =
-        _source.data.firstWhere((row) => row['customerName'] == value);
-    final customerId = customerData['customerId'];
+//   void _showCustomerMenu(BuildContext context, dynamic value) {
+//     final customerData =
+//         _source.data.firstWhere((row) => row['customerName'] == value);
+//     final customerId = customerData['customerId'];
 
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero),
-            ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
+//     final RenderBox button = context.findRenderObject() as RenderBox;
+//     final RenderBox overlay =
+//         Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+//     final RelativeRect position = RelativeRect.fromRect(
+//       Rect.fromPoints(
+//         button.localToGlobal(Offset.zero, ancestor: overlay),
+//         button.localToGlobal(button.size.bottomRight(Offset.zero),
+//             ancestor: overlay),
+//       ),
+//       Offset.zero & overlay.size,
+//     );
 
-    showMenu(
-      context: context,
-      position: position,
-      items: [
-        const PopupMenuItem(
-          value: 'edit',
-          child: Text('Edit Customer'),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: Text('Delete Customer'),
-        ),
-        const PopupMenuItem(
-          value: 'viewDetails',
-          child: Text('View Details'),
-        ),
-      ],
-      elevation: 8.0,
-    ).then((value) {
-      if (value == 'edit') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Edit customer $customerId')),
-        );
-      } else if (value == 'delete') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Delete customer $customerId')),
-        );
-      } else if (value == 'viewDetails') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('View details for customer $customerId')),
-        );
-      }
-    });
-  }
-}
+//     showMenu(
+//       context: context,
+//       position: position,
+//       items: [
+//         const PopupMenuItem(
+//           value: 'edit',
+//           child: Text('Edit Customer'),
+//         ),
+//         const PopupMenuItem(
+//           value: 'delete',
+//           child: Text('Delete Customer'),
+//         ),
+//         const PopupMenuItem(
+//           value: 'viewDetails',
+//           child: Text('View Details'),
+//         ),
+//       ],
+//       elevation: 8.0,
+//     ).then((value) {
+//       if (value == 'edit') {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Edit customer $customerId')),
+//         );
+//       } else if (value == 'delete') {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Delete customer $customerId')),
+//         );
+//       } else if (value == 'viewDetails') {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('View details for customer $customerId')),
+//         );
+//       }
+//     });
+//   }
+// }

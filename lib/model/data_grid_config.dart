@@ -27,7 +27,7 @@ class DataGridConfig {
     this.rowBackgroundColor = Colors.white,
     this.alternateRowBackgroundColor = const Color(0xFFFAFAFA),
     this.borderColor = const Color(0xFFE0E0E0),
-    this.borderWidth = 1.0,
+    this.borderWidth = 0.5,
     this.rowHeight = 48.0,
     this.headerHeight = 56.0,
     this.headerTextStyle = const TextStyle(

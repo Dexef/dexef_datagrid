@@ -888,16 +888,17 @@ class _DataGridState extends State<DataGrid> {
       child: Row(
         children: [
           if (widget.selectionMode == SelectionMode.multiple) ...[
-            Container(
-              width: 50,
-              decoration: const BoxDecoration(
-                color: Color(0xFFEDF2F7),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
               ),
-              child: DataGridSelectAllCheckbox(
+              child: Container(
+                width: 50,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEDF2F7),
+                ),
+                child: DataGridSelectAllCheckbox(
                 isSelected: _controller.selectionState.isSelectAll,
                 isIndeterminate:
                     _controller.selectionState.selectedCount > 0 &&
@@ -912,6 +913,7 @@ class _DataGridState extends State<DataGrid> {
                 },
                 config: widget.config,
               ),
+            ),
             ),
             const SizedBox(width: 4),
           ],
