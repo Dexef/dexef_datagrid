@@ -177,7 +177,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       useOptimizedGrid: false,
       controller: _controller,
       config: const DataGridConfig(
-        rowHeight: 44,
+        rowHeight: 52,
         headerHeight: 40,
         minColumnWidth: 120,
         showBorders: true,
@@ -291,6 +291,16 @@ class _DataGridExampleState extends State<DataGridExample> {
         caption: 'Customer',
         width: 180,
         filterable: true,
+        headerBuilder: (context) => const Center(
+          child: Text(
+            'Customer',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+        ),
         cellBuilder: (context, value) {
           return Row(
             children: [
@@ -667,7 +677,7 @@ class _OptimizedDataGridExampleState extends State<OptimizedDataGridExample> {
       columns: _buildColumns(),
       controller: _controller,
       config: const DataGridConfig(
-        rowHeight: 74,
+        rowHeight: 52,
         headerHeight: 40,
         minColumnWidth: 120,
         showBorders: true,

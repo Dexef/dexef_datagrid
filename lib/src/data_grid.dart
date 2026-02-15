@@ -204,9 +204,24 @@ class _DataGridState extends State<DataGrid> {
               const SizedBox(height: 8),
               _buildSearchBar(onRefresh: widget.onRefresh),
               _buildHeader(visibleColumns),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Expanded(
-                child: _buildBody(visibleColumns),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 1,
+                        width: double.infinity,
+                        color: const Color(0xFFE0E0E0),
+                      ),
+                      Expanded(child: _buildBody(visibleColumns)),
+                    ],
+                  ),
+                ),
               ),
               if (widget.showPaginationControls &&
                   widget.paginationMode != PaginationMode.none &&
@@ -870,18 +885,18 @@ class _DataGridState extends State<DataGrid> {
     return Container(
       height: widget.config.headerHeight,
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: const BoxDecoration(
-        color: Color(0xFFEDF2F7),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-      ),
       child: Row(
         children: [
           if (widget.selectionMode == SelectionMode.multiple) ...[
-            SizedBox(
+            Container(
               width: 50,
+              decoration: const BoxDecoration(
+                color: Color(0xFFEDF2F7),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
               child: DataGridSelectAllCheckbox(
                 isSelected: _controller.selectionState.isSelectAll,
                 isIndeterminate:
@@ -898,32 +913,33 @@ class _DataGridState extends State<DataGrid> {
                 config: widget.config,
               ),
             ),
-            SizedBox(
-              width: 8,
-              height: widget.config.headerHeight,
-              child: const ColoredBox(color: Colors.white),
-            ),
+            const SizedBox(width: 4),
           ],
           ...columns.asMap().entries.expand((entry) {
             final index = entry.key;
             final column = entry.value;
             return [
               if (index > 0)
-                SizedBox(
-                  width: 3,
-                  height: widget.config.headerHeight,
-                  child: const ColoredBox(color: Colors.white),
-                ),
+                const SizedBox(width: 4),
               Expanded(
                 flex: column.width?.toInt() ?? 1,
-                child: GestureDetector(
-                  onTap: column.sortable ? () => _onHeaderTap(column) : null,
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 40),
-                        child: column.buildHeader(context),
-                      ),
+                child: Container(
+                  height: widget.config.headerHeight,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFEDF2F7),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                  ),
+                  child: GestureDetector(
+                    onTap: column.sortable ? () => _onHeaderTap(column) : null,
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 40),
+                          child: column.buildHeader(context),
+                        ),
                       // if (widget.showSortControls && column.sortable)
                       //   Positioned(
                       //     right: column.filterable ? 24 : 4,
@@ -959,7 +975,8 @@ class _DataGridState extends State<DataGrid> {
                       //       ),
                       //     ),
                       //   ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
