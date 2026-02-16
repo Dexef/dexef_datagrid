@@ -190,7 +190,7 @@ class _DataGridState extends State<DataGrid> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // if (widget.showFilterPanel || widget.showSearchPanel) _buildFilterButtons(),
-              const SizedBox(height: 8),
+              
               DefaultText(
                 text: 'Customers',
                 isTextTheme: true,
@@ -201,7 +201,6 @@ class _DataGridState extends State<DataGrid> {
                       fontFamily: 'DexPro',
                     ),
               ),
-              const SizedBox(height: 8),
               _buildSearchBar(onRefresh: widget.onRefresh),
               _buildHeader(visibleColumns),
               const SizedBox(height: 32),
@@ -255,7 +254,7 @@ class _DataGridState extends State<DataGrid> {
     required VoidCallback? onRefresh,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 18),
       child: Row(
         children: [
           // Add New button

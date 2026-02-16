@@ -97,11 +97,8 @@ class DataGridController extends ChangeNotifier {
       // Use total source data count for pagination calculation
       final totalRecords = source.rowCount;
 
-      // Set initial page size to 25 if data length is greater than 20
-      int initialPageSize = 20; // Default page size
-      if (totalRecords > 20) {
-        initialPageSize = 25;
-      }
+      // Set initial page size to 10
+      int initialPageSize = 10;
 
       final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
@@ -301,11 +298,8 @@ class DataGridController extends ChangeNotifier {
       // Initialize pagination state for client mode
       final totalRecords = _source!.rowCount;
 
-      // Set initial page size to 25 if data length is greater than 20
-      int initialPageSize = 20; // Default page size
-      if (totalRecords > 20) {
-        initialPageSize = 25;
-      }
+      // Set initial page size to 10
+      int initialPageSize = 10;
 
       final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
