@@ -480,13 +480,23 @@ class _DataGridExampleState extends State<DataGridExample> {
           ),
         ),
         cellBuilder: (context, value) {
-          return Center(
+          const statusColors = {
+            'Regular': Color(0xFF5AACD4),
+            'Premium': Color(0xFF9B59B6),
+            'VIP': Color(0xFF2ECC71),
+            'New': Color(0xFFE8A838),
+            'Inactive': Color(0xFF3A7BD5),
+          };
+          final color = statusColors[value.toString()] ?? const Color(0xFF5AACD4);
+          return Container(
+            color: color,
+            alignment: Alignment.center,
             child: Text(
               value.toString(),
               style: const TextStyle(
-                color: Color(0xff0075F4),
-                fontSize: 16,
-                fontFamily: 'DexPro',
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
             ),

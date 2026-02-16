@@ -87,6 +87,28 @@ class _DataGridRowState extends State<DataGridRow> {
       onCancel: _cancelEditing,
     );
 
+    // For list type, keep the original cell appearance while the menu shows
+    if (column.dataType == DataType.list) {
+      return SizedBox(
+        height: widget.config.rowHeight,
+        child: Stack(
+          clipBehavior: Clip.hardEdge,
+          children: [
+            Positioned.fill(
+              child: column.cellBuilder != null
+                  ? column.buildCell(context, value)
+                  : Center(child: Text(value?.toString() ?? '')),
+            ),
+            Positioned(
+              width: 0,
+              height: 0,
+              child: Opacity(opacity: 0, child: editor),
+            ),
+          ],
+        ),
+      );
+    }
+
     final content = hasEditBuilder
         ? column.editCellBuilder!(context, value, editor)
         : Center(child: editor);
@@ -124,61 +146,67 @@ class _DataGridRowState extends State<DataGridRow> {
 
   @override
   Widget build(BuildContext context) {
-    return DataGridRowSelectionHighlight(
-      isSelected: widget.isSelected,
-      child: GestureDetector(
-        onTap: widget.editMode != EditMode.none ? null : () {
-          if (widget.selectionMode != SelectionMode.none && widget.onRowSelect != null) {
-            widget.onRowSelect!(widget.rowIndex);
-          }
-          if (widget.onRowTap != null) {
-            widget.onRowTap!();
-          }
-        },
-        child: MouseRegion(
-          onHover: (event) {
-            setState(() {
-              isHover = true;
-            });
-          },
-          onExit: (event) {
-            setState(() {
-              isHover = false;
-            });
-          },
-          child: Container(
-            height: widget.config.rowHeight,
-            width: double.infinity,
-            child: Row(
-              children: [
-                // Checkbox for selection
-                if (widget.selectionMode == SelectionMode.multiple)
-                  SizedBox(
-                    width: 50,
-                    child: Container(
-                      decoration: widget.config.showBorders ? BoxDecoration(
-                        color: Colors.blue.withOpacity(0.2),
-                          border: Border(
-                            right: BorderSide(
-                              color: widget.config.borderColor,
-                              width: widget.config.borderWidth,
-                            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        DataGridRowSelectionHighlight(
+          isSelected: widget.isSelected,
+          child: GestureDetector(
+            onTap: widget.editMode != EditMode.none ? null : () {
+              if (widget.selectionMode != SelectionMode.none && widget.onRowSelect != null) {
+                widget.onRowSelect!(widget.rowIndex);
+              }
+              if (widget.onRowTap != null) {
+                widget.onRowTap!();
+              }
+            },
+            child: MouseRegion(
+              onHover: (event) {
+                setState(() {
+                  isHover = true;
+                });
+              },
+              onExit: (event) {
+                setState(() {
+                  isHover = false;
+                });
+              },
+              child: Container(
+                height: widget.config.rowHeight,
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    // Checkbox for selection
+                    if (widget.selectionMode == SelectionMode.multiple) ...[
+                      Container(
+                        width: 6,
+                        height: widget.config.rowHeight,
+                        color: const Color(0xff2196F3),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        child: Container(
+                          decoration: widget.config.showBorders ? BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: widget.config.borderColor,
+                                  width: widget.config.borderWidth,
+                                ),
+                              ),
+                            ) : null,
+                          child: DataGridCheckboxColumn(
+                            rowIndex: widget.rowIndex,
+                            isSelected: widget.isSelected,
+                            onChanged: (value) {
+                              if (widget.onRowSelect != null) {
+                                widget.onRowSelect!(widget.rowIndex);
+                              }
+                            },
+                            config: widget.config,
                           ),
-                        ):BoxDecoration(
-                        color: widget.isSelected ? Colors.blue.withOpacity(0.2) : Colors.white
+                        ),
                       ),
-                      child: DataGridCheckboxColumn(
-                        rowIndex: widget.rowIndex,
-                        isSelected: widget.isSelected,
-                        onChanged: (value) {
-                          if (widget.onRowSelect != null) {
-                            widget.onRowSelect!(widget.rowIndex);
-                          }
-                        },
-                        config: widget.config,
-                      ),
-                    ),
-                  ),
+                    ],
                 ...widget.columns.asMap().entries.map((entry) {
                   final columnIndex = entry.key;
                   final column = entry.value;
@@ -220,6 +248,12 @@ class _DataGridRowState extends State<DataGridRow> {
           ),
         ),
       ),
+    ),
+        const SizedBox(
+          height: 3,
+          child: ColoredBox(color: Colors.white),
+        ),
+      ],
     );
   }
 }

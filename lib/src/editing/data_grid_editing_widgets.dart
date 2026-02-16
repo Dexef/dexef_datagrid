@@ -167,11 +167,11 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
     final size = renderBox.size;
     final screenSize = MediaQuery.of(context).size;
 
-    // Calculate position, ensure it stays within screen bounds
+    // Calculate position - show below the cell
     double top = offset.dy + size.height + 4;
     double left = offset.dx - 8;
     const double menuWidth = 200.0;
-    final double menuHeight = (items.length * 42.0) + 100;
+    final double menuHeight = (items.length * 30.0) + 120;
 
     if (top + menuHeight > screenSize.height) {
       top = offset.dy - menuHeight - 4;
@@ -192,17 +192,25 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
             Positioned(
               left: left,
               top: top,
-              child: Material(
-                elevation: 8,
-                borderRadius: BorderRadius.circular(12),
-                shadowColor: Colors.black26,
-                child: Container(
-                  width: menuWidth,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomPaint(
+                    size: const Size(16, 8),
+                    painter: _ArrowPainter(),
                   ),
+                  Material(
+                    elevation: 8,
+                    borderRadius: BorderRadius.circular(12),
+                    shadowColor: Colors.black26,
+                    child: Container(
+                      width: menuWidth,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -212,7 +220,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
                         final color = _listItemColors[index % _listItemColors.length];
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: InkWell(
+                          child: GestureDetector(
                             onTap: () => Navigator.of(context).pop(item),
                             child: Container(
                               width: double.infinity,
@@ -225,7 +233,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 14,
+                                  fontSize: 12,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -239,8 +247,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
+                        child: GestureDetector(
                           onTap: () => Navigator.of(context).pop(),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(vertical: 8),
@@ -261,8 +268,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
                           ),
                         ),
                       ),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(8),
+                      GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
                         child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
@@ -285,6 +291,8 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
                     ],
                   ),
                 ),
+              ),
+                ],
               ),
             ),
           ],
@@ -651,4 +659,28 @@ class DataGridValidationErrorIndicator extends StatelessWidget {
       ),
     );
   }
-} 
+}
+
+/// Paints an arrow for the tooltip
+class _ArrowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(0, size.height)
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..close();
+
+    // Draw shadow
+    canvas.drawShadow(path, Colors.black26, 4, false);
+
+    // Draw white arrow
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
