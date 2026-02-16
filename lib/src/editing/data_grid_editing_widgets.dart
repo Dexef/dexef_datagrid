@@ -350,18 +350,27 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
 
   Widget _buildBooleanEditor() {
     final boolValue = widget.value is bool ? widget.value : widget.value?.toString().toLowerCase() == 'true';
-    
-    return DropdownButton<bool>(
-      value: boolValue,
-      items: const [
-        DropdownMenuItem(value: true, child: Text('True')),
-        DropdownMenuItem(value: false, child: Text('False')),
-      ],
-      onChanged: (value) {
-        if (value != null) {
-          widget.onValueChanged(widget.field, value);
-        }
-      },
+    final newValue = !boolValue; // The toggled value
+
+    // Automatically toggle the value when entering edit mode
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_saved) {
+        // Toggle the boolean value
+        widget.onValueChanged(widget.field, newValue);
+        _saved = true;
+        widget.onSave();
+      }
+    });
+
+    // Show the NEW value (after toggle) immediately
+    return Center(
+      child: newValue
+          ? const Icon(
+              Icons.done,
+              color: Colors.green,
+              size: 24,
+            )
+          : const SizedBox.shrink(), // Empty when false
     );
   }
 

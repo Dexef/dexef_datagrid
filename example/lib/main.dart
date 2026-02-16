@@ -160,6 +160,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         'orders': 10 + (i % 20),
         'totalSpent': 1500.0 + (i * 100.0),
         'status': statuses[statusIndex],
+        'active': i % 2 == 0, // Alternating true/false for demo
       });
     }
 
@@ -501,6 +502,37 @@ class _DataGridExampleState extends State<DataGridExample> {
               ),
               textAlign: TextAlign.center,
             ),
+          );
+        },
+      ),
+      // Active column with boolean value
+      DataGridColumn.custom(
+        dataField: 'active',
+        caption: 'Active',
+        dataType: DataType.boolean,
+        width: 60,
+        editable: true,
+        filterable: true,
+        headerBuilder: (context) => const Center(
+          child: Text(
+            'Active',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        cellBuilder: (context, value) {
+          final isActive = value == true;
+          return Center(
+            child: isActive
+                ? const Icon(
+                    Icons.done,
+                    color: Colors.green,
+                    size: 24,
+                  )
+                : const SizedBox.shrink(), // Empty when false
           );
         },
       ),
