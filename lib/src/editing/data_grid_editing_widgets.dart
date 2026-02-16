@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../model/data_grid_model.dart';
 import '../style/style_size.dart';
 import '../widgets/default_text.dart';
@@ -98,17 +99,24 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
   }
 
   Widget _buildTextEditor() {
+    // Check if this is a phone field to restrict input to digits only
+    final isPhoneField = widget.field.toLowerCase().contains('phone');
+
     return TextField(
       controller: _controller,
       focusNode: _focusNode,
       textAlign: widget.textAlign,
+      maxLines: 1,
+      inputFormatters: isPhoneField
+        ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))]
+        : null,
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+        contentPadding: EdgeInsets.zero,
       ),
       onChanged: (value) {
         widget.onValueChanged(widget.field, value);
@@ -127,14 +135,16 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       controller: _controller,
       focusNode: _focusNode,
       keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
       textAlign: widget.textAlign,
+      maxLines: 1,
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+        contentPadding: EdgeInsets.zero,
       ),
       onChanged: (value) {
         final number = double.tryParse(value);
