@@ -47,23 +47,18 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
   void initState() {
     super.initState();
     final text = widget.value?.toString() ?? '';
-    _controller = TextEditingController(text: text);
+    _controller = TextEditingController.fromValue(
+      TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      ),
+    );
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChanged);
-
-    void setCursorToEnd() {
-      if (mounted && _controller.text.isNotEmpty) {
-        _controller.selection = TextSelection.fromPosition(
-  TextPosition(offset: _controller.text.length),
-);
-      }
-    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
-        setCursorToEnd();
-        Future.delayed(const Duration(milliseconds: 0), setCursorToEnd);
       }
     });
   }
@@ -107,6 +102,13 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       focusNode: _focusNode,
       textAlign: widget.textAlign,
       maxLines: 1,
+      enableInteractiveSelection: true,
+      onTap: () {
+        if (_controller.selection.isCollapsed) return;
+        _controller.selection = TextSelection.collapsed(
+          offset: _controller.text.length,
+        );
+      },
       inputFormatters: isPhoneField
         ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))]
         : null,
@@ -138,6 +140,13 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
       textAlign: widget.textAlign,
       maxLines: 1,
+      enableInteractiveSelection: true,
+      onTap: () {
+        if (_controller.selection.isCollapsed) return;
+        _controller.selection = TextSelection.collapsed(
+          offset: _controller.text.length,
+        );
+      },
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,

@@ -19,114 +19,77 @@ class DataGridPaginationControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final startRow = pagination.startIndex + 1;
-    final endRow = pagination.endIndex + 1;
     final totalPages = pagination.totalPages;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        border: Border(
-          top: BorderSide(color: Colors.grey.shade300),
-        ),
+        // border: Border(
+        //   top: BorderSide(color: Colors.grey.shade300),
+        // ),
       ),
       child: Row(
         children: [
-          // Info text
-          Expanded(
+          // Page number buttons at the start
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: _buildPageButtons(totalPages, pagination.currentPage),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildPageButtons(int totalPages, int currentPage) {
+    List<Widget> buttons = [];
+
+    // Calculate which pages to show
+    int startPage = 1;
+    int endPage = totalPages;
+
+    // Show maximum 5 page buttons
+    if (totalPages > 5) {
+      if (currentPage <= 3) {
+        endPage = 5;
+      } else if (currentPage >= totalPages - 2) {
+        startPage = totalPages - 4;
+      } else {
+        startPage = currentPage - 2;
+        endPage = currentPage + 2;
+      }
+    }
+
+    for (int i = startPage; i <= endPage; i++) {
+      final isCurrentPage = i == currentPage;
+      buttons.add(
+        GestureDetector(
+          onTap: isLoading ? null : () => onPaginationChanged(pagination.goToPage(i)),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isCurrentPage ? Colors.blue : Colors.white,
+              border: Border.all(
+                color: isCurrentPage ? Colors.blue : Colors.grey.shade300,
+                width: 1,
+              ),
+            ),
+            alignment: Alignment.center,
             child: Text(
-              'Showing $startRow-${endRow > totalRows ? totalRows : endRow} of $totalRows rows',
+              '$i',
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: isCurrentPage ? Colors.white : Colors.black87,
+                fontWeight: isCurrentPage ? FontWeight.bold : FontWeight.normal,
                 fontSize: 14,
               ),
             ),
           ),
-          // Page size selector
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Rows per page: '),
-              const SizedBox(width:10),              
-              Container(
-                child: DropdownButton<int>(
-                  value: [10, 25, 50, 100].contains(pagination.pageSize) 
-                      ? pagination.pageSize 
-                      : 25,
-                  underline: const SizedBox.shrink(),
-                  items: [10, 25, 50, 100].map((size) {
-                    return DropdownMenuItem(value: size, child: Text('$size'));
-                  }).toList(),
-                  onChanged: (size) {
-                    if (size != null) {
-                      onPaginationChanged(pagination.changePageSize(size));
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 16),
-          // Navigation buttons
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.first_page),
-                onPressed: pagination.hasPreviousPage && !isLoading
-                    ? () => onPaginationChanged(pagination.goToPage(1))
-                    : null,
-                tooltip: 'First page',
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_left),
-                onPressed: pagination.hasPreviousPage && !isLoading
-                    ? () => onPaginationChanged(pagination.previousPage())
-                    : null,
-                tooltip: 'Previous page',
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  '${pagination.currentPage} of $totalPages',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right),
-                onPressed: pagination.hasNextPage && !isLoading
-                    ? () => onPaginationChanged(pagination.nextPage())
-                    : null,
-                tooltip: 'Next page',
-              ),
-              IconButton(
-                icon: const Icon(Icons.last_page),
-                onPressed: pagination.hasNextPage && !isLoading
-                    ? () => onPaginationChanged(pagination.goToPage(totalPages))
-                    : null,
-                tooltip: 'Last page',
-              ),
-            ],
-          ),
-          if (isLoading) ...[
-            const SizedBox(width: 8),
-            const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ],
-        ],
-      ),
-    );
+        ),
+      );
+    }
+
+    return buttons;
   }
 }
 

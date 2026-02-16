@@ -226,20 +226,23 @@ class _DataGridState extends State<DataGrid> {
               if (widget.showPaginationControls &&
                   widget.paginationMode != PaginationMode.none &&
                   _controller.source?.hasData == true)
-                DataGridPaginationControls(
-                  pagination: _controller.paginationState,
-                  onPaginationChanged: (pagination) {
-                    if (pagination.currentPage !=
-                        _controller.paginationState.currentPage) {
-                      _controller.goToPage(pagination.currentPage);
-                    }
-                    if (pagination.pageSize !=
-                        _controller.paginationState.pageSize) {
-                      _controller.setPageSize(pagination.pageSize);
-                    }
-                  },
-                  totalRows: _controller.source?.rowCount ?? 0,
-                  isLoading: _controller.source?.isLoading ?? false,
+                Padding(
+                  padding: const EdgeInsets.only(top: 24),
+                  child: DataGridPaginationControls(
+                    pagination: _controller.paginationState,
+                    onPaginationChanged: (pagination) {
+                      if (pagination.currentPage !=
+                          _controller.paginationState.currentPage) {
+                        _controller.goToPage(pagination.currentPage);
+                      }
+                      if (pagination.pageSize !=
+                          _controller.paginationState.pageSize) {
+                        _controller.setPageSize(pagination.pageSize);
+                      }
+                    },
+                    totalRows: _controller.source?.rowCount ?? 0,
+                    isLoading: _controller.source?.isLoading ?? false,
+                  ),
                 ),
             ],
           ),
