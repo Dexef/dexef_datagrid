@@ -937,9 +937,12 @@ class _DataGridState extends State<DataGrid> {
                     onTap: column.sortable ? () => _onHeaderTap(column) : null,
                     child: Stack(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 40),
-                          child: column.buildHeader(context),
+                        Positioned.fill(
+                          right: 40,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: column.buildHeader(context),
+                          ),
                         ),
                       // if (widget.showSortControls && column.sortable)
                       //   Positioned(

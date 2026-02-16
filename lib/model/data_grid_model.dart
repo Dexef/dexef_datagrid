@@ -217,6 +217,7 @@ class DataGridColumn {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      alignment: Alignment.center,
       child: Text(
         caption,
         style: const TextStyle(
@@ -224,6 +225,7 @@ class DataGridColumn {
           fontSize: 14,
           color: Colors.black87,
         ),
+        textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis,
       ),
     );

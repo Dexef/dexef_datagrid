@@ -401,7 +401,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         dataField: 'orders',
         caption: 'Orders',
         dataType: DataType.number,
-        width: 40,
+        width: 60,
         editable: false,
         sortable: true,
         filterable: true,

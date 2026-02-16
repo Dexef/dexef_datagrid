@@ -113,10 +113,13 @@ class _DataGridRowState extends State<DataGridRow> {
         ? column.editCellBuilder!(context, value, editor)
         : Center(child: editor);
 
+    // Apply hover background to editing cell
+    final editingBgColor = isHover ? Colors.grey.withValues(alpha: 0.1) : Colors.white;
+
     return Container(
       height: widget.config.rowHeight,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: editingBgColor,
         border: widget.config.showHorizontalBorders && !widget.config.showBorders
             ? Border(
                 bottom: BorderSide(
