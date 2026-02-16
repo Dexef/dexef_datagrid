@@ -4,12 +4,13 @@ import '../model/data_grid_model.dart';
 import 'selection/data_grid_selection_widgets.dart';
 
 /// Represents a cell in the data grid
-class DataGridCell extends StatelessWidget {
+class DataGridCell extends StatefulWidget {
   final dynamic value;
   final DataGridColumn column;
   final DataGridConfig config;
   final bool isSelected;
   final bool isAlternateRow;
+  final bool isRowHover;
   final VoidCallback? onTap;
   final VoidCallback? onDoubleTap;
   final bool isEditing;
@@ -23,6 +24,7 @@ class DataGridCell extends StatelessWidget {
     required this.config,
     this.isSelected = false,
     this.isAlternateRow = false,
+    this.isRowHover = false,
     this.onTap,
     this.onDoubleTap,
     this.isEditing = false,
@@ -31,47 +33,56 @@ class DataGridCell extends StatelessWidget {
   });
 
   @override
+  State<DataGridCell> createState() => _DataGridCellState();
+}
+
+class _DataGridCellState extends State<DataGridCell> {
+  bool _isCellHover = false;
+
+  @override
   Widget build(BuildContext context) {
     final backgroundColor = _getBackgroundColor();
-    
+
     return MouseRegion(
-      cursor: onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+      cursor: widget.onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+      onEnter: (_) => setState(() => _isCellHover = true),
+      onExit: (_) => setState(() => _isCellHover = false),
       child: GestureDetector(
-        onTap: onTap,
-        onDoubleTap: onDoubleTap,
+        onTap: widget.onTap,
+        onDoubleTap: widget.onDoubleTap,
         child: DataGridCellSelectionHighlight(
-        isSelected: isSelected,
-        hasError: errorMessage != null,
+        isSelected: widget.isSelected,
+        hasError: widget.errorMessage != null,
         child: Container(
-          height: config.rowHeight,
+          height: widget.config.rowHeight,
           decoration: BoxDecoration(
             color: backgroundColor,
-            border: config.showHorizontalBorders && !config.showBorders
+            border: widget.config.showHorizontalBorders && !widget.config.showBorders
                 ? Border(
                     bottom: BorderSide(
-                      color: config.borderColor,
-                      width: config.borderWidth,
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
                     ),
                   )
-                : config.showBorders
+                : widget.config.showBorders
                     ? Border(
                     right: BorderSide(
-                      color: config.borderColor,
-                      width: config.borderWidth,
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
                     ),
                     bottom: BorderSide(
-                      color: config.borderColor,
-                      width: config.borderWidth,
+                      color: widget.config.borderColor,
+                      width: widget.config.borderWidth,
                     ),
                   )
                 : null,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: showMoreVert 
+            child: widget.showMoreVert
                 ? Row(
                     children: [
-                      Expanded(child: column.buildCell(context, value)),
+                      Expanded(child: widget.column.buildCell(context, widget.value)),
                       const Icon(
                         Icons.more_vert,
                         size: 20,
@@ -79,7 +90,7 @@ class DataGridCell extends StatelessWidget {
                       ),
                     ],
                   )
-                : column.buildCell(context, value),
+                : widget.column.buildCell(context, widget.value),
           ),
         ),
       ),
@@ -88,11 +99,21 @@ class DataGridCell extends StatelessWidget {
   }
 
   Color _getBackgroundColor() {
-    if (isSelected) {
-      return Colors.blue.withOpacity(0.2);
+    if (widget.isSelected) {
+      return Colors.blue.withValues(alpha: 0.2);
     }
-    
-    // Always return white background, no alternate row coloring
+
+    // Cell hover takes priority over row hover
+    if (_isCellHover) {
+      return Colors.grey.withValues(alpha: 0.2); // Darker grey for cell hover
+    }
+
+    // Row hover
+    if (widget.isRowHover) {
+      return Colors.grey.withValues(alpha: 0.1); // Light grey for row hover
+    }
+
+    // Default white background
     return Colors.white;
   }
 } 

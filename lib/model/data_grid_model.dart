@@ -15,6 +15,7 @@ class DataGridColumn {
   final bool filterable;
   final bool resizable;
   final bool visible;
+  final bool editable; // whether the column is editable
   final Widget Function(BuildContext, dynamic)? cellBuilder;
   final Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder;
   final Widget Function(BuildContext)? headerBuilder;
@@ -30,6 +31,7 @@ class DataGridColumn {
     this.filterable = true,
     this.resizable = true,
     this.visible = true,
+    this.editable = true,
     this.cellBuilder,
     this.editCellBuilder,
     this.headerBuilder,
@@ -46,6 +48,7 @@ class DataGridColumn {
     bool filterable = true,
     bool resizable = true,
     bool visible = true,
+    bool editable = true,
     Widget Function(BuildContext, dynamic)? cellBuilder,
     Widget Function(BuildContext)? headerBuilder,
   }) {
@@ -58,6 +61,7 @@ class DataGridColumn {
       filterable: filterable,
       resizable: resizable,
       visible: visible,
+      editable: editable,
       cellBuilder: cellBuilder,
       headerBuilder: headerBuilder,
     );
@@ -72,6 +76,7 @@ class DataGridColumn {
     bool filterable = true,
     bool resizable = true,
     bool visible = true,
+    bool editable = true,
     String? format,
     Widget Function(BuildContext, dynamic)? cellBuilder,
     Widget Function(BuildContext)? headerBuilder,
@@ -85,6 +90,7 @@ class DataGridColumn {
       filterable: filterable,
       resizable: resizable,
       visible: visible,
+      editable: editable,
       format: format,
       cellBuilder: cellBuilder,
       headerBuilder: headerBuilder,
@@ -100,6 +106,7 @@ class DataGridColumn {
     bool filterable = true,
     bool resizable = true,
     bool visible = true,
+    bool editable = true,
     String? format,
     Widget Function(BuildContext, dynamic)? cellBuilder,
     Widget Function(BuildContext)? headerBuilder,
@@ -113,6 +120,7 @@ class DataGridColumn {
       filterable: filterable,
       resizable: resizable,
       visible: visible,
+      editable: editable,
       format: format,
       cellBuilder: cellBuilder,
       headerBuilder: headerBuilder,
@@ -128,6 +136,7 @@ class DataGridColumn {
     bool filterable = true,
     bool resizable = true,
     bool visible = true,
+    bool editable = true,
     Widget Function(BuildContext, dynamic)? cellBuilder,
     Widget Function(BuildContext)? headerBuilder,
   }) {
@@ -140,6 +149,7 @@ class DataGridColumn {
       filterable: filterable,
       resizable: resizable,
       visible: visible,
+      editable: editable,
       cellBuilder: cellBuilder,
       headerBuilder: headerBuilder,
     );
@@ -157,6 +167,7 @@ class DataGridColumn {
     bool filterable = false,
     bool resizable = true,
     bool visible = true,
+    bool editable = true,
     Widget Function(BuildContext)? headerBuilder,
     List<String>? listItems,
   }) {
@@ -169,6 +180,7 @@ class DataGridColumn {
       filterable: filterable,
       resizable: resizable,
       visible: visible,
+      editable: editable,
       cellBuilder: cellBuilder,
       editCellBuilder: editCellBuilder,
       headerBuilder: headerBuilder,

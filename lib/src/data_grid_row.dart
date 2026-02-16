@@ -187,6 +187,7 @@ class _DataGridRowState extends State<DataGridRow> {
                         width: 50,
                         child: Container(
                           decoration: BoxDecoration(
+                              color: isHover ? Colors.grey.withValues(alpha: 0.1) : Colors.white,
                               border: Border(
                                 right: widget.config.showBorders ? BorderSide(
                                   color: widget.config.borderColor,
@@ -238,7 +239,8 @@ class _DataGridRowState extends State<DataGridRow> {
                               config: widget.config,
                               isSelected: widget.isSelected,
                               isAlternateRow: widget.isAlternateRow,
-                              onTap: widget.editMode != EditMode.none && widget.onCellEdit != null
+                              isRowHover: isHover,
+                              onTap: widget.editMode != EditMode.none && widget.onCellEdit != null && column.editable
                                   ? () => _startEditing(column.dataField, value)
                                   : widget.onCellTap != null
                                       ? () => widget.onCellTap!(widget.rowIndex)

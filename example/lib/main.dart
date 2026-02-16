@@ -401,6 +401,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         caption: 'Orders',
         dataType: DataType.number,
         width: 40,
+        editable: false,
         sortable: true,
         filterable: true,
         headerBuilder: (context) => const Center(
