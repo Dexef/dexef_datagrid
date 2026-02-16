@@ -42,6 +42,13 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       widget.onSave();
     }
   }
+  void setCursorToEnd() {
+      if (mounted && _controller.text.isNotEmpty) {
+        _controller.selection = TextSelection.fromPosition(
+  TextPosition(offset: _controller.text.length),
+);
+      }
+    }
 
   @override
   void initState() {
@@ -59,6 +66,8 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
+        setCursorToEnd();
+        Future.delayed(const Duration(milliseconds: 0), setCursorToEnd);
       }
     });
   }
@@ -140,13 +149,6 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
       textAlign: widget.textAlign,
       maxLines: 1,
-      enableInteractiveSelection: true,
-      onTap: () {
-        if (_controller.selection.isCollapsed) return;
-        _controller.selection = TextSelection.collapsed(
-          offset: _controller.text.length,
-        );
-      },
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,
