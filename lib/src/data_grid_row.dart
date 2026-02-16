@@ -87,8 +87,8 @@ class _DataGridRowState extends State<DataGridRow> {
       onCancel: _cancelEditing,
     );
 
-    // For list type, keep the original cell appearance while the menu shows
-    if (column.dataType == DataType.list) {
+    // For list/date type, keep the original cell appearance while the picker shows
+    if (column.dataType == DataType.list || column.dataType == DataType.date) {
       return SizedBox(
         height: widget.config.rowHeight,
         child: Stack(
@@ -186,14 +186,18 @@ class _DataGridRowState extends State<DataGridRow> {
                       SizedBox(
                         width: 50,
                         child: Container(
-                          decoration: widget.config.showBorders ? BoxDecoration(
+                          decoration: BoxDecoration(
                               border: Border(
-                                right: BorderSide(
+                                right: widget.config.showBorders ? BorderSide(
+                                  color: widget.config.borderColor,
+                                  width: widget.config.borderWidth,
+                                ) : BorderSide.none,
+                                bottom: BorderSide(
                                   color: widget.config.borderColor,
                                   width: widget.config.borderWidth,
                                 ),
                               ),
-                            ) : null,
+                            ),
                           child: DataGridCheckboxColumn(
                             rowIndex: widget.rowIndex,
                             isSelected: widget.isSelected,

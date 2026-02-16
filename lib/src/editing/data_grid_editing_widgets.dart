@@ -45,16 +45,24 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.value?.toString() ?? '');
+    final text = widget.value?.toString() ?? '';
+    _controller = TextEditingController(text: text);
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChanged);
+
+    void setCursorToEnd() {
+      if (mounted && _controller.text.isNotEmpty) {
+        _controller.selection = TextSelection.fromPosition(
+  TextPosition(offset: _controller.text.length),
+);
+      }
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
-        _controller.selection = TextSelection.collapsed(
-          offset: _controller.text.length,
-        );
+        setCursorToEnd();
+        Future.delayed(const Duration(milliseconds: 0), setCursorToEnd);
       }
     });
   }
@@ -94,7 +102,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       controller: _controller,
       focusNode: _focusNode,
       textAlign: widget.textAlign,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff464646)),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,
         border: InputBorder.none,
@@ -120,7 +128,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       focusNode: _focusNode,
       keyboardType: TextInputType.number,
       textAlign: widget.textAlign,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xff464646)),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,
         border: InputBorder.none,
@@ -347,26 +355,38 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
     );
   }
 
+  bool _datePickerOpened = false;
+
+  void _showDatePicker() async {
+    if (_datePickerOpened) return;
+    _datePickerOpened = true;
+
+    final date = await showDatePicker(
+      context: context,
+      initialDate: widget.value is DateTime ? widget.value : DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (date != null) {
+      widget.onValueChanged(widget.field, date);
+    }
+    if (!_saved && mounted) {
+      _saved = true;
+      widget.onSave();
+    }
+  }
+
   Widget _buildDateEditor() {
-    return InkWell(
-      onTap: () async {
-        final date = await showDatePicker(
-          context: context,
-          initialDate: widget.value is DateTime ? widget.value : DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2100),
-        );
-        if (date != null) {
-          widget.onValueChanged(widget.field, date);
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Text(
-          widget.value is DateTime 
-              ? '${widget.value.day.toString().padLeft(2, '0')}/${widget.value.month.toString().padLeft(2, '0')}/${widget.value.year}'
-              : 'Select Date',
-        ),
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _showDatePicker();
+    });
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Text(
+        widget.value is DateTime
+            ? '${widget.value.day.toString().padLeft(2, '0')}/${widget.value.month.toString().padLeft(2, '0')}/${widget.value.year}'
+            : 'Select Date',
       ),
     );
   }
