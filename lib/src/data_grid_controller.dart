@@ -98,7 +98,7 @@ class DataGridController extends ChangeNotifier {
       final totalRecords = source.rowCount;
 
       // Set initial page size to 10
-      int initialPageSize = 10;
+      int initialPageSize = 25;
 
       final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;
@@ -299,7 +299,7 @@ class DataGridController extends ChangeNotifier {
       final totalRecords = _source!.rowCount;
 
       // Set initial page size to 10
-      int initialPageSize = 10;
+      int initialPageSize = 25;
 
       final totalPages = (totalRecords / initialPageSize).ceil();
       final safeTotalPages = totalPages < 1 ? 1 : totalPages;

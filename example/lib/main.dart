@@ -133,7 +133,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         'status': statuses[statusIndex],
         'email': '${customerNames[customerIndex].split(' ').first.toLowerCase()}$i@example.com',
         'city': ['Cairo', 'Alexandria', 'Giza', 'Mansoura', 'Tanta', 'Aswan'][i % 6],
-        'rating': (3.0 + (i % 5) * 0.5),
+        'balance': 500.0 + (i * 75.0) - ((i % 7) * 120.0),
         'active': i % 2 == 0,
       });
     }
@@ -326,33 +326,16 @@ class _DataGridExampleState extends State<DataGridExample> {
         cellBuilder: (context, value) => _buildDataCell(value.toString()),
       ),
       DataGridColumn.custom(
-        dataField: 'rating',
-        caption: 'Rating',
+        dataField: 'balance',
+        caption: 'Balance',
         dataType: DataType.number,
-        width: 60,
+        width: 80,
         filterable: true,
         sortable: true,
-        headerBuilder: (context) => _buildHeaderCell('Rating'),
+        headerBuilder: (context) => _buildHeaderCell('Balance'),
         cellBuilder: (context, value) {
-          final rating = value as double;
-          return Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.star, size: 16, color: rating >= 4.0 ? Colors.amber : Colors.grey),
-                const SizedBox(width: 4),
-                Text(
-                  rating.toStringAsFixed(1),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'DexPro',
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xff464646),
-                  ),
-                ),
-              ],
-            ),
-          );
+          final balance = value as double;
+          return _buildDataCell('\$${balance.toStringAsFixed(2)}');
         },
       ),
       DataGridColumn.custom(
@@ -452,4 +435,5 @@ class _DataGridExampleState extends State<DataGridExample> {
     ];
     return months[month - 1];
   }
+
 }

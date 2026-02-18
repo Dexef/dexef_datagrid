@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +128,7 @@ class _DataGridState extends State<DataGrid> {
   final ScrollController _headerScrollController = ScrollController();
   final ScrollController _filterRowScrollController = ScrollController();
   final ScrollController _bodyScrollController = ScrollController();
+  final ScrollController _horizontalScrollController = ScrollController();
   // Removed unused variables
 
   String _searchText = '';
@@ -163,6 +165,7 @@ class _DataGridState extends State<DataGrid> {
     _headerScrollController.dispose();
     _filterRowScrollController.dispose();
     _bodyScrollController.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -202,24 +205,60 @@ class _DataGridState extends State<DataGrid> {
                     ),
               ),
               _buildSearchBar(onRefresh: widget.onRefresh),
-              _buildHeader(visibleColumns),
-              const SizedBox(height: 32),
               Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 1,
-                        width: double.infinity,
-                        color: const Color(0xFFE0E0E0),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final availableWidth = constraints.maxWidth;
+                    final checkboxExtra = widget.selectionMode == SelectionMode.multiple ? 54.0 : 0.0;
+                    final gapCount = visibleColumns.length - 1 + (widget.selectionMode == SelectionMode.multiple ? 1 : 0);
+                    final totalGaps = gapCount * 4.0;
+                    final totalColumnWidth = visibleColumns.fold<double>(
+                      0, (sum, col) => sum + (col.width ?? widget.config.minColumnWidth));
+                    final totalMinWidth = totalColumnWidth + checkboxExtra + totalGaps + 8;
+                    final contentWidth = math.max(availableWidth, totalMinWidth);
+
+                    Widget gridContent = SizedBox(
+                      width: contentWidth,
+                      child: Column(
+                        children: [
+                          _buildHeader(visibleColumns),
+                          const SizedBox(height: 32),
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                topRight: Radius.circular(12),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 1,
+                                    width: double.infinity,
+                                    color: const Color(0xFFE0E0E0),
+                                  ),
+                                  Expanded(child: _buildBody(visibleColumns)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Expanded(child: _buildBody(visibleColumns)),
-                    ],
-                  ),
+                    );
+
+                    if (contentWidth > availableWidth) {
+                      return Scrollbar(
+                        controller: _horizontalScrollController,
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          controller: _horizontalScrollController,
+                          scrollDirection: Axis.horizontal,
+                          child: gridContent,
+                        ),
+                      );
+                    }
+
+                    return gridContent;
+                  },
                 ),
               ),
               if (widget.showPaginationControls &&
