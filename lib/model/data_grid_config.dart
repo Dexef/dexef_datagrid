@@ -22,7 +22,7 @@ class DataGridConfig {
   final double maxColumnWidth;
 
   const DataGridConfig({
-    this.headerBackgroundColor = const Color(0xFFF5F5F5),
+    this.headerBackgroundColor = const Color(0xFFDCE8F5),
     this.headerTextColor = Colors.black87,
     this.rowBackgroundColor = Colors.white,
     this.alternateRowBackgroundColor = const Color(0xFFFAFAFA),

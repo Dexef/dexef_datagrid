@@ -898,7 +898,7 @@ class _DataGridState extends State<DataGrid> {
               child: Container(
                 width: 50,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFEDF2F7),
+                  color: Color(0xFFDCE8F5),
                 ),
                 child: DataGridSelectAllCheckbox(
                 isSelected: _controller.selectionState.isSelectAll,
@@ -929,7 +929,7 @@ class _DataGridState extends State<DataGrid> {
                 flex: column.width?.toInt() ?? 1,
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFFEDF2F7),
+                    color: Color(0xFFDCE8F5),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),
                       topRight: Radius.circular(12),
