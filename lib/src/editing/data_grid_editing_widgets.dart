@@ -12,6 +12,7 @@ class DataGridCellEditor extends StatefulWidget {
   final Function(String field, dynamic value) onValueChanged;
   final VoidCallback onSave;
   final VoidCallback onCancel;
+  final VoidCallback? onSaveAndNavigateNext;
   final String? errorMessage;
   final TextAlign textAlign;
 
@@ -23,6 +24,7 @@ class DataGridCellEditor extends StatefulWidget {
     required this.onValueChanged,
     required this.onSave,
     required this.onCancel,
+    this.onSaveAndNavigateNext,
     this.errorMessage,
     this.textAlign = TextAlign.center,
   });
@@ -137,7 +139,11 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       onSubmitted: (_) {
         if (!_saved) {
           _saved = true;
-          widget.onSave();
+          if (widget.onSaveAndNavigateNext != null) {
+            widget.onSaveAndNavigateNext!();
+          } else {
+            widget.onSave();
+          }
         }
       },
     );
@@ -166,7 +172,11 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       onSubmitted: (_) {
         if (!_saved) {
           _saved = true;
-          widget.onSave();
+          if (widget.onSaveAndNavigateNext != null) {
+            widget.onSaveAndNavigateNext!();
+          } else {
+            widget.onSave();
+          }
         }
       },
     );

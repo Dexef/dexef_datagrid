@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../model/data_grid_config.dart';
 import '../model/data_grid_model.dart';
@@ -22,6 +23,8 @@ class DataGridRow extends StatefulWidget {
   final Function(int)? onRowSelect;
   final Function(int, String, dynamic)? onCellEdit;
   final bool autoEditFirstCell;
+  final VoidCallback? onRowEditComplete;
+  final bool showSelectionCheckbox;
 
   const DataGridRow({
     super.key,
@@ -39,6 +42,8 @@ class DataGridRow extends StatefulWidget {
     this.onRowSelect,
     this.onCellEdit,
     this.autoEditFirstCell = false,
+    this.onRowEditComplete,
+    this.showSelectionCheckbox = true,
   });
 
   @override
@@ -92,6 +97,37 @@ class _DataGridRowState extends State<DataGridRow> {
     });
   }
 
+  void _saveAndMoveToNext() {
+    if (!mounted || _editingField == null) return;
+    final currentField = _editingField!;
+    final currentValue = _editingValue;
+
+    // Save current cell
+    if (widget.onCellEdit != null) {
+      widget.onCellEdit!(widget.rowIndex, currentField, currentValue);
+    }
+
+    // Find next editable column
+    final editableColumns = widget.columns.where((col) => col.editable).toList();
+    final currentIndex = editableColumns.indexWhere((col) => col.dataField == currentField);
+
+    if (currentIndex >= 0 && currentIndex < editableColumns.length - 1) {
+      final nextColumn = editableColumns[currentIndex + 1];
+      final nextValue = widget.rowData[nextColumn.dataField];
+      setState(() {
+        _editingField = nextColumn.dataField;
+        _editingValue = nextValue;
+      });
+    } else {
+      // No more editable cells
+      setState(() {
+        _editingField = null;
+        _editingValue = null;
+      });
+      widget.onRowEditComplete?.call();
+    }
+  }
+
   Widget _buildEditingCell(BuildContext context, DataGridColumn column, dynamic value) {
     final hasEditBuilder = column.editCellBuilder != null;
     final editor = DataGridCellEditor(
@@ -103,6 +139,7 @@ class _DataGridRowState extends State<DataGridRow> {
         _editingValue = newValue;
       },
       onSave: _saveEditing,
+      onSaveAndNavigateNext: _saveAndMoveToNext,
       onCancel: _cancelEditing,
     );
 
@@ -221,16 +258,18 @@ class _DataGridRowState extends State<DataGridRow> {
                                 ),
                               ),
                             ),
-                          child: DataGridCheckboxColumn(
-                            rowIndex: widget.rowIndex,
-                            isSelected: widget.isSelected,
-                            onChanged: (value) {
-                              if (widget.onRowSelect != null) {
-                                widget.onRowSelect!(widget.rowIndex);
-                              }
-                            },
-                            config: widget.config,
-                          ),
+                          child: widget.showSelectionCheckbox
+                              ? DataGridCheckboxColumn(
+                                  rowIndex: widget.rowIndex,
+                                  isSelected: widget.isSelected,
+                                  onChanged: (value) {
+                                    if (widget.onRowSelect != null) {
+                                      widget.onRowSelect!(widget.rowIndex);
+                                    }
+                                  },
+                                  config: widget.config,
+                                )
+                              : const SizedBox.shrink(),
                         ),
                       ),
                     ],

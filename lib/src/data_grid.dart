@@ -1481,18 +1481,50 @@ class _DataGridState extends State<DataGrid> {
                 )
               : null,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        alignment: Alignment.centerLeft,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.add, size: 18, color: Color(0xFF9E9E9E)),
-            SizedBox(width: 8),
-            Text(
-              'Click here to add a new row',
-              style: TextStyle(
-                fontSize: 13,
-                color: Color(0xFF9E9E9E),
+          children: [
+            if (widget.selectionMode == SelectionMode.multiple) ...[
+              Container(
+                width: 6,
+                height: widget.config.rowHeight,
+                color: const Color(0xff2196F3),
+              ),
+              SizedBox(
+                width: 50,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      right: widget.config.showBorders
+                          ? BorderSide(
+                              color: widget.config.borderColor,
+                              width: widget.config.borderWidth,
+                            )
+                          : BorderSide.none,
+                      bottom: BorderSide(
+                        color: widget.config.borderColor,
+                        width: widget.config.borderWidth,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.add, size: 18, color: Color(0xFF9E9E9E)),
+                  SizedBox(width: 8),
+                  Text(
+                    'Click here to add a new row',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF9E9E9E),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -1509,20 +1541,29 @@ class _DataGridState extends State<DataGrid> {
       rowIndex: -1,
       editMode: widget.editMode != EditMode.none ? widget.editMode : EditMode.cell,
       autoEditFirstCell: true,
-      selectionMode: SelectionMode.none,
+      selectionMode: widget.selectionMode,
+      showSelectionCheckbox: false,
       onCellEdit: (rowIndex, field, value) {
-        if (value == null || (value is String && value.trim().isEmpty)) {
-          setState(() {
-            _isAddingNewRow = false;
-          });
-          return;
+        // Accumulate values while navigating between cells
+        _newRowData[field] = value;
+      },
+      onRowEditComplete: () {
+        // Check if any meaningful data was entered
+        bool hasData = false;
+        for (final col in columns) {
+          final v = _newRowData[col.dataField];
+          if (v is String && v.trim().isNotEmpty) { hasData = true; break; }
+          if (v is num && v != 0) { hasData = true; break; }
         }
-        // Add the row to the data source
-        widget.onAddNew?.call();
-        // Update the newly added row with the entered value
-        if (widget.onCellEdit != null && _controller.source != null) {
-          final newRowIndex = _controller.source!.data.length - 1;
-          widget.onCellEdit!(newRowIndex, field, value);
+
+        if (hasData) {
+          widget.onAddNew?.call();
+          if (widget.onCellEdit != null && _controller.source != null) {
+            final newRowIndex = _controller.source!.data.length - 1;
+            for (final entry in _newRowData.entries) {
+              widget.onCellEdit!(newRowIndex, entry.key, entry.value);
+            }
+          }
         }
         setState(() {
           _isAddingNewRow = false;
