@@ -21,6 +21,7 @@ class DataGridColumn {
   final Widget Function(BuildContext)? headerBuilder;
   final String? format; // for dates and numbers
   final List<String>? listItems; // for list/dropdown columns
+  final String? hintText; // hint text shown in editor when value is empty
 
   const DataGridColumn({
     required this.dataField,
@@ -37,6 +38,7 @@ class DataGridColumn {
     this.headerBuilder,
     this.format,
     this.listItems,
+    this.hintText,
   });
 
   /// Creates a text column
@@ -170,6 +172,7 @@ class DataGridColumn {
     bool editable = true,
     Widget Function(BuildContext)? headerBuilder,
     List<String>? listItems,
+    String? hintText,
   }) {
     return DataGridColumn(
       dataField: dataField,
@@ -185,6 +188,7 @@ class DataGridColumn {
       editCellBuilder: editCellBuilder,
       headerBuilder: headerBuilder,
       listItems: listItems,
+      hintText: hintText,
     );
   }
 

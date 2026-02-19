@@ -758,6 +758,11 @@ class DataGridController extends ChangeNotifier {
     return displayIndex;
   }
 
+  /// Gets the source data index from a filtered-data-relative index
+  int getSourceDataIndex(int filteredIndex) {
+    return _getOriginalDataIndex(filteredIndex);
+  }
+
   /// Gets the selected row data
   List<Map<String, dynamic>> getSelectedRowData() {
     if (_source == null) return [];

@@ -68,6 +68,8 @@ class DataGrid extends StatefulWidget {
   final VoidCallback? onPrint;
   final VoidCallback? onShare;
   final VoidCallback? onRefresh;
+  /// Whether to show an "add new row" button at the end of the data rows.
+  final bool showAddNewRow;
   // Optional: جلب كل البيانات من API عند التصدير/الطباعة (بدون الاعتماد على الصفحة الحالية)
   final Future<List<Map<String, dynamic>>> Function()? fetchAllDataForExport;
 
@@ -116,6 +118,7 @@ class DataGrid extends StatefulWidget {
     this.onPrint,
     this.onShare,
     this.onRefresh,
+    this.showAddNewRow = false,
     this.fetchAllDataForExport,
   });
 
@@ -132,6 +135,10 @@ class _DataGridState extends State<DataGrid> {
   // Removed unused variables
 
   String _searchText = '';
+  bool _autoEditNewRow = false;
+  bool _isAddingNewRow = false;
+  Map<String, dynamic> _newRowData = {};
+  int _lastKnownPage = 1;
 
   @override
   void initState() {
@@ -156,7 +163,14 @@ class _DataGridState extends State<DataGrid> {
   void didUpdateWidget(DataGrid oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.source != oldWidget.source && widget.source != null) {
+      // Use _lastKnownPage saved from the previous build frame
+      final pageToRestore = _lastKnownPage;
       _controller.setSource(widget.source!);
+      // Restore the page the user was on
+      if (widget.paginationMode == PaginationMode.client) {
+        final maxPage = _controller.paginationState.totalPages;
+        _controller.goToPage(pageToRestore.clamp(1, maxPage));
+      }
     }
   }
 
@@ -174,6 +188,9 @@ class _DataGridState extends State<DataGrid> {
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, child) {
+        // Save current page so didUpdateWidget can restore it
+        _lastKnownPage = _controller.paginationState.currentPage;
+
         if (widget.loadingWidget != null &&
             _controller.source?.isLoading == true) {
           return widget.loadingWidget!;
@@ -1379,36 +1396,138 @@ class _DataGridState extends State<DataGrid> {
       );
     }
 
-    return Column(
-      children: displayData.asMap().entries.map((entry) {
-        final index = entry.key;
+    final shouldAutoEdit = _autoEditNewRow;
+    if (shouldAutoEdit) {
+      _autoEditNewRow = false;
+    }
+
+    // Compute pagination offset so indices map to the full filtered data
+    final paginationOffset = widget.paginationMode == PaginationMode.client
+        ? _controller.paginationState.startIndex
+        : 0;
+
+    final rows = displayData.asMap().entries.map<Widget>((entry) {
+        final pageIndex = entry.key;
         final rowData = entry.value;
-        final isSelected = _controller.isRowSelected(index);
-        final isAlternateRow = index % 2 == 1;
+        final filteredIndex = paginationOffset + pageIndex;
+        final isSelected = _controller.isRowSelected(filteredIndex);
+        final isAlternateRow = pageIndex % 2 == 1;
+        final isLastRow = pageIndex == displayData.length - 1;
 
         return DataGridRow(
           rowData: rowData,
           columns: columns,
           config: widget.config,
-          rowIndex: index,
+          rowIndex: filteredIndex,
           isSelected: isSelected,
           isAlternateRow: isAlternateRow,
-          onRowTap: () => _onRowTap(index),
+          onRowTap: () => _onRowTap(filteredIndex),
           onCellTap: widget.onCellTap,
           selectionMode: widget.selectionMode,
           editMode: widget.editMode,
-          isEditing: _controller.isEditingRow(index),
+          isEditing: _controller.isEditingRow(filteredIndex),
           onRowSelect: (rowIndex) {
             if (widget.selectionMode == SelectionMode.single) {
               _controller.clearSelection();
-              _controller.selectRow(rowIndex);
-            } else if (widget.selectionMode == SelectionMode.multiple) {
-              _controller.toggleRowSelection(rowIndex);
             }
+            _controller.toggleRowSelection(rowIndex);
           },
-          onCellEdit: widget.onCellEdit,
+          onCellEdit: widget.onCellEdit != null ? (rowIndex, field, value) {
+            // Convert filtered index to source data index
+            final sourceIndex = _controller.getSourceDataIndex(rowIndex);
+            widget.onCellEdit!(sourceIndex, field, value);
+          } : null,
+          autoEditFirstCell: shouldAutoEdit && isLastRow,
         );
-      }).toList(),
+      }).toList();
+
+    if (widget.showAddNewRow && widget.onAddNew != null) {
+      if (_isAddingNewRow) {
+        rows.add(_buildNewRowEditor(columns));
+      } else {
+        rows.add(_buildAddNewRowButton());
+      }
+    }
+
+    return Column(children: rows);
+  }
+
+  Widget _buildAddNewRowButton() {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isAddingNewRow = true;
+          _newRowData = {};
+          for (final col in widget.columns.where((c) => c.visible)) {
+            switch (col.dataType) {
+              case DataType.boolean:
+                _newRowData[col.dataField] = false;
+              case DataType.number:
+                _newRowData[col.dataField] = 0;
+              case DataType.date:
+                _newRowData[col.dataField] = DateTime.now();
+              default:
+                _newRowData[col.dataField] = '';
+            }
+          }
+        });
+      },
+      child: Container(
+        height: widget.config.rowHeight,
+        decoration: BoxDecoration(
+          border: widget.config.showHorizontalBorders
+              ? const Border(
+                  bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1),
+                )
+              : null,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.add, size: 18, color: Color(0xFF9E9E9E)),
+            SizedBox(width: 8),
+            Text(
+              'Click here to add a new row',
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF9E9E9E),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewRowEditor(List<DataGridColumn> columns) {
+    return DataGridRow(
+      rowData: _newRowData,
+      columns: columns,
+      config: widget.config,
+      rowIndex: -1,
+      editMode: widget.editMode != EditMode.none ? widget.editMode : EditMode.cell,
+      autoEditFirstCell: true,
+      selectionMode: SelectionMode.none,
+      onCellEdit: (rowIndex, field, value) {
+        if (value == null || (value is String && value.trim().isEmpty)) {
+          setState(() {
+            _isAddingNewRow = false;
+          });
+          return;
+        }
+        // Add the row to the data source
+        widget.onAddNew?.call();
+        // Update the newly added row with the entered value
+        if (widget.onCellEdit != null && _controller.source != null) {
+          final newRowIndex = _controller.source!.data.length - 1;
+          widget.onCellEdit!(newRowIndex, field, value);
+        }
+        setState(() {
+          _isAddingNewRow = false;
+        });
+      },
     );
   }
 

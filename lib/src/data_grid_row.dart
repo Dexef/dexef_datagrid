@@ -21,6 +21,7 @@ class DataGridRow extends StatefulWidget {
   final bool isEditing;
   final Function(int)? onRowSelect;
   final Function(int, String, dynamic)? onCellEdit;
+  final bool autoEditFirstCell;
 
   const DataGridRow({
     super.key,
@@ -37,6 +38,7 @@ class DataGridRow extends StatefulWidget {
     this.isEditing = false,
     this.onRowSelect,
     this.onCellEdit,
+    this.autoEditFirstCell = false,
   });
 
   @override
@@ -47,6 +49,23 @@ class _DataGridRowState extends State<DataGridRow> {
   bool isHover = false;
   String? _editingField;
   dynamic _editingValue;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoEditFirstCell && widget.editMode != EditMode.none && widget.onCellEdit != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final firstEditableColumn = widget.columns
+            .where((col) => col.editable)
+            .firstOrNull;
+        if (firstEditableColumn != null) {
+          final value = widget.rowData[firstEditableColumn.dataField];
+          _startEditing(firstEditableColumn.dataField, value);
+        }
+      });
+    }
+  }
 
   void _startEditing(String field, dynamic value) {
     setState(() {

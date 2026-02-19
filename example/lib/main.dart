@@ -181,7 +181,32 @@ class _DataGridExampleState extends State<DataGridExample> {
           _source.data[rowIndex][field] = value;
         });
       },
-      onAddNew: widget.onAddNew,
+      showAddNewRow: true,
+      onAddNew: () {
+        setState(() {
+          _source.data.add({
+            'id': _source.data.length + 1,
+            'customerName': '',
+            'customerId': '#${(_source.data.length + 1).toString().padLeft(3, '0')}',
+            'phone1': '',
+            'phone2': '',
+            'lastPurchaseDate': DateTime.now(),
+            'daysAgo': 0,
+            'orders': 0,
+            'totalSpent': 0.0,
+            'status': 'New',
+            'email': '',
+            'city': '',
+            'balance': 0.0,
+            'active': false,
+          });
+          _source = DataGridSource(
+            data: _source.data,
+            totalCount: _source.data.length,
+          );
+          _controller.setSource(_source);
+        });
+      },
       onDuplicate: widget.onDuplicate,
       onEdit: widget.onEdit,
       onDelete: widget.onDelete,
@@ -209,7 +234,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 16,
+          fontSize: 13,
           fontFamily: 'DexPro',
           color: Color(0xff464646),
           fontWeight: FontWeight.w500,
@@ -232,10 +257,23 @@ class _DataGridExampleState extends State<DataGridExample> {
   ];
 
   Widget _buildInitialsCircle(String name) {
+    if (name.trim().isEmpty) {
+      return Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
+        ),
+        child: const Center(
+          child: Icon(Icons.person, size: 18, color: Colors.grey),
+        ),
+      );
+    }
     final parts = name.split(' ');
     final initials = parts.length >= 2
         ? '${parts.first[0]}${parts.last[0]}'.toUpperCase()
-        : name.substring(0, 2).toUpperCase();
+        : name.substring(0, name.length >= 2 ? 2 : name.length).toUpperCase();
     final color = _avatarColors[name.hashCode.abs() % _avatarColors.length];
     return Container(
       width: 36,
@@ -265,6 +303,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         caption: 'Customer',
         width: 160,
         filterable: true,
+        hintText: 'Enter name...',
         headerBuilder: (context) => _buildHeaderCell('Customer'),
         cellBuilder: (context, value) {
           return Row(
@@ -276,7 +315,7 @@ class _DataGridExampleState extends State<DataGridExample> {
                 child: Text(
                   value.toString(),
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 13,
                     fontFamily: 'DexPro',
                     color: Color(0xff464646),
                     fontWeight: FontWeight.w500,

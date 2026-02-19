@@ -3,7 +3,9 @@
     "allow": [
       "Bash(wc:*)",
       "Bash(flutter pub get:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(flutter doctor:*)",
+      "Bash(flutter clean:*)"
     ]
   }
 }

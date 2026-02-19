@@ -122,12 +122,14 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
         ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))]
         : null,
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         isDense: true,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
         contentPadding: EdgeInsets.zero,
+        hintText: widget.column.hintText,
+        hintStyle: const TextStyle(fontSize: 14, color: Color(0xff999FA7)),
       ),
       onChanged: (value) {
         widget.onValueChanged(widget.field, value);
