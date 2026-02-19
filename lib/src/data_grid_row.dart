@@ -54,6 +54,7 @@ class _DataGridRowState extends State<DataGridRow> {
   bool isHover = false;
   String? _editingField;
   dynamic _editingValue;
+  Timer? _autoCommitTimer;
 
   @override
   void initState() {
@@ -72,7 +73,14 @@ class _DataGridRowState extends State<DataGridRow> {
     }
   }
 
+  @override
+  void dispose() {
+    _autoCommitTimer?.cancel();
+    super.dispose();
+  }
+
   void _startEditing(String field, dynamic value) {
+    _autoCommitTimer?.cancel();
     setState(() {
       _editingField = field;
       _editingValue = value;
@@ -80,6 +88,7 @@ class _DataGridRowState extends State<DataGridRow> {
   }
 
   void _cancelEditing() {
+    _autoCommitTimer?.cancel();
     setState(() {
       _editingField = null;
       _editingValue = null;
@@ -95,6 +104,15 @@ class _DataGridRowState extends State<DataGridRow> {
       _editingField = null;
       _editingValue = null;
     });
+    // Auto-commit after a short delay if no other cell starts editing
+    if (widget.onRowEditComplete != null) {
+      _autoCommitTimer?.cancel();
+      _autoCommitTimer = Timer(const Duration(milliseconds: 200), () {
+        if (mounted && _editingField == null) {
+          widget.onRowEditComplete!();
+        }
+      });
+    }
   }
 
   void _saveAndMoveToNext() {
