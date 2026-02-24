@@ -379,12 +379,16 @@ class _DataGridExampleState extends State<DataGridExample> {
             'Morocco': Color(0xFF3A7BD5),
             'Qatar': Color(0xFF1ABC9C),
           };
-          final color = countryColors[value.toString()] ?? const Color(0xFF95A5A6);
+          final str = value?.toString() ?? '';
+          final color = countryColors[str];
+          if (color == null || str.isEmpty) {
+            return const SizedBox.shrink();
+          }
           return Container(
             color: color,
             alignment: Alignment.center,
             child: Text(
-              value.toString(),
+              str,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
@@ -461,13 +465,16 @@ class _DataGridExampleState extends State<DataGridExample> {
             'New': Color(0xFFE8A838),
             'Inactive': Color(0xFF3A7BD5),
           };
-          final color =
-              statusColors[value.toString()] ?? const Color(0xFF5AACD4);
+          final str = value?.toString() ?? '';
+          final color = statusColors[str];
+          if (color == null || str.isEmpty) {
+            return const SizedBox.shrink();
+          }
           return Container(
             color: color,
             alignment: Alignment.center,
             child: Text(
-              value.toString(),
+              str,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,

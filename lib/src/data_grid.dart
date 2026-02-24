@@ -139,6 +139,9 @@ class _DataGridState extends State<DataGrid> {
   bool _isAddingNewRow = false;
   Map<String, dynamic> _newRowData = {};
   int _lastKnownPage = 1;
+  int _extraRowsOnPage = 0;
+  int _extraRowsAddedOnPage = -1;
+  bool _justAddedRow = false;
 
   @override
   void initState() {
@@ -163,6 +166,12 @@ class _DataGridState extends State<DataGrid> {
   void didUpdateWidget(DataGrid oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.source != oldWidget.source && widget.source != null) {
+      // Reset extra rows only on real refresh, not when we just added a row
+      if (!_justAddedRow) {
+        _extraRowsOnPage = 0;
+        _extraRowsAddedOnPage = -1;
+      }
+      _justAddedRow = false;
       // Use _lastKnownPage saved from the previous build frame
       final pageToRestore = _lastKnownPage;
       _controller.setSource(widget.source!);
@@ -1441,6 +1450,46 @@ class _DataGridState extends State<DataGrid> {
         );
       }).toList();
 
+    // Show extra rows added on this page (beyond normal page size)
+    final currentPage = _controller.paginationState.currentPage;
+    if (_extraRowsOnPage > 0 && _extraRowsAddedOnPage == currentPage) {
+      final allData = _controller.getAllDisplayData(onlyVisibleFields: false);
+      final pageEnd = paginationOffset + displayData.length;
+      for (int i = 0; i < _extraRowsOnPage; i++) {
+        final extraIdx = pageEnd + i;
+        if (extraIdx < allData.length) {
+          final rowData = allData[extraIdx];
+          final isAlternateRow = (displayData.length + i) % 2 == 1;
+          rows.add(DataGridRow(
+            rowData: rowData,
+            columns: columns,
+            config: widget.config,
+            rowIndex: extraIdx,
+            isAlternateRow: isAlternateRow,
+            onRowTap: () => _onRowTap(extraIdx),
+            onCellTap: widget.onCellTap,
+            selectionMode: widget.selectionMode,
+            editMode: widget.editMode,
+            isEditing: _controller.isEditingRow(extraIdx),
+            onRowSelect: (rowIndex) {
+              if (widget.selectionMode == SelectionMode.single) {
+                _controller.clearSelection();
+              }
+              _controller.toggleRowSelection(rowIndex);
+            },
+            onCellEdit: widget.onCellEdit != null ? (rowIndex, field, value) {
+              final sourceIndex = _controller.getSourceDataIndex(rowIndex);
+              widget.onCellEdit!(sourceIndex, field, value);
+            } : null,
+          ));
+        }
+      }
+    } else if (_extraRowsOnPage > 0 && _extraRowsAddedOnPage != currentPage) {
+      // Navigated to a different page - clear extra rows
+      _extraRowsOnPage = 0;
+      _extraRowsAddedOnPage = -1;
+    }
+
     if (widget.showAddNewRow && widget.onAddNew != null) {
       if (_isAddingNewRow) {
         rows.add(_buildNewRowEditor(columns));
@@ -1548,6 +1597,9 @@ class _DataGridState extends State<DataGrid> {
         _newRowData[field] = value;
       },
       onRowEditComplete: () {
+        // Save current page before anything changes (onAddNew resets pagination)
+        final pageToKeep = _controller.paginationState.currentPage;
+
         // Check if any meaningful data was entered
         bool hasData = false;
         for (final col in columns) {
@@ -1557,14 +1609,44 @@ class _DataGridState extends State<DataGrid> {
         }
 
         if (hasData) {
+          // Calculate where to insert: account for already-added extra rows
+          final insertIndex = widget.paginationMode == PaginationMode.client
+              ? _controller.paginationState.startIndex + _controller.getDisplayData().length + _extraRowsOnPage
+              : _controller.source?.data.length ?? 0;
+
+          // Flag so didUpdateWidget doesn't clear extra rows
+          _justAddedRow = true;
+
+          // Add the row (appended at end by onAddNew)
           widget.onAddNew?.call();
-          if (widget.onCellEdit != null && _controller.source != null) {
-            final newRowIndex = _controller.source!.data.length - 1;
-            for (final entry in _newRowData.entries) {
-              widget.onCellEdit!(newRowIndex, entry.key, entry.value);
+
+          // Move the row from the end to the correct position
+          if (_controller.source != null) {
+            final data = _controller.source!.data;
+            final lastIndex = data.length - 1;
+            if (insertIndex < lastIndex && insertIndex >= 0) {
+              final newRow = data.removeAt(lastIndex);
+              data.insert(insertIndex, newRow);
             }
           }
+
+          // Update cell values at the inserted position
+          if (widget.onCellEdit != null && _controller.source != null) {
+            final actualIndex = insertIndex < _controller.source!.data.length
+                ? insertIndex
+                : _controller.source!.data.length - 1;
+            for (final entry in _newRowData.entries) {
+              widget.onCellEdit!(actualIndex, entry.key, entry.value);
+            }
+          }
+
+          // Track this as an extra row on the current page
+          _extraRowsOnPage++;
+          _extraRowsAddedOnPage = pageToKeep;
         }
+
+        // Restore page so didUpdateWidget uses the correct value
+        _lastKnownPage = pageToKeep;
         setState(() {
           _isAddingNewRow = false;
         });
