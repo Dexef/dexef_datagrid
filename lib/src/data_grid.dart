@@ -418,7 +418,7 @@ class _DataGridState extends State<DataGrid> {
                     icon: Icons.delete,
                     label: 'Delete',
                     onTap: widget.onDelete,
-                    isActive: false),
+                    isActive: true),
                 const SizedBox(width: 8),
                 // Print button
                 _buildActionButton(
