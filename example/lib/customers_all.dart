@@ -84,8 +84,9 @@ class _CustomersAllPageState extends State<CustomersAllPage> {
       _logPrint(results);
       return results;
     } catch (e) {
-      if (_debugLogging)
+      if (_debugLogging) {
         debugPrint('Page-number pagination attempt failed: $e');
+      }
     }
 
     // 2) Offset/limit based
@@ -100,8 +101,9 @@ class _CustomersAllPageState extends State<CustomersAllPage> {
       _logPrint(results);
       return results;
     } catch (e) {
-      if (_debugLogging)
+      if (_debugLogging) {
         debugPrint('Offset/limit pagination attempt failed: $e');
+      }
     }
 
     // 3) Cursor-based
@@ -160,13 +162,13 @@ class _CustomersAllPageState extends State<CustomersAllPage> {
     if (_hasPlaceholders && !_useMock) {
       return Scaffold(
         appBar: AppBar(title: const Text('All Customers')),
-        body: Center(
+        body: const Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.info_outline, color: Colors.blue),
                 SizedBox(height: 8),
                 Text(
@@ -329,7 +331,7 @@ class CustomersApi {
       debugPrint('← ${resp.statusCode} ${resp.reasonPhrase}');
       final body = resp.body;
       debugPrint(
-          'Body (${body.length} chars): ${body.length > 1000 ? body.substring(0, 1000) + '…' : body}');
+          'Body (${body.length} chars): ${body.length > 1000 ? '${body.substring(0, 1000)}…' : body}');
     }
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
       throw HttpException('${resp.statusCode}: ${resp.body}');

@@ -145,8 +145,9 @@ class DataGridController extends ChangeNotifier {
 
   // Selection methods
   void selectRow(int rowIndex) {
-    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount)
+    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount) {
       return;
+    }
 
     final newSelectedRows = Set<int>.from(_selectionState.selectedRows);
     newSelectedRows.add(rowIndex);
@@ -199,8 +200,9 @@ class DataGridController extends ChangeNotifier {
 
   // Editing methods
   void startCellEdit(int rowIndex, String field) {
-    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount)
+    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount) {
       return;
+    }
 
     final rowData = _source!.getRow(rowIndex);
     if (rowData == null) return;
@@ -215,8 +217,9 @@ class DataGridController extends ChangeNotifier {
   }
 
   void startRowEdit(int rowIndex) {
-    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount)
+    if (_source == null || rowIndex < 0 || rowIndex >= _source!.rowCount) {
       return;
+    }
 
     final rowData = _source!.getRow(rowIndex);
     if (rowData == null) return;
@@ -610,7 +613,9 @@ class DataGridController extends ChangeNotifier {
   void sortByColumn(int columnIndex) {
     if (_source == null ||
         columnIndex < 0 ||
-        columnIndex >= _source!.data.first.keys.length) return;
+        columnIndex >= _source!.data.first.keys.length) {
+      return;
+    }
 
     final field = _source!.data.first.keys.elementAt(columnIndex);
 
