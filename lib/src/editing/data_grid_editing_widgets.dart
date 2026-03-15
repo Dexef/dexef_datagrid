@@ -573,7 +573,7 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
     final currentValue = widget.rowData[column.dataField]?.toString() ?? '';
 
     return DropdownButtonFormField<String>(
-      value: items.contains(currentValue) ? currentValue : null,
+      initialValue: items.contains(currentValue) ? currentValue : null,
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -627,7 +627,7 @@ class _DataGridFormEditorState extends State<DataGridFormEditor> {
         : widget.rowData[column.dataField]?.toString().toLowerCase() == 'true';
     
     return DropdownButtonFormField<bool>(
-      value: boolValue,
+      initialValue: boolValue,
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

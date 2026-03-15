@@ -346,7 +346,6 @@ class _DataGridState extends State<DataGrid> {
               height: 42,
               child: Theme(
                 data: Theme.of(context).copyWith(
-                    useMaterial3: false,
                     inputDecorationTheme: const InputDecorationTheme()),
                 child: TextField(
                   maxLines: 1,
@@ -419,7 +418,7 @@ class _DataGridState extends State<DataGrid> {
                     icon: Icons.delete,
                     label: 'Delete',
                     onTap: widget.onDelete,
-                    isActive: false),
+                    isActive: true),
                 const SizedBox(width: 8),
                 // Print button
                 _buildActionButton(
@@ -547,7 +546,7 @@ class _DataGridState extends State<DataGrid> {
                 text: label,
                 isTextTheme: true,
                 themeStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Color(0xff4B4B4B),
+                      color: const Color(0xff4B4B4B),
                       fontSize:
                           AppFontSize().setFontSize(context, webFontSize: 12),
                       fontWeight: FontWeight.bold,
@@ -590,8 +589,8 @@ class _DataGridState extends State<DataGrid> {
           value: 'refresh',
           child: Row(
             children: [
-              Icon(Icons.refresh, size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.refresh, size: 18),
+              const SizedBox(width: 8),
               DefaultText(
                 text: 'Refresh',
                 fontColor: Colors.black,
@@ -604,8 +603,8 @@ class _DataGridState extends State<DataGrid> {
           value: 'settings',
           child: Row(
             children: [
-              Icon(Icons.settings, size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.settings, size: 18),
+              const SizedBox(width: 8),
               DefaultText(
                 text: 'Settings',
                 fontColor: Colors.black,
@@ -617,8 +616,8 @@ class _DataGridState extends State<DataGrid> {
           value: 'help',
           child: Row(
             children: [
-              Icon(Icons.help, size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.help, size: 18),
+              const SizedBox(width: 8),
               DefaultText(
                 text: 'Help',
                 fontColor: Colors.black,
@@ -1276,8 +1275,8 @@ class _DataGridState extends State<DataGrid> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
             DefaultText(
               text: 'Loading data...',
               fontColor: Colors.black,
@@ -1293,12 +1292,12 @@ class _DataGridState extends State<DataGrid> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
+            const SizedBox(
               width: 40,
               height: 40,
               child: CircularProgressIndicator(strokeWidth: 3),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DefaultText(
               text: 'Loading data...',
               fontColor: Colors.black,
@@ -1559,11 +1558,11 @@ class _DataGridState extends State<DataGrid> {
                 ),
               ),
             ],
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(Icons.add, size: 18, color: Color(0xFF9E9E9E)),
                   SizedBox(width: 8),
                   Text(
@@ -1659,7 +1658,7 @@ class _DataGridState extends State<DataGrid> {
     if (groupedData.isEmpty) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: DefaultText(
             text: 'No data to display',
             fontColor: Colors.black,

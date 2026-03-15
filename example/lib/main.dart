@@ -10,9 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(
+      home: Scaffold(
         backgroundColor: Colors.white,
         body: DataGridExample(),
       ),

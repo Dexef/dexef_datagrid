@@ -1021,11 +1021,11 @@ class _OptimizedDataGridState extends State<OptimizedDataGrid> {
               ),
               const SizedBox(height: 16),
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter filter value...',
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(),
                   contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 controller: TextEditingController(text: filterValue),
                 onChanged: (value) {

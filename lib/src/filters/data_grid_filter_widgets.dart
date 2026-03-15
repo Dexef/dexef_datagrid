@@ -53,7 +53,7 @@ class _DataGridTextFilterWidgetState extends State<DataGridTextFilterWidget> {
           SizedBox(
             width: 200,
             child: DropdownButtonFormField<FilterType>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: const InputDecoration(
                 labelText: 'Filter Type',
                 border: OutlineInputBorder(),
@@ -183,7 +183,7 @@ class _DataGridNumberFilterWidgetState extends State<DataGridNumberFilterWidget>
           SizedBox(
             width: 200,
             child: DropdownButtonFormField<FilterType>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: const InputDecoration(
                 labelText: 'Filter Type',
                 border: OutlineInputBorder(),
@@ -327,7 +327,7 @@ class _DataGridDateFilterWidgetState extends State<DataGridDateFilterWidget> {
           SizedBox(
             width: 200,
             child: DropdownButtonFormField<FilterType>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: const InputDecoration(
                 labelText: 'Filter Type',
                 border: OutlineInputBorder(),

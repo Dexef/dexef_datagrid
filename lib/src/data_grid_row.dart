@@ -248,7 +248,7 @@ class _DataGridRowState extends State<DataGridRow> {
                   isHover = false;
                 });
               },
-              child: Container(
+              child: SizedBox(
                 height: widget.config.rowHeight,
                 width: double.infinity,
                 child: Row(
