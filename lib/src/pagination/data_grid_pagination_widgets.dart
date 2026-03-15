@@ -23,11 +23,8 @@ class DataGridPaginationControls extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        // border: Border(
-        //   top: BorderSide(color: Colors.grey.shade300),
-        // ),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF0F0F0),
       ),
       child: Row(
         children: [
@@ -307,7 +304,7 @@ class DataGridVirtualScrollIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: const Color(0xFFF0F0F0),
         border: Border(
           top: BorderSide(color: Colors.grey.shade300),
         ),
