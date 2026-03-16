@@ -598,13 +598,14 @@ class _DataGridState extends State<DataGrid> {
     required VoidCallback? onTap,
     bool isActive = true,
   }) {
-    return MouseRegion(
-      cursor:
-          isActive ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
-      child: GestureDetector(
-        onTap: onTap,
-        // borderRadius: BorderRadius.circular(8),
-        child: Container(
+    return Tooltip(
+      message: label,
+      child: MouseRegion(
+        cursor:
+            isActive ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
           decoration: BoxDecoration(
@@ -633,6 +634,7 @@ class _DataGridState extends State<DataGrid> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
