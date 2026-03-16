@@ -70,6 +70,8 @@ class DataGrid extends StatefulWidget {
   final VoidCallback? onRefresh;
   /// Whether to show an "add new row" button at the end of the data rows.
   final bool showAddNewRow;
+  /// Whether to show a summary row with totals for numeric columns.
+  final bool showSummaryRow;
   // Optional: جلب كل البيانات من API عند التصدير/الطباعة (بدون الاعتماد على الصفحة الحالية)
   final Future<List<Map<String, dynamic>>> Function()? fetchAllDataForExport;
 
@@ -119,6 +121,7 @@ class DataGrid extends StatefulWidget {
     this.onShare,
     this.onRefresh,
     this.showAddNewRow = false,
+    this.showSummaryRow = false,
     this.fetchAllDataForExport,
   });
 
@@ -287,11 +290,13 @@ class _DataGridState extends State<DataGrid> {
                   },
                 ),
               ),
+              if (widget.showSummaryRow && _controller.source?.hasData == true)
+                _buildSummaryRow(visibleColumns),
               if (widget.showPaginationControls &&
                   widget.paginationMode != PaginationMode.none &&
                   _controller.source?.hasData == true)
                 Padding(
-                  padding: const EdgeInsets.only(top: 24),
+                  padding: const EdgeInsets.only(top: 8),
                   child: DataGridPaginationControls(
                     pagination: _controller.paginationState,
                     onPaginationChanged: (pagination) {
@@ -315,11 +320,85 @@ class _DataGridState extends State<DataGrid> {
     );
   }
 
+  Widget _buildSummaryRow(List<DataGridColumn> visibleColumns) {
+    final source = _controller.source;
+    if (source == null) return const SizedBox.shrink();
+
+    // Use filtered/searched data for summary calculation
+    final displayedData = _controller.getAllDisplayData(onlyVisibleFields: false);
+
+    // Calculate totals for numeric columns
+    final Map<String, double> totals = {};
+    for (final col in visibleColumns) {
+      if (col.dataType == DataType.number) {
+        double sum = 0;
+        for (final row in displayedData) {
+          final value = row[col.dataField];
+          if (value is num) {
+            sum += value.toDouble();
+          }
+        }
+        totals[col.dataField] = sum;
+      }
+    }
+
+    if (totals.isEmpty) return const SizedBox.shrink();
+
+    final checkboxExtra = widget.selectionMode == SelectionMode.multiple ? 54.0 : 0.0;
+
+    return Container(
+      height: 40,
+      margin: const EdgeInsets.only(top: 8, left: 4, right: 4),
+      child: Row(
+        children: [
+          if (widget.selectionMode == SelectionMode.multiple) ...[
+            SizedBox(width: 50),
+            const SizedBox(width: 4),
+          ],
+          ...visibleColumns.asMap().entries.expand((entry) {
+            final index = entry.key;
+            final col = entry.value;
+            final total = totals[col.dataField];
+            return [
+              if (index > 0)
+                const SizedBox(width: 4),
+              Expanded(
+                flex: col.width?.toInt() ?? 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFFE0E0E0), width: 0.5),
+                  ),
+                  alignment: Alignment.center,
+                  child: total != null
+                      ? Text(
+                          total == total.roundToDouble()
+                              ? total.toInt().toString()
+                              : total.toStringAsFixed(2),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff464646),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ];
+          }),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSearchBar({
     required VoidCallback? onRefresh,
   }) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 18),
+      color: Colors.white.withValues(alpha: 0.8),
       child: Row(
         children: [
           // Add New button

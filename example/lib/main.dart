@@ -170,6 +170,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       paginationMode: PaginationMode.client,
       virtualScrollMode: VirtualScrollMode.none,
       showPaginationControls: true,
+      showSummaryRow: true,
       currentView: widget.currentView,
       onViewChanged: widget.onViewChanged,
       onSelectionChanged: (selectedRows) {
