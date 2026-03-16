@@ -153,7 +153,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       controller: _controller,
       config: const DataGridConfig(
         rowHeight: 48,
-        headerHeight: 40,
+        headerHeight: 28,
         minColumnWidth: 120,
         showBorders: true,
         showHorizontalBorders: true,

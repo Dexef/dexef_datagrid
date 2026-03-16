@@ -103,16 +103,6 @@ class _DataGridCellState extends State<DataGridCell> {
       return Colors.blue.withValues(alpha: 0.2);
     }
 
-    // Cell hover takes priority over row hover
-    if (_isCellHover) {
-      return Colors.grey.withValues(alpha: 0.2); // Darker grey for cell hover
-    }
-
-    // Row hover
-    if (widget.isRowHover) {
-      return Colors.grey.withValues(alpha: 0.1); // Light grey for row hover
-    }
-
     // Default white background
     return Colors.white;
   }

@@ -251,7 +251,7 @@ class _DataGridState extends State<DataGrid> {
                       child: Column(
                         children: [
                           _buildHeader(visibleColumns),
-                          const SizedBox(height: 32),
+                          SizedBox(height: 8,),
                           Expanded(
                             child: ClipRRect(
                               borderRadius: const BorderRadius.only(
@@ -396,9 +396,8 @@ class _DataGridState extends State<DataGrid> {
   Widget _buildSearchBar({
     required VoidCallback? onRefresh,
   }) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 18),
-      color: Colors.white.withValues(alpha: 0.8),
       child: Row(
         children: [
           // Add New button
@@ -1027,41 +1026,12 @@ class _DataGridState extends State<DataGrid> {
   }
 
   Widget _buildHeader(List<DataGridColumn> columns) {
-    return Container(
+    return SizedBox(
       height: widget.config.headerHeight,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
         children: [
-          if (widget.selectionMode == SelectionMode.multiple) ...[
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-              child: Container(
-                width: 50,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFDCE8F5),
-                ),
-                child: DataGridSelectAllCheckbox(
-                isSelected: _controller.selectionState.isSelectAll,
-                isIndeterminate:
-                    _controller.selectionState.selectedCount > 0 &&
-                        _controller.selectionState.selectedCount <
-                            (_controller.source?.rowCount ?? 0),
-                onChanged: (value) {
-                  if (value == true) {
-                    _controller.selectAll();
-                  } else {
-                    _controller.clearSelection();
-                  }
-                },
-                config: widget.config,
-              ),
-            ),
-            ),
-            const SizedBox(width: 4),
-          ],
+          if (widget.selectionMode == SelectionMode.multiple)
+            const SizedBox(width: 54),
           ...columns.asMap().entries.expand((entry) {
             final index = entry.key;
             final column = entry.value;
@@ -1070,62 +1040,11 @@ class _DataGridState extends State<DataGrid> {
                 const SizedBox(width: 4),
               Expanded(
                 flex: column.width?.toInt() ?? 1,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFDCE8F5),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                  ),
-                  child: GestureDetector(
-                    onTap: column.sortable ? () => _onHeaderTap(column) : null,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          right: 40,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: column.buildHeader(context),
-                          ),
-                        ),
-                      // if (widget.showSortControls && column.sortable)
-                      //   Positioned(
-                      //     right: column.filterable ? 24 : 4,
-                      //     top: 4,
-                      //     child: DataGridSortControls(
-                      //       field: column.dataField,
-                      //       currentSort: currentSort,
-                      //       priority: sortPriority,
-                      //       onSort: () => _onSortColumn(column),
-                      //       onRemoveSort: () => _onRemoveSort(column.dataField),
-                      //       showPriority: _controller.sortState.sorts.length > 1,
-                      //     ),
-                      //   ),
-                      // if (column.filterable)
-                      //   Positioned(
-                      //     right: 4,
-                      //     top: 4,
-                      //     child: GestureDetector(
-                      //       onTap: () => _showColumnFilter(column),
-                      //       child: Container(
-                      //         padding: const EdgeInsets.all(2),
-                      //         decoration: BoxDecoration(
-                      //           color: _hasColumnFilter(column.dataField)
-                      //               ? Colors.blue
-                      //               : Colors.grey,
-                      //           borderRadius: BorderRadius.circular(4),
-                      //         ),
-                      //         child: const Icon(
-                      //           Icons.filter_list,
-                      //           size: 12,
-                      //           color: Colors.white,
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ),
-                      ],
-                    ),
+                child: GestureDetector(
+                  onTap: column.sortable ? () => _onHeaderTap(column) : null,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: column.buildHeader(context),
                   ),
                 ),
               ),
