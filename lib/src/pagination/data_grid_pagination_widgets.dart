@@ -22,9 +22,9 @@ class DataGridPaginationControls extends StatelessWidget {
     final totalPages = pagination.totalPages;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: const BoxDecoration(
-        color: Color(0xFFF0F0F0),
+        color: Colors.white,
       ),
       child: Row(
         children: [
@@ -63,8 +63,8 @@ class DataGridPaginationControls extends StatelessWidget {
         GestureDetector(
           onTap: isLoading ? null : () => onPaginationChanged(pagination.goToPage(i)),
           child: Container(
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: isCurrentPage ? Colors.blue : Colors.white,
               border: Border.all(
@@ -78,7 +78,7 @@ class DataGridPaginationControls extends StatelessWidget {
               style: TextStyle(
                 color: isCurrentPage ? Colors.white : Colors.black87,
                 fontWeight: isCurrentPage ? FontWeight.bold : FontWeight.normal,
-                fontSize: 14,
+                fontSize: 12,
               ),
             ),
           ),

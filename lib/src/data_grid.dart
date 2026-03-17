@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'package:dexef_datagrid/src/style/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -251,7 +252,7 @@ class _DataGridState extends State<DataGrid> {
                       child: Column(
                         children: [
                           _buildHeader(visibleColumns),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           Expanded(
                             child: ClipRRect(
                               borderRadius: const BorderRadius.only(
@@ -347,8 +348,8 @@ class _DataGridState extends State<DataGrid> {
     final checkboxExtra = widget.selectionMode == SelectionMode.multiple ? 54.0 : 0.0;
 
     return Container(
-      height: 40,
-      margin: const EdgeInsets.only(top: 8, left: 4, right: 4),
+      height: 30,
+      margin: const EdgeInsets.only(top: 4, left: 4, right: 4),
       child: Row(
         children: [
           if (widget.selectionMode == SelectionMode.multiple) ...[
@@ -377,7 +378,7 @@ class _DataGridState extends State<DataGrid> {
                               ? total.toInt().toString()
                               : total.toStringAsFixed(2),
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: Color(0xff464646),
                           ),
@@ -397,7 +398,7 @@ class _DataGridState extends State<DataGrid> {
     required VoidCallback? onRefresh,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
       child: Row(
         children: [
           // Add New button
@@ -421,7 +422,7 @@ class _DataGridState extends State<DataGrid> {
           const SizedBox(width: 8),
           Expanded(
             child: SizedBox(
-              height: 42,
+              height: 38,
               child: Theme(
                 data: Theme.of(context).copyWith(
                     inputDecorationTheme: const InputDecorationTheme()),
@@ -429,13 +430,13 @@ class _DataGridState extends State<DataGrid> {
                   maxLines: 1,
                   textAlignVertical: TextAlignVertical.center,
                   style: const TextStyle(
-                      height: 1.0, fontSize: 14), // stable line height
+                      height: 1.0, fontSize: 12), // stable line height
                   decoration: InputDecoration(
                     isDense: true,
                     isCollapsed: true, // ignore default paddings
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12), // control height
-                    prefixIcon: const Icon(Icons.search, size: 20),
+                    prefixIcon: const Icon(Icons.search, size: 16),
                     // prefixIconConstraints: const BoxConstraints(
                     //   minWidth: 36,
                     //   minHeight: 44,
@@ -445,7 +446,7 @@ class _DataGridState extends State<DataGrid> {
                     fillColor: const Color(0xffF7F7F7),
                     hintText: 'Enter customer name or phone',
                     hintStyle:
-                        const TextStyle(color: Color(0xff999FA7), fontSize: 14),
+                        const TextStyle(color: Color(0xff999FA7), fontSize: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
                       borderSide: const BorderSide(color: Color(0xffE3E4E3)),
@@ -469,7 +470,7 @@ class _DataGridState extends State<DataGrid> {
           Container(
             decoration: BoxDecoration(
               color: const Color(0xffF5F5F5),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: const Color(0xffDDDDDD),
                 width: 1,
@@ -606,7 +607,7 @@ class _DataGridState extends State<DataGrid> {
         child: GestureDetector(
           onTap: onTap,
           child: Container(
-          height: 40,
+          height: 38,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
           decoration: BoxDecoration(
             // color: color,
@@ -1523,6 +1524,7 @@ class _DataGridState extends State<DataGrid> {
       child: Container(
         height: widget.config.rowHeight,
         decoration: BoxDecoration(
+          color: Colors.white,
           border: widget.config.showHorizontalBorders
               ? const Border(
                   bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1),
@@ -1563,13 +1565,14 @@ class _DataGridState extends State<DataGrid> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add, size: 18, color: Color(0xFF9E9E9E)),
+                  Icon(Icons.add, size: 18, color: Colors.black),
                   SizedBox(width: 8),
                   Text(
                     'Click here to add a new row',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF9E9E9E),
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600
                     ),
                   ),
                 ],

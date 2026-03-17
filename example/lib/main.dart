@@ -223,7 +223,7 @@ class _DataGridExampleState extends State<DataGridExample> {
         text,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 14,
+          fontSize: 12,
           color: Colors.black87,
         ),
       ),
@@ -235,7 +235,7 @@ class _DataGridExampleState extends State<DataGridExample> {
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 13,
+          fontSize: 14,
           fontFamily: 'DexPro',
           color: Color(0xff464646),
           fontWeight: FontWeight.w500,
@@ -316,7 +316,7 @@ class _DataGridExampleState extends State<DataGridExample> {
                 child: Text(
                   value.toString(),
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontFamily: 'DexPro',
                     color: Color(0xff464646),
                     fontWeight: FontWeight.w500,
