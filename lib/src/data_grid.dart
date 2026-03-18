@@ -146,6 +146,8 @@ class _DataGridState extends State<DataGrid> {
   int _extraRowsOnPage = 0;
   int _extraRowsAddedOnPage = -1;
   bool _justAddedRow = false;
+  int _visibleRowCount = 30;
+  bool _isLoadingMoreRows = false;
 
   @override
   void initState() {
@@ -164,6 +166,31 @@ class _DataGridState extends State<DataGrid> {
     if (widget.onServerDataRequest != null) {
       _controller.setServerDataCallback(widget.onServerDataRequest!);
     }
+
+    _bodyScrollController.addListener(_onBodyScroll);
+  }
+
+  void _onBodyScroll() {
+    if (_isLoadingMoreRows) return;
+    final maxScroll = _bodyScrollController.position.maxScrollExtent;
+    final currentScroll = _bodyScrollController.position.pixels;
+    // When near the bottom, load more rows
+    if (currentScroll >= maxScroll - 100) {
+      final totalRows = _controller.getDisplayData().length;
+      if (_visibleRowCount < totalRows) {
+        setState(() {
+          _isLoadingMoreRows = true;
+        });
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) {
+            setState(() {
+              _visibleRowCount = (_visibleRowCount + 30).clamp(0, totalRows);
+              _isLoadingMoreRows = false;
+            });
+          }
+        });
+      }
+    }
   }
 
   @override
@@ -174,6 +201,7 @@ class _DataGridState extends State<DataGrid> {
       if (!_justAddedRow) {
         _extraRowsOnPage = 0;
         _extraRowsAddedOnPage = -1;
+        _visibleRowCount = 30;
       }
       _justAddedRow = false;
       // Use _lastKnownPage saved from the previous build frame
@@ -189,6 +217,7 @@ class _DataGridState extends State<DataGrid> {
 
   @override
   void dispose() {
+    _bodyScrollController.removeListener(_onBodyScroll);
     _headerScrollController.dispose();
     _filterRowScrollController.dispose();
     _bodyScrollController.dispose();
@@ -1390,6 +1419,15 @@ class _DataGridState extends State<DataGrid> {
     }
   }
 
+  Widget _buildShimmerRows(List<DataGridColumn> columns, int count) {
+    return _ShimmerEffect(
+      config: widget.config,
+      columns: columns,
+      rowCount: count,
+      selectionMode: widget.selectionMode,
+    );
+  }
+
   Widget _buildNormalBody(List<DataGridColumn> columns) {
     final displayData = _controller.getDisplayData();
 
@@ -1415,13 +1453,18 @@ class _DataGridState extends State<DataGrid> {
         ? _controller.paginationState.startIndex
         : 0;
 
-    final rows = displayData.asMap().entries.map<Widget>((entry) {
+    // Limit rows for infinite scroll loading
+    final visibleData = widget.paginationMode == PaginationMode.none
+        ? displayData.take(_visibleRowCount).toList()
+        : displayData;
+
+    final rows = visibleData.asMap().entries.map<Widget>((entry) {
         final pageIndex = entry.key;
         final rowData = entry.value;
         final filteredIndex = paginationOffset + pageIndex;
         final isSelected = _controller.isRowSelected(filteredIndex);
         final isAlternateRow = pageIndex % 2 == 1;
-        final isLastRow = pageIndex == displayData.length - 1;
+        final isLastRow = pageIndex == visibleData.length - 1;
 
         return DataGridRow(
           rowData: rowData,
@@ -1496,6 +1539,11 @@ class _DataGridState extends State<DataGrid> {
       } else {
         rows.add(_buildAddNewRowButton());
       }
+    }
+
+    // Show shimmer loading rows when loading more data
+    if (_isLoadingMoreRows && widget.paginationMode == PaginationMode.none) {
+      rows.add(_buildShimmerRows(columns, 5));
     }
 
     return Column(children: rows);
@@ -2027,6 +2075,145 @@ class _DataGridState extends State<DataGrid> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text('Printed first ${firstTwenty.length} rows to console')),
+    );
+  }
+}
+
+/// Shimmer loading effect widget for rows
+class _ShimmerEffect extends StatefulWidget {
+  final DataGridConfig config;
+  final List<DataGridColumn> columns;
+  final int rowCount;
+  final SelectionMode selectionMode;
+
+  const _ShimmerEffect({
+    required this.config,
+    required this.columns,
+    required this.rowCount,
+    required this.selectionMode,
+  });
+
+  @override
+  State<_ShimmerEffect> createState() => _ShimmerEffectState();
+}
+
+class _ShimmerEffectState extends State<_ShimmerEffect>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.linear),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final visibleColumns = widget.columns.where((c) => c.visible).toList();
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Column(
+          children: List.generate(widget.rowCount, (rowIndex) {
+            return Container(
+              height: widget.config.rowHeight,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: widget.config.showHorizontalBorders
+                    ? const Border(
+                        bottom:
+                            BorderSide(color: Color(0xFFE0E0E0), width: 1),
+                      )
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  if (widget.selectionMode == SelectionMode.multiple) ...[
+                    Container(
+                      width: 6,
+                      height: widget.config.rowHeight,
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: widget.config.showBorders
+                                ? BorderSide(
+                                    color: widget.config.borderColor,
+                                    width: widget.config.borderWidth,
+                                  )
+                                : BorderSide.none,
+                            bottom: BorderSide(
+                              color: widget.config.borderColor,
+                              width: widget.config.borderWidth,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  ...visibleColumns.map((col) {
+                    return Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: widget.config.showBorders
+                                ? BorderSide(
+                                    color: widget.config.borderColor,
+                                    width: widget.config.borderWidth,
+                                  )
+                                : BorderSide.none,
+                            bottom: BorderSide(
+                              color: widget.config.borderColor,
+                              width: widget.config.borderWidth,
+                            ),
+                          ),
+                        ),
+                        child: _buildShimmerBar(_animation.value),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
+
+  Widget _buildShimmerBar(double animationValue) {
+    return Container(
+      height: 14,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        gradient: LinearGradient(
+          begin: Alignment(animationValue - 1, 0),
+          end: Alignment(animationValue, 0),
+          colors: const [
+            Color(0xFFEEEEEE),
+            Color(0xFFE0E0E0),
+            Color(0xFFEEEEEE),
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        ),
+      ),
     );
   }
 }
