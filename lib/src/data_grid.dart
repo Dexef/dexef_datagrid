@@ -349,7 +349,7 @@ class _DataGridState extends State<DataGrid> {
 
     return Container(
       height: 30,
-      margin: const EdgeInsets.only(top: 4, left: 4, right: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 4 , vertical: 8),
       child: Row(
         children: [
           if (widget.selectionMode == SelectionMode.multiple) ...[
