@@ -81,7 +81,7 @@ class DataGrid extends StatefulWidget {
     this.source,
     required this.columns,
     this.config = const DataGridConfig(
-      rowHeight: 74,
+      rowHeight: 40,
       headerHeight: 56,
       minColumnWidth: 120,
       showBorders: false,
@@ -1533,17 +1533,20 @@ class _DataGridState extends State<DataGrid> {
       _extraRowsAddedOnPage = -1;
     }
 
-    if (widget.showAddNewRow && widget.onAddNew != null) {
+    // Show shimmer loading rows when loading more data
+    final hasMoreToLoad = widget.paginationMode == PaginationMode.none &&
+        _visibleRowCount < displayData.length;
+    if (_isLoadingMoreRows && widget.paginationMode == PaginationMode.none) {
+      rows.add(_buildShimmerRows(columns, 5));
+    }
+
+    // Only show add row button when not loading more rows
+    if (widget.showAddNewRow && widget.onAddNew != null && !hasMoreToLoad && !_isLoadingMoreRows) {
       if (_isAddingNewRow) {
         rows.add(_buildNewRowEditor(columns));
       } else {
         rows.add(_buildAddNewRowButton());
       }
-    }
-
-    // Show shimmer loading rows when loading more data
-    if (_isLoadingMoreRows && widget.paginationMode == PaginationMode.none) {
-      rows.add(_buildShimmerRows(columns, 5));
     }
 
     return Column(children: rows);

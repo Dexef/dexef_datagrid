@@ -335,7 +335,7 @@ class _DataGridRowState extends State<DataGridRow> {
       ),
     ),
         const SizedBox(
-          height: 3,
+          height: 0,
           child: ColoredBox(color: Colors.white),
         ),
       ],
