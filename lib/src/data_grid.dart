@@ -435,8 +435,12 @@ class _DataGridState extends State<DataGrid> {
                 ),
                 const SizedBox(width: 8),
                 // Menu button
-                _buildMenuButton(onRefresh: onRefresh),
-                const SizedBox(width: 8),
+                Visibility(
+                  visible:false,
+                  child:_buildMenuButton(onRefresh: onRefresh),
+                ),
+                // const SizedBox(width: 8),
+
                 // Navigation buttons
                 // _buildNavButton(
                 //   icon: Icons.table_chart,
