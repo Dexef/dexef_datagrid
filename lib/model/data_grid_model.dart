@@ -18,6 +18,13 @@ class DataGridColumn {
   final bool editable; // whether the column is editable
   final Widget Function(BuildContext, dynamic)? cellBuilder;
   final Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder;
+  /// Like [cellBuilder] but receives the full row so you can render extra fields
+  /// (e.g. an ID under the name) while [dataField] still drives editing.
+  /// Takes precedence over [cellBuilder] when both are set.
+  final Widget Function(BuildContext, Map<String, dynamic> rowData)? rowCellBuilder;
+  /// Like [editCellBuilder] but receives the full row alongside the editor.
+  /// Takes precedence over [editCellBuilder] when both are set.
+  final Widget Function(BuildContext, Map<String, dynamic> rowData, Widget editor)? rowEditCellBuilder;
   final Widget Function(BuildContext)? headerBuilder;
   final String? format; // for dates and numbers
   final List<String>? listItems; // for list/dropdown columns
@@ -35,6 +42,8 @@ class DataGridColumn {
     this.editable = true,
     this.cellBuilder,
     this.editCellBuilder,
+    this.rowCellBuilder,
+    this.rowEditCellBuilder,
     this.headerBuilder,
     this.format,
     this.listItems,
@@ -157,12 +166,16 @@ class DataGridColumn {
     );
   }
 
-  /// Creates a custom column
+  /// Creates a custom column. Provide [cellBuilder] for a single-value cell, or
+  /// [rowCellBuilder] to render multiple fields from the row (e.g. name + id)
+  /// while [dataField] still drives the inline editor.
   factory DataGridColumn.custom({
     required String dataField,
     required String caption,
-    required Widget Function(BuildContext, dynamic) cellBuilder,
+    Widget Function(BuildContext, dynamic)? cellBuilder,
     Widget Function(BuildContext, dynamic, Widget editor)? editCellBuilder,
+    Widget Function(BuildContext, Map<String, dynamic> rowData)? rowCellBuilder,
+    Widget Function(BuildContext, Map<String, dynamic> rowData, Widget editor)? rowEditCellBuilder,
     DataType dataType = DataType.custom,
     double? width,
     bool sortable = false,
@@ -174,6 +187,10 @@ class DataGridColumn {
     List<String>? listItems,
     String? hintText,
   }) {
+    assert(
+      cellBuilder != null || rowCellBuilder != null,
+      'DataGridColumn.custom requires either cellBuilder or rowCellBuilder',
+    );
     return DataGridColumn(
       dataField: dataField,
       caption: caption,
@@ -186,14 +203,20 @@ class DataGridColumn {
       editable: editable,
       cellBuilder: cellBuilder,
       editCellBuilder: editCellBuilder,
+      rowCellBuilder: rowCellBuilder,
+      rowEditCellBuilder: rowEditCellBuilder,
       headerBuilder: headerBuilder,
       listItems: listItems,
       hintText: hintText,
     );
   }
 
-  /// Builds the default cell widget based on data type
-  Widget buildCell(BuildContext context, dynamic value) {
+  /// Builds the default cell widget based on data type.
+  /// Pass [rowData] when available so [rowCellBuilder] can access the full row.
+  Widget buildCell(BuildContext context, dynamic value, [Map<String, dynamic>? rowData]) {
+    if (rowCellBuilder != null && rowData != null) {
+      return rowCellBuilder!(context, rowData);
+    }
     if (cellBuilder != null) {
       return cellBuilder!(context, value);
     }

@@ -5,7 +5,9 @@
       "Bash(flutter pub get:*)",
       "Bash(flutter analyze:*)",
       "Bash(flutter doctor:*)",
-      "Bash(flutter clean:*)"
+      "Bash(flutter clean:*)",
+      "Bash(ls -lat \"/c/Users/Dexef_Dev_Alaa/Pictures/Screenshots\" | head -20)",
+      "Read(//c/Users/Dexef_Dev_Alaa/Pictures/Screenshots/**)"
     ]
   }
 }

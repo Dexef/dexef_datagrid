@@ -16,6 +16,8 @@ class DataGridCell extends StatefulWidget {
   final bool isEditing;
   final String? errorMessage;
   final bool showMoreVert;
+  /// Full row data, forwarded to [DataGridColumn.rowCellBuilder] when set.
+  final Map<String, dynamic>? rowData;
 
   const DataGridCell({
     super.key,
@@ -30,6 +32,7 @@ class DataGridCell extends StatefulWidget {
     this.isEditing = false,
     this.errorMessage,
     this.showMoreVert = false,
+    this.rowData,
   });
 
   @override
@@ -82,7 +85,7 @@ class _DataGridCellState extends State<DataGridCell> {
             child: widget.showMoreVert
                 ? Row(
                     children: [
-                      Expanded(child: widget.column.buildCell(context, widget.value)),
+                      Expanded(child: widget.column.buildCell(context, widget.value, widget.rowData)),
                       const Icon(
                         Icons.more_vert,
                         size: 20,
@@ -90,7 +93,7 @@ class _DataGridCellState extends State<DataGridCell> {
                       ),
                     ],
                   )
-                : widget.column.buildCell(context, widget.value),
+                : widget.column.buildCell(context, widget.value, widget.rowData),
           ),
         ),
       ),

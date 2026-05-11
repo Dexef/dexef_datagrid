@@ -18,6 +18,7 @@ class OptimizedDataGridCell extends StatelessWidget {
   final bool isEditing;
   final String? errorMessage;
   final bool showMoreVert;
+  final Map<String, dynamic>? rowData;
 
   const OptimizedDataGridCell({
     super.key,
@@ -31,6 +32,7 @@ class OptimizedDataGridCell extends StatelessWidget {
     this.isEditing = false,
     this.errorMessage,
     this.showMoreVert = false,
+    this.rowData,
   });
 
   @override
@@ -106,7 +108,7 @@ class OptimizedDataGridCell extends StatelessWidget {
         return _buildBooleanWidget();
       case DataType.list:
       case DataType.custom:
-        return column.buildCell(context, value);
+        return column.buildCell(context, value, rowData);
     }
   }
 

@@ -83,13 +83,14 @@ class OptimizedDataGridRow extends StatelessWidget {
                     return OptimizedDataGridCell(
                       key: ValueKey('cell_${rowIndex}_${column.dataField}'),
                       value: value,
+                      rowData: rowData,
                       column: column,
                       config: config,
                       isSelected: isSelected,
                       isAlternateRow: isAlternateRow,
                       onTap: onCellTap != null ? () => onCellTap!(rowIndex) : null,
-                      onDoubleTap: editMode != EditMode.none && onCellEdit != null 
-                          ? () => onCellEdit!(rowIndex, column.dataField, value) 
+                      onDoubleTap: editMode != EditMode.none && onCellEdit != null
+                          ? () => onCellEdit!(rowIndex, column.dataField, value)
                           : null,
                     );
                   }),
