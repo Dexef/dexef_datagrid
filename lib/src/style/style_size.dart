@@ -72,11 +72,9 @@ class AppScreenSize {
   }
 ////////////////////////////////////////////////////////////////////////////////
 class AppFontFamily{
-  static String dexPro = 'DexPro';
-  static String dexProBold = 'DexProBold';
-  static String dexProRegular = 'DexProRegular';
-  // static String dexRoundBold = 'DXRoundBold';
-  // static String dexefRoundRegular = 'DXRoundRegular';
+  static String dexPro = 'packages/dexef_datagrid/DexPro';
+  static String dexProBold = 'packages/dexef_datagrid/DexPro';
+  static String dexProRegular = 'packages/dexef_datagrid/DexPro';
 }
 
 // class AppFontWeight{
