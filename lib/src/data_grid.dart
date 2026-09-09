@@ -260,7 +260,7 @@ class _DataGridState extends State<DataGrid> {
                       color: const Color(0xff666666),
                       fontSize:
                           AppFontSize().setFontSize(context, webFontSize: 18),
-                      fontFamily: 'DexPro',
+                      fontFamily: 'packages/dexef_datagrid/DexPro',
                     ),
               ),
               _buildSearchBar(onRefresh: widget.onRefresh),
@@ -519,7 +519,7 @@ class _DataGridState extends State<DataGrid> {
                     icon: Icons.edit,
                     label: 'Edit',
                     onTap: widget.onEdit,
-                    isActive: false),
+                    isActive: true),
                 const SizedBox(width: 8),
                 // Delete button
                 _buildActionButton(
@@ -543,8 +543,12 @@ class _DataGridState extends State<DataGrid> {
                 ),
                 const SizedBox(width: 8),
                 // Menu button
-                _buildMenuButton(onRefresh: onRefresh),
-                const SizedBox(width: 8),
+                Visibility(
+                  visible:false,
+                  child:_buildMenuButton(onRefresh: onRefresh),
+                ),
+                // const SizedBox(width: 8),
+
                 // Navigation buttons
                 // _buildNavButton(
                 //   icon: Icons.table_chart,
@@ -1165,6 +1169,7 @@ class _DataGridState extends State<DataGrid> {
               ),
               child: SvgPicture.asset(
                 "assets/images/filter_grid.svg",
+                package: 'dexef_datagrid',
               )
               // Icon(
               //   Icons.filter_list,

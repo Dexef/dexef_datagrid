@@ -5,8 +5,7 @@
       "Bash(flutter pub get:*)",
       "Bash(flutter analyze:*)",
       "Bash(flutter doctor:*)",
-      "Bash(flutter clean:*)",
-      "Bash(find:*)"
+      "Bash(flutter clean:*)"
     ]
   }
 }

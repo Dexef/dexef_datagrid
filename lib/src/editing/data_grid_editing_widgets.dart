@@ -123,7 +123,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       inputFormatters: isPhoneField
         ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))]
         : null,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', package: 'dexef_datagrid', color: Color(0xff464646)),
       decoration: InputDecoration(
         isDense: true,
         border: InputBorder.none,
@@ -157,7 +157,7 @@ class _DataGridCellEditorState extends State<DataGridCellEditor> {
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
       textAlign: widget.textAlign,
       maxLines: 1,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', color: Color(0xff464646)),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'DexPro', package: 'dexef_datagrid', color: Color(0xff464646)),
       decoration: const InputDecoration(
         isDense: true,
         border: InputBorder.none,

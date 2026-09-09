@@ -147,12 +147,13 @@ class _DataGridRowState extends State<DataGridRow> {
   }
 
   Widget _buildEditingCell(BuildContext context, DataGridColumn column, dynamic value) {
+    final hasRowEditBuilder = column.rowEditCellBuilder != null;
     final hasEditBuilder = column.editCellBuilder != null;
     final editor = DataGridCellEditor(
       field: column.dataField,
       value: value,
       column: column,
-      textAlign: hasEditBuilder ? TextAlign.start : TextAlign.center,
+      textAlign: (hasRowEditBuilder || hasEditBuilder) ? TextAlign.start : TextAlign.center,
       onValueChanged: (field, newValue) {
         _editingValue = newValue;
       },
@@ -169,8 +170,8 @@ class _DataGridRowState extends State<DataGridRow> {
           clipBehavior: Clip.hardEdge,
           children: [
             Positioned.fill(
-              child: column.cellBuilder != null
-                  ? column.buildCell(context, value)
+              child: (column.rowCellBuilder != null || column.cellBuilder != null)
+                  ? column.buildCell(context, value, widget.rowData)
                   : Center(child: Text(value?.toString() ?? '')),
             ),
             Positioned(
@@ -183,9 +184,11 @@ class _DataGridRowState extends State<DataGridRow> {
       );
     }
 
-    final content = hasEditBuilder
-        ? column.editCellBuilder!(context, value, editor)
-        : Center(child: editor);
+    final Widget content = hasRowEditBuilder
+        ? column.rowEditCellBuilder!(context, widget.rowData, editor)
+        : hasEditBuilder
+            ? column.editCellBuilder!(context, value, editor)
+            : Center(child: editor);
 
     // Apply hover background to editing cell
     final editingBgColor = isHover ? Colors.grey.withValues(alpha: 0.1) : Colors.white;
@@ -314,6 +317,7 @@ class _DataGridRowState extends State<DataGridRow> {
                           ? _buildEditingCell(context, column, value)
                           : DataGridCell(
                               value: value,
+                              rowData: widget.rowData,
                               column: column,
                               config: widget.config,
                               isSelected: widget.isSelected,
