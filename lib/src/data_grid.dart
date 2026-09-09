@@ -508,12 +508,12 @@ class _DataGridState extends State<DataGrid> {
             child: Row(
               children: [
                 // Duplicate button
-                _buildActionButton(
-                    icon: Icons.content_copy,
-                    label: 'Duplicate',
-                    onTap: widget.onDuplicate,
-                    isActive: false),
-                const SizedBox(width: 8),
+                // _buildActionButton(
+                //     icon: Icons.content_copy,
+                //     label: 'Duplicate',
+                //     onTap: widget.onDuplicate,
+                //     isActive: false),
+                // const SizedBox(width: 8),
                 // Edit button
                 _buildActionButton(
                     icon: Icons.edit,
@@ -529,12 +529,12 @@ class _DataGridState extends State<DataGrid> {
                     isActive: true),
                 const SizedBox(width: 8),
                 // Print button
-                _buildActionButton(
-                    icon: Icons.print,
-                    label: 'Print',
-                    onTap: widget.onPrint ?? _printAllRows,
-                    isActive: false),
-                const SizedBox(width: 8),
+                // _buildActionButton(
+                //     icon: Icons.print,
+                //     label: 'Print',
+                //     onTap: widget.onPrint ?? _printAllRows,
+                //     isActive: false),
+                // const SizedBox(width: 8),
                 // Share button
                 _buildActionButton(
                   icon: Icons.share,
